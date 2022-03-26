@@ -7,8 +7,8 @@
 #include <vector>
 
 #include "database.h"
-#include "singleton.h"
-#include "systemuser.h"
+#include "modules/singleton.h"
+#include "modules/systemuser.h"
 
 class UserDB : public DataBase {
   Q_OBJECT
