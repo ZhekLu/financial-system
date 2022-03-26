@@ -8,22 +8,26 @@ CONFIG += c++17
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+VPATH += ./modules
+
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
     database/database.cpp \
-    database/userdb.cpp
+    database/userdb.cpp \
+    view/authwidget.cpp
 
 HEADERS += \
     mainwindow.h \
+    singleton.h modes.h \
     database/database.h \
     database/userdb.h \
-    singleton.h \
-    modes.h \
-    systemuser.h
+    entities/systemuser.h \
+    view/authwidget.h
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    view/authwidget.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

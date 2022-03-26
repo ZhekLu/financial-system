@@ -58,6 +58,8 @@ bool UserDB::createTables() {
   return res;
 }
 
+// Login and system
+
 bool UserDB::is_login_busy(QString login) {
   QString query =
       tr("SELECT login FROM system_users WHERE login = ") + qs(login);
@@ -67,30 +69,30 @@ bool UserDB::is_login_busy(QString login) {
 }
 
 bool UserDB::contains(SystemUser user) {
-  QString query = tr("SELECT password, role FROM system_users WHERE login = ") +
-                  qs(user.login);
-  exec(query);
-  if (!db_query->next())
-    return false;
 
-  QString password = db_query->value(0).toString();
-  int role = db_query->value(1).toInt();
-  return QString::fromStdString(user.password) == password && user.mode == role;
+  QString query = QString("SELECT user_id FROM system_users "
+                          "WHERE login = \"%1\" AND "
+                          "password = \"%2\" AND "
+                          "role = %3")
+                      .arg(QString::fromStdString(user.login))
+                      .arg(QString::fromStdString(user.password))
+                      .arg(QString::number(user.mode));
+  exec(query);
+  return db_query->next();
 }
 
-void UserDB::print_all_users() {
-  QString query = "SELECT * FROM system_users";
-  if (exec(query))
-    qDebug() << "OK";
-  else
-    qDebug() << "NO";
-  qDebug() << "ALL:\n";
-  while (db_query->next()) {
-    qDebug() << "Start:" << db_query->value(0).toString()
-             << db_query->value(1).toString() << db_query->value(2).toString()
-             << ":End";
-  }
-  qDebug() << ":ALL\n";
+size_t UserDB::get_id_by_login(SystemUser user) {
+  QString query = QString("SELECT user_id FROM system_users "
+                          "WHERE login = \"%1\" AND "
+                          "password = \"%2\" AND "
+                          "role = %3")
+                      .arg(QString::fromStdString(user.login))
+                      .arg(QString::fromStdString(user.password))
+                      .arg(QString::number(user.mode));
+  exec(query);
+  if (!db_query->next())
+    return 0;
+  return db_query->value(0).toInt();
 }
 
 void UserDB::login_user(SystemUser user) {
@@ -107,47 +109,84 @@ void UserDB::login_user(SystemUser user) {
   emit DataBase::updated();
 }
 
-void UserDB::test_login() {
+// Debug
 
-  QString query = ".tables";
+void UserDB::print_all_system_users() {
+  QString query = "SELECT * FROM system_users";
   if (!exec(query))
-    qDebug() << ".tables(no)";
-  while (db_query->next()) {
-    qDebug() << db_query->value(0).toString();
-  }
+    qDebug() << "UserDB::print_all_users::fail";
 
-  query = "INSERT INTO system_users (login, password, role, user_id)"
-          "VALUES (\"login1\", \"pass1\", 1, 1),"
-          "(\"login2\", \"pass2\", 2, 2);";
-  if (exec(query))
-    qDebug() << "testOK";
-  else
-    qDebug() << "testNO";
+  qDebug() << "ALL:";
+  while (db_query->next()) {
+    qDebug() << "Start:" << db_query->value(0).toString()
+             << db_query->value(1).toString() << db_query->value(2).toString()
+             << ":End";
+  }
+  qDebug() << ":ALL";
 }
 
-// User *UserDB::get_user(QString login) {
-//   QString query =
-//       tr("SELECT user_id FROM system_users WHERE login = ") + qs(login);
-//   exec(query);
+void UserDB::print_mode_system_users(LoginMode lm) {
+  QString query =
+      "SELECT * FROM system_users WHERE role = " + QString::number(lm);
+  if (!exec(query))
+    qDebug() << "UserDB::print_all_users::fail";
 
-//  if (!db_query->next())
-//    return nullptr;
+  qDebug() << "ALL in this mode:";
+  while (db_query->next()) {
+    qDebug() << "Start:" << db_query->value(0).toString()
+             << db_query->value(1).toString() << db_query->value(2).toString()
+             << ":End";
+  }
+  qDebug() << ":ALL in this mode";
+}
 
-//  int id = db_query->value(0).toInt();
+void UserDB::test_login() {
 
-//  query = tr("SELECT full_name, pass_number, pass_id, phone, email "
-//             "FROM users WHERE id = ") +
-//          qs(QString::number(id));
-//  exec(query);
+  QString query = "INSERT INTO system_users (login, password, role, user_id)"
+                  "VALUES "
+                  "(\"login1\", \"pass1\", 1, 1),"
+                  "(\"login2\", \"pass2\", 2, 2),"
+                  "(\"login3\", \"pass3\", 3, 13);";
+  if (exec(query))
+    qDebug() << "testloginOK";
+  else
+    qDebug() << "testloginNO";
+}
 
-//  std::string name = db_query->value(0).toString().toStdString();
-//  std::string p_number = db_query->value(1).toString().toStdString();
-//  std::string p_id = db_query->value(2).toString().toStdString();
-//  std::string phone = db_query->value(3).toString().toStdString();
-//  std::string email = db_query->value(4).toString().toStdString();
+void UserDB::test_users() {
+  QString query =
+      "INSERT INTO users (id, full_name, pass_number, phone, email)"
+      "VALUES "
+      "(1, \"name first manager\", \"pas_num1\", \"phone1\", \"email1\"),"
+      "(2, \"name first operator\", \"pas_num2\", \"phone2\", \"email2\"),"
+      "(13, \"name first individual\", \"pas_num3\", \"phone3\", \"email3\");";
 
-//  return new User(id, name, p_number, p_id, phone, email);
-//}
+  if (exec(query))
+    qDebug() << "testuserOK";
+  else
+    qDebug() << "testuserNO";
+}
+
+// User
+
+User *UserDB::get_user(size_t id) {
+  QString query = tr("SELECT full_name, pass_number, "
+                     "pass_id, phone, email "
+                     "FROM users WHERE id = ") +
+                  qs(QString::number(id));
+  exec(query);
+
+  if (!db_query->next())
+    return nullptr;
+
+  std::string name = db_query->value(0).toString().toStdString();
+  std::string p_number = db_query->value(1).toString().toStdString();
+  std::string p_id = db_query->value(2).toString().toStdString();
+  std::string phone = db_query->value(3).toString().toStdString();
+  std::string email = db_query->value(4).toString().toStdString();
+
+  return new User(name, p_number, p_id, phone, email, id);
+}
 
 void UserDB::remove_user(std::string login) {
   QString query = tr("DELETE FROM users WHERE login = ") + qs(login);
