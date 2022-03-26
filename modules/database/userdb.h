@@ -22,7 +22,9 @@ public:
   void remove_user(std::string login);
   //  std::vector<SystemUser> users();
 
-  void print_all_users();
+  // Debug methods
+  void print_all_system_users();
+  void print_mode_system_users(LoginMode);
 
   //  // Users
   //  User *get_user(QString login);

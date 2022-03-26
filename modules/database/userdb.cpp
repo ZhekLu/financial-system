@@ -78,12 +78,11 @@ bool UserDB::contains(SystemUser user) {
   return db_query->next();
 }
 
-void UserDB::print_all_users() {
+void UserDB::print_all_system_users() {
   QString query = "SELECT * FROM system_users";
-  if (exec(query))
-    qDebug() << "OK";
-  else
-    qDebug() << "NO";
+  if (!exec(query))
+    qDebug() << "UserDB::print_all_users::fail";
+
   qDebug() << "ALL:";
   while (db_query->next()) {
     qDebug() << "Start:" << db_query->value(0).toString()
@@ -91,6 +90,21 @@ void UserDB::print_all_users() {
              << ":End";
   }
   qDebug() << ":ALL";
+}
+
+void UserDB::print_mode_system_users(LoginMode lm) {
+  QString query =
+      "SELECT * FROM system_users WHERE role = " + QString::number(lm);
+  if (!exec(query))
+    qDebug() << "UserDB::print_all_users::fail";
+
+  qDebug() << "ALL in this mode:";
+  while (db_query->next()) {
+    qDebug() << "Start:" << db_query->value(0).toString()
+             << db_query->value(1).toString() << db_query->value(2).toString()
+             << ":End";
+  }
+  qDebug() << ":ALL in this mode";
 }
 
 void UserDB::login_user(SystemUser user) {

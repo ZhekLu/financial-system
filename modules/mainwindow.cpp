@@ -35,7 +35,7 @@ void MainWindow::on_adm_log_but_clicked() {
 
 void MainWindow::on_login_button_clicked(LoginMode mode) {
   aw->show(mode);
-  USER_DB->print_all_users();
+  USER_DB->print_mode_system_users(mode);
 }
 
 void MainWindow::connection_test(LoginMode mode) {
