@@ -24,7 +24,7 @@ public:
   virtual void hide();
 
 signals:
-  void auth_ok(LoginMode lm);
+  void auth_ok(size_t);
 private slots:
 
   void on_enter_btn_clicked();

@@ -1,9 +1,11 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QMainWindow>
+
 #include "modes.h"
 #include "view/authwidget.h"
-#include <QMainWindow>
+#include "view/managerfactory.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -17,8 +19,7 @@ class MainWindow : public QMainWindow {
 public:
   MainWindow(QWidget *parent = nullptr);
   ~MainWindow();
-public slots:
-  void connection_test(LoginMode mode);
+
 private slots:
   void on_ind_log_but_clicked();
 
@@ -29,6 +30,12 @@ private slots:
   void on_op_log_but_clicked();
 
   void on_adm_log_but_clicked();
+
+  void auth_connection(size_t);
+
+  void on_exit_but_clicked();
+
+  void on_debug_but_clicked();
 
 private:
   // fields

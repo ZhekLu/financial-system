@@ -5,7 +5,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
   aw = new AuthWidget();
-  connect(aw, &AuthWidget::auth_ok, this, &MainWindow::connection_test);
+  connect(aw, &AuthWidget::auth_ok, this, &MainWindow::auth_connection);
 }
 
 MainWindow::~MainWindow() {
@@ -38,7 +38,22 @@ void MainWindow::on_login_button_clicked(LoginMode mode) {
   USER_DB->print_mode_system_users(mode);
 }
 
-void MainWindow::connection_test(LoginMode mode) {
-  this->setWindowTitle("GOOOG" + QString::number(mode));
+void MainWindow::on_exit_but_clicked() { this->close(); }
+
+void MainWindow::auth_connection(size_t id) {
+  this->setWindowTitle("GOOOG" + QString::number(id));
   QMessageBox::information(this, "lf", "gg");
+
+  User *curr_user = USER_DB->get_user(id);
+  if (!curr_user)
+    return;
+  QMainWindow *manager = ManagerFactory::get_manager_widget(curr_user, this);
+  manager->show();
+  //  DepositManager *dp = new DepositManager(curr_user);
+  //  dp->show();
+}
+
+void MainWindow::on_debug_but_clicked() {
+  USER_DB->test_login();
+  USER_DB->test_users();
 }
