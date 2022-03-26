@@ -16,9 +16,17 @@ class AuthWidget : public QWidget {
   Q_OBJECT
 
 public:
-  AuthWidget(LoginMode mode, QWidget *parent = nullptr);
+  AuthWidget(QWidget *parent = nullptr);
   ~AuthWidget();
+
+  // methods
+  virtual void show(LoginMode login_mode);
+  virtual void hide();
+
+signals:
+  void auth_ok(LoginMode lm);
 private slots:
+
   void on_enter_btn_clicked();
 
   void on_back_btn_clicked();

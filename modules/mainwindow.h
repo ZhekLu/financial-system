@@ -17,7 +17,8 @@ class MainWindow : public QMainWindow {
 public:
   MainWindow(QWidget *parent = nullptr);
   ~MainWindow();
-
+public slots:
+  void connection_test(LoginMode mode);
 private slots:
   void on_ind_log_but_clicked();
 
@@ -32,6 +33,7 @@ private slots:
 private:
   // fields
   Ui::MainWindow *ui;
+  AuthWidget *aw;
 
   // methods
   void on_login_button_clicked(LoginMode mode);

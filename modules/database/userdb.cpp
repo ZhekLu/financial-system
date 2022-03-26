@@ -90,7 +90,7 @@ void UserDB::print_all_users() {
              << db_query->value(1).toString() << db_query->value(2).toString()
              << ":End";
   }
-  qDebug() << ":ALL\n";
+  qDebug() << ":ALL";
 }
 
 void UserDB::login_user(SystemUser user) {

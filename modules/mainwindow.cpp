@@ -4,9 +4,14 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
+  aw = new AuthWidget();
+  connect(aw, &AuthWidget::auth_ok, this, &MainWindow::connection_test);
 }
 
-MainWindow::~MainWindow() { delete ui; }
+MainWindow::~MainWindow() {
+  delete ui;
+  delete aw;
+}
 
 void MainWindow::on_ind_log_but_clicked() {
   on_login_button_clicked(LoginMode::INDIVIDUAL);
@@ -29,27 +34,11 @@ void MainWindow::on_adm_log_but_clicked() {
 }
 
 void MainWindow::on_login_button_clicked(LoginMode mode) {
-  AuthWidget *aw = new AuthWidget(mode);
-  aw->show();
-  QString title;
-  switch (mode) {
-  case LoginMode::ADMIN:
-    title = "System::Admin";
-    break;
-  case LoginMode::ENTITY:
-    title = "Client::Entity";
-    break;
-  case LoginMode::MANAGER:
-    title = "System::Manager";
-    break;
-  case LoginMode::OPERATOR:
-    title = "System::Operator";
-    break;
-  case LoginMode::INDIVIDUAL:
-    title = "Client::Individual";
-    break;
-  }
-  aw->setWindowTitle(title);
-
+  aw->show(mode);
   USER_DB->print_all_users();
+}
+
+void MainWindow::connection_test(LoginMode mode) {
+  this->setWindowTitle("GOOOG" + QString::number(mode));
+  QMessageBox::information(this, "lf", "gg");
 }

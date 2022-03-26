@@ -3,26 +3,54 @@
 
 using namespace std;
 
-AuthWidget::AuthWidget(LoginMode mode, QWidget *parent)
-    : QWidget(parent), ui(new Ui::AuthWidget), mode(mode) {
+AuthWidget::AuthWidget(QWidget *parent)
+    : QWidget(parent), ui(new Ui::AuthWidget) {
   ui->setupUi(this);
-  setAttribute(Qt::WA_DeleteOnClose);
+  //  setAttribute(Qt::WA_DeleteOnClose);
 }
 
 AuthWidget::~AuthWidget() { delete ui; }
+
+void AuthWidget::show(LoginMode login_mode) {
+  QWidget::show();
+  mode = login_mode;
+
+  switch (mode) {
+  case LoginMode::ADMIN:
+    setWindowTitle("System::Admin");
+    break;
+  case LoginMode::ENTITY:
+    setWindowTitle("Client::Entity");
+    break;
+  case LoginMode::MANAGER:
+    setWindowTitle("System::Manager");
+    break;
+  case LoginMode::OPERATOR:
+    setWindowTitle("System::Operator");
+    break;
+  case LoginMode::INDIVIDUAL:
+    setWindowTitle("Client::Individual");
+    break;
+  }
+}
+
+void AuthWidget::hide() {
+  QWidget::hide();
+  ui->login->clear();
+  ui->password->clear();
+}
 
 void AuthWidget::on_enter_btn_clicked() {
   string login = ui->login->text().toStdString();
   string password = ui->password->text().toStdString();
 
-  if (!USER_DB->contains(SystemUser(login, password, mode)))
+  if (!USER_DB->contains(SystemUser(login, password, mode))) {
     QMessageBox::critical(this, "Authorization", "Wrong login or password");
-  else
-    //    this->close();
-    QMessageBox::information(this, "Authorization", "SUCCESS");
-
-  //      ui->login->clear();
-  //      ui->password->clear();
+  } else {
+    qDebug() << "auth ok";
+    emit auth_ok(mode);
+    hide();
+  }
 }
 
-void AuthWidget::on_back_btn_clicked() { this->close(); }
+void AuthWidget::on_back_btn_clicked() { this->hide(); }
