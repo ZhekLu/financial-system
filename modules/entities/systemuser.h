@@ -1,7 +1,7 @@
 #ifndef SYSTEMUSER_H
 #define SYSTEMUSER_H
 
-#include "modes.h"
+#include "modules/modes.h"
 #include <string>
 
 struct SystemUser {

@@ -1,26 +1,64 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "./ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow) {
-  ui->setupUi(this);
+    : QMainWindow(parent)
+    , ui(new Ui::MainWindow)
+{
+    ui->setupUi(this);
 }
 
-MainWindow::~MainWindow() { delete ui; }
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
 
-void MainWindow::on_read_bt_clicked() { USER_DB->print_all_users(); }
+void MainWindow::on_ind_log_but_clicked()
+{
+    on_login_button_clicked(LoginMode::INDIVIDUAL);
+}
 
-void MainWindow::on_write_bt_clicked() {
-  std::vector<SystemUser> su{
-      SystemUser("log1", "pas1", LoginMode::INDIVIDUAL, 1),
-      SystemUser("log2", "pas12", LoginMode::INDIVIDUAL, 2),
-      SystemUser("log3", "pas13", LoginMode::INDIVIDUAL, 13),
-      SystemUser("log4", "pas14", LoginMode::INDIVIDUAL, 14),
-      SystemUser("log5", "pas15", LoginMode::INDIVIDUAL, 5),
-      SystemUser("log6", "pas16", LoginMode::INDIVIDUAL, 16),
-      SystemUser("log7", "pas17", LoginMode::INDIVIDUAL, 17)};
-  for (auto &s : su) {
-    USER_DB->login_user(s);
-  }
-  //  USER_DB->test_login();
+void MainWindow::on_ent_log_but_clicked()
+{
+    on_login_button_clicked(LoginMode::ENTITY);
+}
+
+void MainWindow::on_man_log_but_clicked()
+{
+    on_login_button_clicked(LoginMode::MANAGER);
+}
+
+void MainWindow::on_op_log_but_clicked()
+{
+    on_login_button_clicked(LoginMode::OPERATOR);
+}
+
+void MainWindow::on_adm_log_but_clicked()
+{
+    on_login_button_clicked(LoginMode::ADMIN);
+}
+
+void MainWindow::on_login_button_clicked(LoginMode mode)
+{
+    AuthWidget* aw = new AuthWidget(mode);
+    aw->show();
+    QString title;
+    switch (mode) {
+    case LoginMode::ADMIN:
+        title = "System::Admin";
+        break;
+    case LoginMode::ENTITY:
+        title = "Client::Entity";
+        break;
+    case LoginMode::MANAGER:
+        title = "System::Manager";
+        break;
+    case LoginMode::OPERATOR:
+        title = "System::Operator";
+        break;
+    case LoginMode::INDIVIDUAL:
+        title = "Client::Individual";
+        break;
+    }
+    aw->setWindowTitle(title);
 }
