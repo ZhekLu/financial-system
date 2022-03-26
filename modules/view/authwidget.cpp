@@ -15,11 +15,11 @@ void AuthWidget::on_enter_btn_clicked() {
   string login = ui->login->text().toStdString();
   string password = ui->password->text().toStdString();
 
-  //  if (USER_DB->contains(SystemUser(login, password, lm)))
-  //          QMessageBox::critical(this, "Authorization", "Wrong login or
-  //          password");
-  //      else
-  //          this->close();
+  if (!USER_DB->contains(SystemUser(login, password, mode)))
+    QMessageBox::critical(this, "Authorization", "Wrong login or password");
+  else
+    //    this->close();
+    QMessageBox::information(this, "Authorization", "SUCCESS");
 
   //      ui->login->clear();
   //      ui->password->clear();

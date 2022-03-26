@@ -67,15 +67,15 @@ bool UserDB::is_login_busy(QString login) {
 }
 
 bool UserDB::contains(SystemUser user) {
-  QString query = tr("SELECT password, role FROM system_users WHERE login = ") +
-                  qs(user.login);
+  QString query = QString("SELECT user_id FROM system_users "
+                          "WHERE login = \"%1\" AND "
+                          "password = \"%2\" AND "
+                          "role = %3")
+                      .arg(QString::fromStdString(user.login))
+                      .arg(QString::fromStdString(user.password))
+                      .arg(QString::number(user.mode));
   exec(query);
-  if (!db_query->next())
-    return false;
-
-  QString password = db_query->value(0).toString();
-  int role = db_query->value(1).toInt();
-  return QString::fromStdString(user.password) == password && user.mode == role;
+  return db_query->next();
 }
 
 void UserDB::print_all_users() {
@@ -84,7 +84,7 @@ void UserDB::print_all_users() {
     qDebug() << "OK";
   else
     qDebug() << "NO";
-  qDebug() << "ALL:\n";
+  qDebug() << "ALL:";
   while (db_query->next()) {
     qDebug() << "Start:" << db_query->value(0).toString()
              << db_query->value(1).toString() << db_query->value(2).toString()

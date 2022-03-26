@@ -5,6 +5,7 @@
 #include <QWidget>
 
 //#include "financialsystem.h"
+#include "modules/database/userdb.h"
 #include "modules/modes.h"
 
 namespace Ui {
