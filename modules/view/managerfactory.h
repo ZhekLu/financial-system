@@ -6,12 +6,12 @@
 
 class ManagerFactory {
 public:
-  ManagerFactory(User *u) {
+  ManagerFactory(Individual *u) {
     dm = new DepositManager(u);
     dm->show();
   }
 
-  static QMainWindow *get_manager_widget(User *u, QWidget *parent = nullptr) {
+  static QMainWindow *get_manager_widget(Individual *u, QWidget *parent = nullptr) {
     return new DepositManager(u, parent);
   }
 

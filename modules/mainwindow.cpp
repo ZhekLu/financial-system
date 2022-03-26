@@ -41,16 +41,11 @@ void MainWindow::on_login_button_clicked(LoginMode mode) {
 void MainWindow::on_exit_but_clicked() { this->close(); }
 
 void MainWindow::auth_connection(size_t id) {
-  this->setWindowTitle("GOOOG" + QString::number(id));
-  QMessageBox::information(this, "lf", "gg");
-
-  User *curr_user = USER_DB->get_user(id);
+  Individual *curr_user = USER_DB->get_user(id);
   if (!curr_user)
     return;
   QMainWindow *manager = ManagerFactory::get_manager_widget(curr_user, this);
   manager->show();
-  //  DepositManager *dp = new DepositManager(curr_user);
-  //  dp->show();
 }
 
 void MainWindow::on_debug_but_clicked() {

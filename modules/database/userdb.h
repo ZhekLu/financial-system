@@ -8,7 +8,7 @@
 
 #include "database.h"
 #include "modules/entities/systemuser.h"
-#include "modules/entities/user.h"
+#include "modules/entities/individual.h"
 #include "modules/singleton.h"
 
 class UserDB : public DataBase {
@@ -26,12 +26,8 @@ public:
   void remove_user(std::string login);
   //  std::vector<SystemUser> users();
 
-  // Debug methods
-  void print_all_system_users();
-  void print_mode_system_users(LoginMode);
-
   // Users
-  User *get_user(size_t id);
+  Individual *get_user(size_t id);
 
   //  // Bank accounts
   //  void add_account(BankAccount product);
@@ -40,6 +36,10 @@ public:
   //  void add_company(Company company);
   //  void remove_company(size_t id);
 
+  // Debug methods
+  void print_all_system_users();
+  void print_mode_system_users(LoginMode);
+  // Fill tables
   void test_login();
   void test_users();
 

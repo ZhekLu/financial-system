@@ -4,7 +4,7 @@
 #include <QMainWindow>
 
 //#include"financialsystem.h"
-#include "modules/entities/user.h"
+#include "modules/entities/individual.h"
 
 namespace Ui {
 class DepositManager;
@@ -14,12 +14,12 @@ class DepositManager : public QMainWindow {
   Q_OBJECT
 
 public:
-  DepositManager(User *owner, QWidget *parent = nullptr);
+  DepositManager(Individual *owner, QWidget *parent = nullptr);
   ~DepositManager();
 
 private:
   Ui::DepositManager *ui;
-  User *user;
+  Individual *user;
 
   void init();
 };

@@ -169,7 +169,7 @@ void UserDB::test_users() {
 
 // User
 
-User *UserDB::get_user(size_t id) {
+Individual *UserDB::get_user(size_t id) {
   QString query = tr("SELECT full_name, pass_number, "
                      "pass_id, phone, email "
                      "FROM users WHERE id = ") +
@@ -185,7 +185,7 @@ User *UserDB::get_user(size_t id) {
   std::string phone = db_query->value(3).toString().toStdString();
   std::string email = db_query->value(4).toString().toStdString();
 
-  return new User(name, p_number, p_id, phone, email, id);
+  return new Individual(name, p_number, p_id, phone, email, id);
 }
 
 void UserDB::remove_user(std::string login) {
