@@ -46,11 +46,10 @@ bool UserDB::createTables() {
   if (!db.tables().contains("companies") && res) {
     res = query.exec("CREATE TABLE companies"
                      "("
-                     "id INTEGER PRIMARY KEY, "
                      "name TEXT, "
                      "type INTEGER, "
                      "PAC INTEGER, "
-                     "BIC INTEGER, "
+                     "BIC INTEGER PRIMARY KEY, "
                      "adress TEXT"
                      ");");
   }

@@ -15,7 +15,7 @@ public:
   ~Individual() = default;
 
   // methods
-  QString get_info() override { return {}; }
+  QString get_info() const override { return {}; }
 
 private:
   std::string pass_number;
