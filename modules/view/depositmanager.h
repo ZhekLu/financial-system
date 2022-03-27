@@ -4,7 +4,9 @@
 #include <QMainWindow>
 
 //#include"financialsystem.h"
+//#include "modules/database/userdb.h"
 #include "modules/entities/individual.h"
+#include <QSqlQuery>
 
 namespace Ui {
 class DepositManager;

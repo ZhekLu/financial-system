@@ -7,8 +7,8 @@
 #include <vector>
 
 #include "database.h"
-#include "modules/entities/systemuser.h"
 #include "modules/entities/individual.h"
+#include "modules/entities/systemuser.h"
 #include "modules/singleton.h"
 
 class UserDB : public DataBase {
@@ -18,7 +18,6 @@ public:
 
   // Login
   bool is_login_busy(QString login);
-
   bool contains(SystemUser user);
   size_t get_id_by_login(SystemUser user);
 
@@ -29,8 +28,11 @@ public:
   // Users
   Individual *get_user(size_t id);
 
-  //  // Bank accounts
-  //  void add_account(BankAccount product);
+  // Bank accounts
+  void add_account(BankAccount product);
+  size_t get_account_balance(size_t id);
+  BankAccount *get_account(size_t id);
+  std::vector<BankAccount *> get_user_accounts(size_t user_id);
 
   //  // Companies
   //  void add_company(Company company);

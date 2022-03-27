@@ -17,36 +17,6 @@
    <string notr="true">background-color: rgb(0, 61, 89);</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QTableWidget" name="tableWidget">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>0</y>
-      <width>401</width>
-      <height>351</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>13</pointsize>
-     </font>
-    </property>
-    <column>
-     <property name="text">
-      <string notr="true">Card ID</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>Bank</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>Deposit</string>
-     </property>
-    </column>
-   </widget>
    <widget class="QPushButton" name="man_log_but">
     <property name="geometry">
      <rect>
@@ -278,6 +248,36 @@ QPushButton:hover{
     <property name="text">
      <string>Account Info</string>
     </property>
+   </widget>
+   <widget class="QTableWidget" name="tableWidget">
+    <property name="geometry">
+     <rect>
+      <x>15</x>
+      <y>11</y>
+      <width>331</width>
+      <height>321</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(255, 255, 255);</string>
+    </property>
+    <property name="editTriggers">
+     <set>QAbstractItemView::NoEditTriggers</set>
+    </property>
+    <property name="showGrid">
+     <bool>true</bool>
+    </property>
+    <attribute name="horizontalHeaderVisible">
+     <bool>false</bool>
+    </attribute>
+    <attribute name="verticalHeaderVisible">
+     <bool>false</bool>
+    </attribute>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

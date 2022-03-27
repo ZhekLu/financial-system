@@ -5,7 +5,7 @@
 
 #include <QString>
 #include <string>
-#include <unordered_map>
+#include <vector>
 
 class IUser {
 public:
@@ -22,7 +22,7 @@ public:
 protected:
   size_t id;
   std::string name;
-  std::unordered_map<size_t, BankAccount *> accounts;
+  std::vector<BankAccount *> accounts;
 };
 
 #endif // IUSER_H

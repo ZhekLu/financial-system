@@ -169,9 +169,9 @@ void UserDB::test_users() {
 // User
 
 Individual *UserDB::get_user(size_t id) {
-  QString query = tr("SELECT full_name, pass_number, "
-                     "pass_id, phone, email "
-                     "FROM users WHERE id = ") +
+  QString query = ("SELECT full_name, pass_number, "
+                   "pass_id, phone, email "
+                   "FROM users WHERE id = ") +
                   qs(QString::number(id));
   exec(query);
 
@@ -188,21 +188,66 @@ Individual *UserDB::get_user(size_t id) {
 }
 
 void UserDB::remove_user(std::string login) {
-  QString query = tr("DELETE FROM users WHERE login = ") + qs(login);
+  QString query = ("DELETE FROM users WHERE login = ") + qs(login);
   exec(query);
   emit DataBase::updated();
 }
 
-// void UserDB::add_account(BankAccount acc) {
-//   QString query =
-//       tr("INSERT INTO accounts(id, user_id, bank_id, balance) VALUES (") +
-//       //      QString::number(acc.get_id()) + "," +
-//       QString::number(acc.get_owner_id()) + "," +
-//       QString::number(acc.get_bank_id()) + "," +
-//       QString::number(acc.get_balance()) + ");";
-//   exec(query);
-//   emit DataBase::updated();
-// }
+// Bank accounts
+
+void UserDB::add_account(BankAccount acc) {
+  QString query =
+      ("INSERT INTO accounts(id, user_id, bank_id, balance) VALUES (") +
+      QString::number(acc.get_id()) + "," +
+      QString::number(acc.get_owner_id()) + "," +
+      QString::number(acc.get_bank_id()) + "," +
+      QString::number(acc.get_balance()) + ");";
+  exec(query);
+  emit DataBase::updated();
+}
+
+size_t UserDB::get_account_balance(size_t id) {
+  QString query =
+      ("SELECT balance FROM accounts WHERE id = ") + qs(QString::number(id));
+  exec(query);
+
+  if (!db_query->next())
+    return 0;
+
+  return db_query->value(0).toInt();
+}
+
+BankAccount *UserDB::get_account(size_t id) {
+  QString query =
+      ("SELECT user_id, bank_id, balance FROM accounts WHERE id = ") +
+      qs(QString::number(id));
+  exec(query);
+
+  if (!db_query->next())
+    return nullptr;
+
+  size_t user_id = db_query->value(0).toInt();
+  size_t bank_id = db_query->value(1).toInt();
+  size_t balance = db_query->value(2).toInt();
+  return new BankAccount(id, user_id, bank_id, balance);
+}
+
+std::vector<BankAccount *> UserDB::get_user_accounts(size_t user_id) {
+  QString query =
+      ("SELECT id, bank_id, balance FROM accounts WHERE user_id = ") +
+      qs(QString::number(user_id));
+  exec(query);
+
+  std::vector<BankAccount *> accounts;
+
+  while (db_query->next()) {
+    size_t id = db_query->value(0).toInt();
+    size_t bank_id = db_query->value(1).toInt();
+    size_t balance = db_query->value(2).toInt();
+    accounts.push_back(new BankAccount(id, user_id, bank_id, balance));
+  }
+  return accounts;
+}
 
 // void UserDB::add_company(Company company) {
 //   QString query =
