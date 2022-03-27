@@ -62,7 +62,6 @@ bool UserDB::createTables() {
                      "id INTEGER PRIMARY KEY, "
                      "type INTEGER, "
                      "sender INTEGER, "
-                     "receiver INTEGER,"
                      "approved BOOLEAN"
                      ");");
   }
@@ -271,8 +270,8 @@ bool UserDB::update(BankAccount &acc) {
 
 void UserDB::add_request(Request &r) {
   QString query = QString("INSERT INTO requests"
-                          "(id, type, sender, receiver, approved)"
-                          " VALUES %1;")
+                          "(id, type, sender, approved) "
+                          "VALUES %1;")
                       .arg(r.get_values_query());
   if (exec(query))
     emit DataBase::updated();

@@ -1,7 +1,7 @@
 #ifndef BANKACCOUNT_H
 #define BANKACCOUNT_H
 
-#include "ISystemObject.h"
+#include "modules/entities/ISystemObject.h"
 #include <cstdio>
 
 class BankAccount : public ISystemObject {

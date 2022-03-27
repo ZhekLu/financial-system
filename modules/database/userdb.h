@@ -7,10 +7,10 @@
 #include <vector>
 
 #include "database.h"
-#include "modules/entities/bankaccount.h"
+#include "modules/entities/bank/bankaccount.h"
+#include "modules/entities/bank/request.h"
 #include "modules/entities/entity.h"
 #include "modules/entities/individual.h"
-#include "modules/entities/request.h"
 #include "modules/entities/systemuser.h"
 #include "modules/singleton.h"
 
