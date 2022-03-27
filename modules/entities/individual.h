@@ -15,7 +15,18 @@ public:
   ~Individual() = default;
 
   // methods
-  QString get_info() const override { return {}; }
+  QString get_info() const override {
+    return QString("Full name: %1\n"
+                   "Passport number: %2\n"
+                   "Passport id: %3\n"
+                   "Phone number: %4\n"
+                   "email: %5\n")
+        .arg(QString::fromStdString(name), QString::fromStdString(pass_number),
+             QString::fromStdString(pass_id),
+             QString::fromStdString(phone_number),
+             QString::fromStdString(email));
+  }
+
   QString get_values_query() override { return {}; }
 
 private:

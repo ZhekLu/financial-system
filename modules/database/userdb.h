@@ -10,6 +10,7 @@
 #include "modules/entities/bankaccount.h"
 #include "modules/entities/entity.h"
 #include "modules/entities/individual.h"
+#include "modules/entities/request.h"
 #include "modules/entities/systemuser.h"
 #include "modules/singleton.h"
 
@@ -30,20 +31,27 @@ public:
   // Users
   Individual *get_user(size_t id);
 
-  // Bank accounts
-  void add_account(BankAccount);
-  size_t get_account_balance(size_t id);
-  BankAccount *get_account(size_t id);
-  std::vector<BankAccount *> get_user_accounts(size_t user_id);
-
   // Companies
   void add_company(Entity company);
   void remove_company(size_t id);
   Entity *get_company(size_t id);
 
+  // Bank accounts
+  void add_account(BankAccount);
+  size_t get_account_balance(size_t id);
+  BankAccount *get_account(size_t id);
+  bool contains(BankAccount &acc);
+  std::vector<BankAccount *> get_user_accounts(size_t user_id);
+  // Update methods
+  bool update(BankAccount &);
+
+  // Requests
+  void add_request(Request &);
+
   // Debug methods
   void print_all_system_users();
   void print_mode_system_users(LoginMode);
+
   // Fill tables
   void test_login();
   void test_users();

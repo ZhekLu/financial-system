@@ -56,6 +56,17 @@ bool UserDB::createTables() {
                      ");");
   }
 
+  if (!db.tables().contains("requests") && res) {
+    res = query.exec("CREATE TABLE requests"
+                     "("
+                     "id INTEGER PRIMARY KEY, "
+                     "type INTEGER, "
+                     "sender INTEGER, "
+                     "receiver INTEGER,"
+                     "approved BOOLEAN"
+                     ");");
+  }
+
   return res;
 }
 
@@ -134,65 +145,6 @@ void UserDB::remove_user(std::string login) {
     emit DataBase::updated();
 }
 
-// Bank accounts
-
-void UserDB::add_account(BankAccount acc) {
-  QString query =
-      ("INSERT INTO accounts(id, user_id, bank_id, balance, frozen) VALUES (") +
-      QString::number(acc.get_id()) + "," +
-      QString::number(acc.get_owner_id()) + "," +
-      QString::number(acc.get_bank_id()) + "," +
-      QString::number(acc.get_balance()) + "," +
-      QString::number(acc.get_frozen()) + ");";
-  if (exec(query))
-    emit DataBase::updated();
-}
-
-size_t UserDB::get_account_balance(size_t id) {
-  QString query =
-      ("SELECT balance FROM accounts WHERE id = ") + qs(QString::number(id));
-  exec(query);
-
-  if (!db_query->next())
-    return 0;
-
-  return db_query->value(0).toInt();
-}
-
-BankAccount *UserDB::get_account(size_t id) {
-  QString query =
-      ("SELECT user_id, bank_id, balance, frozen FROM accounts WHERE id = ") +
-      qs(QString::number(id));
-  exec(query);
-
-  if (!db_query->next())
-    return nullptr;
-
-  size_t user_id = db_query->value(0).toInt();
-  size_t bank_id = db_query->value(1).toInt();
-  size_t balance = db_query->value(2).toInt();
-  bool frozen = db_query->value(3).toBool();
-  return new BankAccount(id, user_id, bank_id, balance, frozen);
-}
-
-std::vector<BankAccount *> UserDB::get_user_accounts(size_t user_id) {
-  QString query =
-      ("SELECT id, bank_id, balance FROM accounts WHERE user_id = ") +
-      qs(QString::number(user_id));
-  exec(query);
-
-  std::vector<BankAccount *> accounts;
-
-  while (db_query->next()) {
-    size_t id = db_query->value(0).toInt();
-    size_t bank_id = db_query->value(1).toInt();
-    size_t balance = db_query->value(2).toInt();
-    bool frozen = db_query->value(3).toBool();
-    accounts.push_back(new BankAccount(id, user_id, bank_id, balance, frozen));
-  }
-  return accounts;
-}
-
 // Companies
 
 void UserDB::add_company(Entity company) {
@@ -230,6 +182,100 @@ Entity *UserDB::get_company(size_t id) {
   size_t bank_bic = db_query->value(5).toULongLong();
 
   return new Entity(id, Entity::Type(type), name, PAC, BIC, adress, bank_bic);
+}
+
+// Bank accounts
+
+void UserDB::add_account(BankAccount acc) {
+  QString query = ("INSERT INTO accounts(id, user_id, bank_id, balance, "
+                   "frozen) VALUES (") +
+                  QString::number(acc.get_id()) + "," +
+                  QString::number(acc.get_owner_id()) + "," +
+                  QString::number(acc.get_bank_id()) + "," +
+                  QString::number(acc.get_balance()) + "," +
+                  QString::number(acc.get_frozen()) + ");";
+  if (exec(query))
+    emit DataBase::updated();
+}
+
+size_t UserDB::get_account_balance(size_t id) {
+  QString query =
+      ("SELECT balance FROM accounts WHERE id = ") + qs(QString::number(id));
+  exec(query);
+
+  if (!db_query->next())
+    return 0;
+
+  return db_query->value(0).toInt();
+}
+
+BankAccount *UserDB::get_account(size_t id) {
+  QString query =
+      ("SELECT user_id, bank_id, balance, frozen FROM accounts WHERE id = ") +
+      qs(QString::number(id));
+  exec(query);
+
+  if (!db_query->next())
+    return nullptr;
+
+  size_t user_id = db_query->value(0).toInt();
+  size_t bank_id = db_query->value(1).toInt();
+  size_t balance = db_query->value(2).toInt();
+  bool frozen = db_query->value(3).toBool();
+  return new BankAccount(id, user_id, bank_id, balance, frozen);
+}
+
+bool UserDB::contains(BankAccount &acc) {
+  QString query =
+      QString("SELECT * FROM accounts WHERE id = %1 and user_id = %2 and "
+              "bank_id = %3 and balance = %4 and frozen = %5;")
+          .arg(QString::number(acc.id), QString::number(acc.owner_id),
+               QString::number(acc.bank_id), QString::number(acc.balance),
+               QString::number(acc.is_frozen));
+  exec(query);
+  return db_query->next();
+}
+
+std::vector<BankAccount *> UserDB::get_user_accounts(size_t user_id) {
+  QString query =
+      ("SELECT id, bank_id, balance FROM accounts WHERE user_id = ") +
+      qs(QString::number(user_id));
+  exec(query);
+
+  std::vector<BankAccount *> accounts;
+
+  while (db_query->next()) {
+    size_t id = db_query->value(0).toInt();
+    size_t bank_id = db_query->value(1).toInt();
+    size_t balance = db_query->value(2).toInt();
+    bool frozen = db_query->value(3).toBool();
+    accounts.push_back(new BankAccount(id, user_id, bank_id, balance, frozen));
+  }
+  return accounts;
+}
+
+bool UserDB::update(BankAccount &acc) {
+  QString query =
+      QString("UPDATE accounts SET balance = %1, frozen = %2 "
+              "WHERE id = %3")
+          .arg(QString::number(acc.balance), QString::number(acc.is_frozen),
+               QString::number(acc.id));
+  if (exec(query)) {
+    emit DataBase::updated();
+    return true;
+  }
+  return false;
+}
+
+// Requests
+
+void UserDB::add_request(Request &r) {
+  QString query = QString("INSERT INTO requests"
+                          "(id, type, sender, receiver, approved)"
+                          " VALUES %1;")
+                      .arg(r.get_values_query());
+  if (exec(query))
+    emit DataBase::updated();
 }
 
 // Debug
@@ -282,7 +328,8 @@ void UserDB::test_users() {
       "VALUES "
       "(1, \"name first manager\", \"pas_num1\", \"phone1\", \"email1\"),"
       "(2, \"name first operator\", \"pas_num2\", \"phone2\", \"email2\"),"
-      "(13, \"name first individual\", \"pas_num3\", \"phone3\", \"email3\");";
+      "(13, \"name first individual\", \"pas_num3\", \"phone3\", "
+      "\"email3\");";
 
   if (exec(query))
     qDebug() << "testuserOK";

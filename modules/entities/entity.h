@@ -15,11 +15,20 @@ public:
   ~Entity() = default;
 
   // methods
-  QString get_info() const override { return {}; }
+  QString get_info() const override {
+    return QString("Type: %1\n"
+                   "Legal name: %2\n"
+                   "PAC: %3\n"
+                   "BIC: %4\n"
+                   "Legal adress: %5\n"
+                   "Ur bank credits: %6\n")
+        .arg(QString::number(type), QString::fromStdString(name),
+             QString::number(PAC), QString::number(BIC),
+             QString::fromStdString(adress), QString::number(bank_bic));
+  }
   QString get_values_query() override { return {}; }
 
   Type type;
-  std::string name;
   size_t PAC; // YNP
   size_t BIC;
   std::string adress;

@@ -2,12 +2,16 @@
 #define DEPOSITMANAGER_H
 
 #include "modules/database/userdb.h"
+#include "modules/entities/accountmanager.h"
+#include "modules/entities/bankaccount.h"
 #include "modules/entities/entity.h"
 #include "modules/entities/individual.h"
 
 #include <QMainWindow>
+#include <QMessageBox>
 #include <QSqlQuery>
 #include <QTableWidgetItem>
+#include <memory>
 
 namespace Ui {
 class DepositManager;
@@ -21,14 +25,33 @@ public:
   DepositManager(IUser *owner, Mode mode, QWidget *parent = nullptr);
   ~DepositManager();
 
+private slots:
+
+  void on_log_out_but_clicked();
+
+  void on_info_but_clicked();
+
+  void on_freeze_but_clicked();
+
+  void on_withdraw_but_clicked();
+
+  void on_new_card_but_clicked();
+
+  void on_transfer_but_clicked();
+
+  void on_tableWidget_cellClicked(int row, int column);
+
 private:
   Ui::DepositManager *ui;
+
   IUser *user;
-
   Mode access_rights;
+  std::vector<std::unique_ptr<BankAccount>> accounts;
+  BankAccount *current_account;
 
-  void init_grid();
-  QTableWidgetItem *get_item(QString account_id, QString bank, QString balance);
+  void update();
+  void update_grid();
+  QTableWidgetItem *get_item(BankAccount *, QString);
 };
 
 #endif // DEPOSITMANAGER_H

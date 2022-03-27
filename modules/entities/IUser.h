@@ -14,7 +14,6 @@ public:
   virtual ~IUser() = default;
 
   // methods
-  virtual QString get_info() const = 0;
   std::string get_name() const { return name; }
   size_t get_id() const { return id; }
 
