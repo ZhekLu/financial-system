@@ -40,15 +40,11 @@ void MainWindow::on_login_button_clicked(LoginMode mode) {
 
 void MainWindow::on_exit_but_clicked() { this->close(); }
 
-void MainWindow::auth_connection(size_t id) {
-  Individual *curr_user = USER_DB->get_user(id);
-  if (!curr_user)
-    return;
-  QMainWindow *manager = ManagerFactory::get_manager_widget(curr_user, this);
+void MainWindow::auth_connection(size_t id, LoginMode mode) {
+  QMainWindow *manager = ManagerFactory::get_manager_widget(id, mode, this);
   manager->show();
 }
 
 void MainWindow::on_debug_but_clicked() {
-  USER_DB->test_login();
-  USER_DB->test_users();
+  USER_DB->add_account(BankAccount(999, 666, 333, 111));
 }

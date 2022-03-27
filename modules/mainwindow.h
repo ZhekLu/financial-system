@@ -31,7 +31,7 @@ private slots:
 
   void on_adm_log_but_clicked();
 
-  void auth_connection(size_t);
+  void auth_connection(size_t, LoginMode);
 
   void on_exit_but_clicked();
 

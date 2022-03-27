@@ -6,17 +6,29 @@
 
 class ManagerFactory {
 public:
-  ManagerFactory(Individual *u) {
-    dm = new DepositManager(u);
-    dm->show();
-  }
+  static QMainWindow *get_manager_widget(size_t id, LoginMode mode,
+                                         QWidget *parent = nullptr) {
+    IUser *current;
+    if (mode == ENTITY)
+      current = USER_DB->get_company(id);
+    else
+      current = USER_DB->get_user(id);
 
-  static QMainWindow *get_manager_widget(Individual *u, QWidget *parent = nullptr) {
-    return new DepositManager(u, parent);
-  }
+    if (!current)
+      return nullptr;
 
-private:
-  DepositManager *dm;
+    switch (mode) {
+    case ADMIN:
+    case MANAGER:
+    case OPERATOR:
+    case INDIVIDUAL:
+    case ENTITY:
+      return new DepositManager(current,
+                                mode == ENTITY ? DepositManager::Company
+                                               : DepositManager::Person,
+                                parent);
+    }
+  }
 };
 
 #endif // MANAGERFACTORY_H

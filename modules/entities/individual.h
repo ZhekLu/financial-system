@@ -16,6 +16,7 @@ public:
 
   // methods
   QString get_info() const override { return {}; }
+  QString get_values_query() override { return {}; }
 
 private:
   std::string pass_number;
