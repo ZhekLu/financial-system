@@ -15,7 +15,12 @@ public:
 private:
   static bool update(BankAccount *acc);
   static bool check_valid(BankAccount *acc);
+  static bool send_request(Request &);
   static bool send_request(BankAccount *acc, Request);
+  static bool send_request(BankAccount *acc, BankAccount *sec, Request r);
+
+  static bool send_transaction(Transaction &);
+  static bool make_transaction(BankAccount *acc, size_t dest, size_t sum);
 };
 
 #endif // ACCOUNTMANAGER_H

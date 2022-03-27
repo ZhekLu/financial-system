@@ -66,6 +66,17 @@ bool UserDB::createTables() {
                      ");");
   }
 
+  if (!db.tables().contains("transactions") && res) {
+    res = query.exec("CREATE TABLE transactions"
+                     "("
+                     "id INTEGER PRIMARY KEY, "
+                     "sender INTEGER, "
+                     "receiver INTEGER,"
+                     "amount INTEGER,"
+                     "approved BOOLEAN"
+                     ");");
+  }
+
   return res;
 }
 
@@ -211,7 +222,7 @@ size_t UserDB::get_account_balance(size_t id) {
 BankAccount *UserDB::get_account(size_t id) {
   QString query =
       ("SELECT user_id, bank_id, balance, frozen FROM accounts WHERE id = ") +
-      qs(QString::number(id));
+      QString::number(id);
   exec(query);
 
   if (!db_query->next())
@@ -270,9 +281,18 @@ bool UserDB::update(BankAccount &acc) {
 
 void UserDB::add_request(Request &r) {
   QString query = QString("INSERT INTO requests"
-                          "(id, type, sender, approved) "
+                          "(id, sender, receiver, amount, approved) "
                           "VALUES %1;")
                       .arg(r.get_values_query());
+  if (exec(query))
+    emit DataBase::updated();
+}
+
+void UserDB::add_transaction(Transaction &t) {
+  QString query = QString("INSERT INTO transactions"
+                          "(id, sender, approved) "
+                          "VALUES %1;")
+                      .arg(t.get_values_query());
   if (exec(query))
     emit DataBase::updated();
 }

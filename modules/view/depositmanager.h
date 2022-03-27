@@ -7,15 +7,19 @@
 #include "modules/entities/entity.h"
 #include "modules/entities/individual.h"
 
+#include <QDebug>
+#include <QIntValidator>
 #include <QMainWindow>
 #include <QMessageBox>
+#include <QRegularExpression>
+#include <QRegularExpressionValidator>
 #include <QSqlQuery>
 #include <QTableWidgetItem>
 #include <memory>
 
 namespace Ui {
 class DepositManager;
-}
+} // namespace Ui
 
 class DepositManager : public QMainWindow {
   Q_OBJECT
@@ -41,17 +45,30 @@ private slots:
 
   void on_tableWidget_cellClicked(int row, int column);
 
+  void on_confirm_but_clicked();
+
+  void on_cancel_but_clicked();
+
 private:
   Ui::DepositManager *ui;
 
-  IUser *user;
+  std::unique_ptr<IUser> user;
   Mode access_rights;
+
   std::vector<std::unique_ptr<BankAccount>> accounts;
   BankAccount *current_account;
 
+  std::unique_ptr<QRegularExpressionValidator> card_validator;
+  std::unique_ptr<QIntValidator> amount_validator;
+
+  // methods
   void update();
   void update_grid();
+  void init();
   QTableWidgetItem *get_item(BankAccount *, QString);
+
+  void switch_widget(bool);
+  void clean_transfer_widget();
 };
 
 #endif // DEPOSITMANAGER_H

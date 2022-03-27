@@ -8,17 +8,16 @@ DepositManager::DepositManager(IUser *owner, Mode mode, QWidget *parent)
   setAttribute(Qt::WA_DeleteOnClose);
   update();
   connect(USER_DB, &DataBase::updated, this, &DepositManager::update);
+  init();
 }
 
-DepositManager::~DepositManager() {
-  delete ui;
-  delete user;
-}
+DepositManager::~DepositManager() { delete ui; }
 
 void DepositManager::update() {
   // clear
   ui->tableWidget->setRowCount(0);
   ui->tableWidget->setColumnCount(1);
+  current_account = nullptr;
   ui->tableWidget->clearSelection();
   accounts.clear();
 
@@ -56,9 +55,36 @@ void DepositManager::update_grid() {
   }
 }
 
+void DepositManager::init() {
+
+  ui->transfer_widget->hide();
+  card_validator = std::make_unique<QRegularExpressionValidator>(
+      QRegularExpression("^[0-9]{9}$"));
+  ui->id_line->setValidator(card_validator.get());
+
+  amount_validator = std::make_unique<QIntValidator>(0, 0);
+  ui->amount_line->setValidator(amount_validator.get());
+}
+
 QTableWidgetItem *DepositManager::get_item(BankAccount *acc, QString bank) {
   QString item = acc->get_info() + "Bank : " + bank;
   return new QTableWidgetItem(item);
+}
+
+void DepositManager::switch_widget(bool to_table_widget) {
+  ui->tableWidget->setVisible(to_table_widget);
+  ui->new_card_but->setVisible(to_table_widget);
+  ui->transfer_but->setVisible(to_table_widget);
+  ui->freeze_but->setVisible(to_table_widget);
+  ui->withdraw_but->setVisible(to_table_widget);
+  ui->log_out_but->setVisible(to_table_widget);
+  ui->info_but->setVisible(to_table_widget);
+  ui->transfer_widget->setVisible(!to_table_widget);
+}
+
+void DepositManager::clean_transfer_widget() {
+  ui->id_line->clear();
+  ui->amount_line->clear();
 }
 
 void DepositManager::on_log_out_but_clicked() { this->close(); }
@@ -68,15 +94,21 @@ void DepositManager::on_info_but_clicked() {
 }
 
 void DepositManager::on_freeze_but_clicked() {
-  if (AccountManager::freeze_request(current_account))
-    QMessageBox::information(this, ui->freeze_but->text(), "Success");
+  if (current_account && AccountManager::freeze_request(current_account))
+    //    QMessageBox::information(this, ui->freeze_but->text(), "Success");
+    qDebug() << "Success:" << ui->freeze_but->text();
 }
 
 void DepositManager::on_withdraw_but_clicked() {}
 
 void DepositManager::on_new_card_but_clicked() {}
 
-void DepositManager::on_transfer_but_clicked() {}
+void DepositManager::on_transfer_but_clicked() {
+  if (!current_account)
+    return;
+  switch_widget(false);
+  amount_validator->setTop(current_account->get_balance());
+}
 
 void DepositManager::on_tableWidget_cellClicked(int row, int) {
   current_account = accounts[row].get();
@@ -89,4 +121,31 @@ void DepositManager::on_tableWidget_cellClicked(int row, int) {
     ui->transfer_but->setEnabled(true);
     ui->withdraw_but->setEnabled(true);
   }
+}
+
+void DepositManager::on_confirm_but_clicked() {
+  QString card = ui->id_line->text();
+  int pos = 0;
+  if (card_validator->validate(card, pos) != QValidator::Acceptable) {
+    QMessageBox::warning(this, "input error", "incorrect card number");
+    return;
+  }
+
+  size_t amount = ui->amount_line->text().toULongLong();
+  if (!current_account->can_pay(amount)) {
+    QMessageBox::warning(this, "input error", "u don't have enought money");
+    return;
+  }
+  if (!amount)
+    return;
+
+  size_t destination = ui->id_line->text().toULongLong();
+  if (AccountManager::transfer_request(current_account, destination, amount))
+    qDebug() << "Success:Transaction";
+  on_cancel_but_clicked();
+}
+
+void DepositManager::on_cancel_but_clicked() {
+  switch_widget(true);
+  clean_transfer_widget();
 }

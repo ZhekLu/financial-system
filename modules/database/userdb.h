@@ -9,6 +9,7 @@
 #include "database.h"
 #include "modules/entities/bank/bankaccount.h"
 #include "modules/entities/bank/request.h"
+#include "modules/entities/bank/transaction.h"
 #include "modules/entities/entity.h"
 #include "modules/entities/individual.h"
 #include "modules/entities/systemuser.h"
@@ -47,6 +48,9 @@ public:
 
   // Requests
   void add_request(Request &);
+
+  // Transaction
+  void add_transaction(Transaction &);
 
   // Debug methods
   void print_all_system_users();
