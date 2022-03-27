@@ -11,6 +11,18 @@ bool AccountManager::freeze_request(BankAccount *acc) {
   return false;
 }
 
+bool AccountManager::withdraw_request(BankAccount *acc, size_t sum) {
+
+  if (!update(acc))
+    return false;
+  size_t old = acc->balance;
+  acc->balance = old - sum;
+  if (make_withdraw(acc, sum))
+    return true;
+  acc->balance = old;
+  return false;
+}
+
 bool AccountManager::transfer_request(BankAccount *acc, size_t destination,
                                       size_t sum) {
   if (!update(acc))
@@ -67,5 +79,11 @@ bool AccountManager::make_transaction(BankAccount *acc, size_t dest,
   Transaction t(acc->id, receiver->id, sum);
   t.is_approved =
       send_request(acc, receiver.get(), Request(Request::TRANSFER, acc->id));
+  return send_transaction(t);
+}
+
+bool AccountManager::make_withdraw(BankAccount *acc, size_t sum) {
+  Transaction t(acc->id, sum);
+  t.is_approved = send_request(acc, Request(Request::WITHDRAW, acc->id));
   return send_transaction(t);
 }

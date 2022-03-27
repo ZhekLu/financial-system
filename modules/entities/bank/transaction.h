@@ -12,6 +12,7 @@ public:
         amount(sum) {}
   Transaction(size_t from, size_t to, size_t sum)
       : Transaction(id_creator.GenerateId(), from, to, sum) {}
+  Transaction(size_t from, size_t sum) : Transaction(from, 0, sum) {}
 
   // id, sender, receiver, amount, approved
   QString get_values_query() override {

@@ -15,6 +15,7 @@ DepositManager::~DepositManager() { delete ui; }
 
 void DepositManager::update() {
   // clear
+  switch_widget(true, false);
   ui->tableWidget->setRowCount(0);
   ui->tableWidget->setColumnCount(1);
   current_account = nullptr;
@@ -71,15 +72,17 @@ QTableWidgetItem *DepositManager::get_item(BankAccount *acc, QString bank) {
   return new QTableWidgetItem(item);
 }
 
-void DepositManager::switch_widget(bool to_table_widget) {
-  ui->tableWidget->setVisible(to_table_widget);
-  ui->new_card_but->setVisible(to_table_widget);
-  ui->transfer_but->setVisible(to_table_widget);
-  ui->freeze_but->setVisible(to_table_widget);
-  ui->withdraw_but->setVisible(to_table_widget);
-  ui->log_out_but->setVisible(to_table_widget);
-  ui->info_but->setVisible(to_table_widget);
-  ui->transfer_widget->setVisible(!to_table_widget);
+void DepositManager::switch_widget(bool to_table, bool to_transfer) {
+  ui->tableWidget->setVisible(to_table);
+  ui->new_card_but->setVisible(to_table);
+  ui->transfer_but->setVisible(to_table);
+  ui->freeze_but->setVisible(to_table);
+  ui->withdraw_but->setVisible(to_table);
+  ui->log_out_but->setVisible(to_table);
+  ui->info_but->setVisible(to_table);
+  ui->transfer_widget->setVisible(!to_table);
+  ui->id_label->setVisible(to_transfer);
+  ui->id_line->setVisible(to_transfer);
 }
 
 void DepositManager::clean_transfer_widget() {
@@ -94,12 +97,17 @@ void DepositManager::on_info_but_clicked() {
 }
 
 void DepositManager::on_freeze_but_clicked() {
-  if (current_account && AccountManager::freeze_request(current_account))
-    //    QMessageBox::information(this, ui->freeze_but->text(), "Success");
-    qDebug() << "Success:" << ui->freeze_but->text();
+  if (current_account)
+    qDebug() << ui->freeze_but->text()
+             << AccountManager::freeze_request(current_account);
 }
 
-void DepositManager::on_withdraw_but_clicked() {}
+void DepositManager::on_withdraw_but_clicked() {
+  if (!current_account)
+    return;
+  switch_widget(false, false);
+  amount_validator->setTop(current_account->get_balance());
+}
 
 void DepositManager::on_new_card_but_clicked() {}
 
@@ -124,11 +132,16 @@ void DepositManager::on_tableWidget_cellClicked(int row, int) {
 }
 
 void DepositManager::on_confirm_but_clicked() {
-  QString card = ui->id_line->text();
-  int pos = 0;
-  if (card_validator->validate(card, pos) != QValidator::Acceptable) {
-    QMessageBox::warning(this, "input error", "incorrect card number");
-    return;
+
+  // check if data is valid
+
+  if (ui->id_label->isVisible()) {
+    QString card = ui->id_line->text();
+    int pos = 0;
+    if (card_validator->validate(card, pos) != QValidator::Acceptable) {
+      QMessageBox::warning(this, "input error", "incorrect card number");
+      return;
+    }
   }
 
   size_t amount = ui->amount_line->text().toULongLong();
@@ -139,9 +152,16 @@ void DepositManager::on_confirm_but_clicked() {
   if (!amount)
     return;
 
-  size_t destination = ui->id_line->text().toULongLong();
-  if (AccountManager::transfer_request(current_account, destination, amount))
-    qDebug() << "Success:Transaction";
+  if (ui->id_label->isVisible()) {
+    size_t destination = ui->id_line->text().toULongLong();
+    if (destination != current_account->id)
+      qDebug() << "Transaction:"
+               << AccountManager::transfer_request(current_account, destination,
+                                                   amount);
+  } else {
+    qDebug() << "Withdraw"
+             << AccountManager::withdraw_request(current_account, amount);
+  }
   on_cancel_but_clicked();
 }
 

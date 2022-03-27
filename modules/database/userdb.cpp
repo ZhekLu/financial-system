@@ -290,7 +290,7 @@ void UserDB::add_request(Request &r) {
 
 void UserDB::add_transaction(Transaction &t) {
   QString query = QString("INSERT INTO transactions"
-                          "(id, sender, approved) "
+                          "(id, sender, receiver, amount, approved) "
                           "VALUES %1;")
                       .arg(t.get_values_query());
   if (exec(query))

@@ -67,7 +67,7 @@ private:
   void init();
   QTableWidgetItem *get_item(BankAccount *, QString);
 
-  void switch_widget(bool);
+  void switch_widget(bool table, bool transfer = true);
   void clean_transfer_widget();
 };
 

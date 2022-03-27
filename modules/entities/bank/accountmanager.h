@@ -21,6 +21,7 @@ private:
 
   static bool send_transaction(Transaction &);
   static bool make_transaction(BankAccount *acc, size_t dest, size_t sum);
+  static bool make_withdraw(BankAccount *acc, size_t sum);
 };
 
 #endif // ACCOUNTMANAGER_H
