@@ -39,7 +39,8 @@ bool UserDB::createTables() {
                      "id INTEGER PRIMARY KEY, "
                      "user_id INTEGER, "
                      "bank_id INTEGER, "
-                     "balance INTEGER"
+                     "balance INTEGER,"
+                     "frozen BOOLEAN"
                      ");");
   }
 
@@ -50,7 +51,8 @@ bool UserDB::createTables() {
                      "type INTEGER, "
                      "PAC INTEGER, "
                      "BIC INTEGER PRIMARY KEY, "
-                     "adress TEXT"
+                     "adress TEXT,"
+                     "bank_bic INTEGER"
                      ");");
   }
 
@@ -136,11 +138,12 @@ void UserDB::remove_user(std::string login) {
 
 void UserDB::add_account(BankAccount acc) {
   QString query =
-      ("INSERT INTO accounts(id, user_id, bank_id, balance) VALUES (") +
+      ("INSERT INTO accounts(id, user_id, bank_id, balance, frozen) VALUES (") +
       QString::number(acc.get_id()) + "," +
       QString::number(acc.get_owner_id()) + "," +
       QString::number(acc.get_bank_id()) + "," +
-      QString::number(acc.get_balance()) + ");";
+      QString::number(acc.get_balance()) + "," +
+      QString::number(acc.get_frozen()) + ");";
   if (exec(query))
     emit DataBase::updated();
 }
@@ -158,7 +161,7 @@ size_t UserDB::get_account_balance(size_t id) {
 
 BankAccount *UserDB::get_account(size_t id) {
   QString query =
-      ("SELECT user_id, bank_id, balance FROM accounts WHERE id = ") +
+      ("SELECT user_id, bank_id, balance, frozen FROM accounts WHERE id = ") +
       qs(QString::number(id));
   exec(query);
 
@@ -168,7 +171,8 @@ BankAccount *UserDB::get_account(size_t id) {
   size_t user_id = db_query->value(0).toInt();
   size_t bank_id = db_query->value(1).toInt();
   size_t balance = db_query->value(2).toInt();
-  return new BankAccount(id, user_id, bank_id, balance);
+  bool frozen = db_query->value(3).toBool();
+  return new BankAccount(id, user_id, bank_id, balance, frozen);
 }
 
 std::vector<BankAccount *> UserDB::get_user_accounts(size_t user_id) {
@@ -183,7 +187,8 @@ std::vector<BankAccount *> UserDB::get_user_accounts(size_t user_id) {
     size_t id = db_query->value(0).toInt();
     size_t bank_id = db_query->value(1).toInt();
     size_t balance = db_query->value(2).toInt();
-    accounts.push_back(new BankAccount(id, user_id, bank_id, balance));
+    bool frozen = db_query->value(3).toBool();
+    accounts.push_back(new BankAccount(id, user_id, bank_id, balance, frozen));
   }
   return accounts;
 }
@@ -192,10 +197,12 @@ std::vector<BankAccount *> UserDB::get_user_accounts(size_t user_id) {
 
 void UserDB::add_company(Entity company) {
   QString query =
-      "INSERT INTO companies(id, name, type, PAC, BIC, adress) VALUES" +
+      "INSERT INTO companies(id, name, type, PAC, BIC, adress, bank_bic) "
+      "VALUES" +
       QString::number(company.get_id()) + "," + qs(company.get_name()) + "," +
       QString::number(company.type) + "," + QString::number(company.PAC) + "," +
-      QString::number(company.BIC) + "," + qs(company.adress) + ");";
+      QString::number(company.BIC) + "," + qs(company.adress) + "," +
+      QString::number(company.bank_bic) + ");";
   if (exec(query))
     emit DataBase::updated();
 }
@@ -207,7 +214,7 @@ void UserDB::remove_company(size_t id) {
 }
 
 Entity *UserDB::get_company(size_t id) {
-  QString query = ("SELECT name, type, PAC, BIC, adress"
+  QString query = ("SELECT name, type, PAC, BIC, adress, bank_bic"
                    "FROM companies WHERE id = ") +
                   QString::number(id);
   exec(query);
@@ -220,8 +227,9 @@ Entity *UserDB::get_company(size_t id) {
   size_t PAC = db_query->value(2).toULongLong();
   size_t BIC = db_query->value(3).toULongLong();
   std::string adress = db_query->value(4).toString().toStdString();
+  size_t bank_bic = db_query->value(5).toULongLong();
 
-  return new Entity(id, Entity::Type(type), name, PAC, BIC, adress);
+  return new Entity(id, Entity::Type(type), name, PAC, BIC, adress, bank_bic);
 }
 
 // Debug

@@ -46,5 +46,5 @@ void MainWindow::auth_connection(size_t id, LoginMode mode) {
 }
 
 void MainWindow::on_debug_but_clicked() {
-  USER_DB->add_account(BankAccount(999, 666, 333, 111));
+  //  USER_DB->add_account(BankAccount(999, 666, 333, 111));
 }

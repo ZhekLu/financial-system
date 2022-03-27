@@ -170,7 +170,7 @@ QPushButton:hover{
 }</string>
     </property>
     <property name="text">
-     <string>Block</string>
+     <string>Freeze</string>
     </property>
    </widget>
    <widget class="QPushButton" name="man_log_but_5">
@@ -864,7 +864,7 @@ gridline-color: rgb(255, 255, 255);</string>
      <x>0</x>
      <y>0</y>
      <width>525</width>
-     <height>21</height>
+     <height>17</height>
     </rect>
    </property>
   </widget>
