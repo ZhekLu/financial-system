@@ -44,7 +44,10 @@ void MainWindow::on_exit_but_clicked() { this->close(); }
 
 void MainWindow::auth_connection(size_t id, LoginMode mode) {
   QMainWindow *manager = ManagerFactory::get_manager_widget(id, mode, this);
-  manager->show();
+  if (manager)
+    manager->show();
+  else
+    qDebug() << "manager factory fail.";
 }
 
 void MainWindow::on_debug_but_clicked() {

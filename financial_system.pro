@@ -15,19 +15,39 @@ SOURCES += \
     mainwindow.cpp \
     database/database.cpp \
     database/userdb.cpp \
-    view/authwidget.cpp
+    modules/entities/bank/accountmanager.cpp \
+    modules/view/creditmanager.cpp \
+    view/authwidget.cpp \
+    view/depositmanager.cpp
 
 HEADERS += \
     mainwindow.h \
+    modules/database/databasemanager.h \
+    modules/database/idgenerator.h \
+    modules/entities/ISystemObject.h \
+    modules/entities/IUser.h \
+    modules/entities/bank/accountmanager.h \
+    modules/entities/bank/bank.h \
+    modules/entities/bank/bankaccount.h \
+    modules/entities/bank/request.h \
+    modules/entities/bank/transaction.h \
+    modules/entities/entity.h \
+    modules/entities/individual.h \
+    modules/view/creditmanager.h \
+    modules/view/managerfactory.h \
     singleton.h modes.h \
     database/database.h \
     database/userdb.h \
     entities/systemuser.h \
-    view/authwidget.h
+    view/authwidget.h \
+    view/depositmanager.h \
+    entities/individual.h
 
 FORMS += \
     mainwindow.ui \
-    view/authwidget.ui
+    modules/view/creditmanager.ui \
+    view/authwidget.ui \
+    view/depositmanager.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

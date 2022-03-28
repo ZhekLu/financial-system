@@ -1,6 +1,7 @@
 #ifndef DEPOSITMANAGER_H
 #define DEPOSITMANAGER_H
 
+#include "creditmanager.h"
 #include "modules/database/userdb.h"
 #include "modules/entities/bank/accountmanager.h"
 #include "modules/entities/bank/bankaccount.h"
@@ -50,8 +51,11 @@ private slots:
   void on_cance_ac_but_clicked();
   void on_confirm_ac_but_clicked();
 
+  void on_credit_but_clicked();
+
 private:
   Ui::DepositManager *ui;
+  std::unique_ptr<CreditManager> credit_widget;
 
   std::unique_ptr<IUser> user;
   Mode mode;

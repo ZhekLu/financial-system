@@ -4,6 +4,7 @@
 DepositManager::DepositManager(IUser *owner, Mode mode, QWidget *parent)
     : QMainWindow(parent), ui(new Ui::DepositManager), user(owner), mode(mode),
       current_account(nullptr) {
+  credit_widget = std::make_unique<CreditManager>();
   ui->setupUi(this);
   setAttribute(Qt::WA_DeleteOnClose);
   update();
@@ -98,6 +99,7 @@ void DepositManager::switch_widget(bool to_table, bool to_transfer,
   ui->withdraw_but->setVisible(to_table);
   ui->log_out_but->setVisible(to_table);
   ui->info_but->setVisible(to_table);
+  ui->credit_but->setEnabled(to_table);
 
   ui->transfer_widget->setVisible(false);
   ui->id_label->setVisible(to_transfer);
@@ -146,10 +148,12 @@ void DepositManager::on_table_widget_cellClicked(int row, int) {
     ui->freeze_but->setText("Unfreeze");
     ui->transfer_but->setEnabled(false);
     ui->withdraw_but->setEnabled(false);
+    ui->credit_but->setEnabled(false);
   } else {
     ui->freeze_but->setText("Freeze");
     ui->transfer_but->setEnabled(true);
     ui->withdraw_but->setEnabled(true);
+    ui->credit_but->setEnabled(true);
   }
 }
 
@@ -207,4 +211,9 @@ void DepositManager::send_add_account(size_t bank_id) {
     QMessageBox::information(this, "add card", "Ur request was send to bank.");
   else
     qDebug() << "Add account : false";
+}
+
+void DepositManager::on_credit_but_clicked() {
+  if (current_account)
+    credit_widget->show(current_account);
 }

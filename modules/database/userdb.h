@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "database.h"
+#include "modules/entities/bank/bank.h"
 #include "modules/entities/bank/bankaccount.h"
 #include "modules/entities/bank/request.h"
 #include "modules/entities/bank/transaction.h"
@@ -36,6 +37,9 @@ public:
   void add_company(Entity company);
   void remove_company(size_t id);
   Entity *get_company(size_t id);
+
+  // Banks
+  Bank *get_bank(size_t id);
 
   // Bank accounts
   bool add_account(BankAccount *);

@@ -36,7 +36,9 @@ bool UserDB::createTables() {
   if (!db.tables().contains("system_banks") && res) {
     res = query.exec("CREATE TABLE system_banks"
                      "("
-                     "BIC INTEGER PRIMARY KEY"
+                     "BIC INTEGER PRIMARY KEY,"
+                     "account INTEGER,"
+                     "precent INTEGER"
                      ");");
   }
 
@@ -183,8 +185,8 @@ void UserDB::remove_company(size_t id) {
 }
 
 Entity *UserDB::get_company(size_t id) {
-  QString query = ("SELECT name, type, PAC, BIC, adress, bank_bic"
-                   "FROM companies WHERE id = ") +
+  QString query = ("SELECT name, type, PAC, BIC, adress, bank_bic "
+                   "FROM companies WHERE BIC = ") +
                   QString::number(id);
   exec(query);
 
@@ -199,6 +201,21 @@ Entity *UserDB::get_company(size_t id) {
   size_t bank_bic = db_query->value(5).toULongLong();
 
   return new Entity(id, Entity::Type(type), name, PAC, BIC, adress, bank_bic);
+}
+
+Bank *UserDB::get_bank(size_t id) {
+  QString query = ("SELECT account, percent "
+                   "FROM system_banks WHERE BIC = ") +
+                  QString::number(id);
+  exec(query);
+
+  if (!db_query->next())
+    return nullptr;
+
+  size_t account = db_query->value(0).toULongLong();
+  int percent = db_query->value(1).toInt();
+
+  return new Bank(id, account, percent);
 }
 
 // Bank accounts
