@@ -38,7 +38,7 @@ public:
   Entity *get_company(size_t id);
 
   // Bank accounts
-  void add_account(BankAccount);
+  bool add_account(BankAccount *);
   size_t get_account_balance(size_t id);
   BankAccount *get_account(size_t id);
   bool contains(BankAccount &acc);

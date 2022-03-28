@@ -35,6 +35,12 @@ bool AccountManager::transfer_request(BankAccount *acc, size_t destination,
   return false;
 }
 
+bool AccountManager::add_account_request(BankAccount *acc) {
+  Request r(Request::LOGIN_ACCOUNT, acc->id);
+  r.is_approved = USER_DB->add_account(acc);
+  return send_request(r);
+}
+
 bool AccountManager::update(BankAccount *acc) {
   if (check_valid(acc))
     return true;

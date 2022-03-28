@@ -11,6 +11,7 @@ public:
   static bool withdraw_request(BankAccount *acc, size_t sum);
   static bool transfer_request(BankAccount *acc, size_t destination,
                                size_t sum);
+  static bool add_account_request(BankAccount *acc);
 
 private:
   static bool update(BankAccount *acc);

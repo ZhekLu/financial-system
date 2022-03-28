@@ -33,6 +33,13 @@ bool UserDB::createTables() {
                      ");");
   }
 
+  if (!db.tables().contains("system_banks") && res) {
+    res = query.exec("CREATE TABLE system_banks"
+                     "("
+                     "BIC INTEGER PRIMARY KEY"
+                     ");");
+  }
+
   if (!db.tables().contains("accounts") && res) {
     res = query.exec("CREATE TABLE accounts"
                      "("
@@ -196,16 +203,15 @@ Entity *UserDB::get_company(size_t id) {
 
 // Bank accounts
 
-void UserDB::add_account(BankAccount acc) {
-  QString query = ("INSERT INTO accounts(id, user_id, bank_id, balance, "
-                   "frozen) VALUES (") +
-                  QString::number(acc.get_id()) + "," +
-                  QString::number(acc.get_owner_id()) + "," +
-                  QString::number(acc.get_bank_id()) + "," +
-                  QString::number(acc.get_balance()) + "," +
-                  QString::number(acc.get_frozen()) + ");";
-  if (exec(query))
+bool UserDB::add_account(BankAccount *acc) {
+  QString query = "INSERT INTO accounts(id, user_id, bank_id, balance, frozen) "
+                  "VALUES " +
+                  acc->get_values_query();
+  if (exec(query)) {
     emit DataBase::updated();
+    return true;
+  }
+  return false;
 }
 
 size_t UserDB::get_account_balance(size_t id) {
@@ -281,7 +287,7 @@ bool UserDB::update(BankAccount &acc) {
 
 void UserDB::add_request(Request &r) {
   QString query = QString("INSERT INTO requests"
-                          "(id, sender, receiver, amount, approved) "
+                          "(id, type, sender, approved) "
                           "VALUES %1;")
                       .arg(r.get_values_query());
   if (exec(query))

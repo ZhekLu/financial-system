@@ -31,31 +31,33 @@ public:
 
 private slots:
 
+  // main windows
   void on_log_out_but_clicked();
-
   void on_info_but_clicked();
-
   void on_freeze_but_clicked();
-
   void on_withdraw_but_clicked();
-
   void on_new_card_but_clicked();
-
   void on_transfer_but_clicked();
 
-  void on_tableWidget_cellClicked(int row, int column);
+  // table
+  void on_table_widget_cellClicked(int row, int column);
 
+  // transfer & withdraw
   void on_confirm_but_clicked();
-
   void on_cancel_but_clicked();
+
+  // add
+  void on_cance_ac_but_clicked();
+  void on_confirm_ac_but_clicked();
 
 private:
   Ui::DepositManager *ui;
 
   std::unique_ptr<IUser> user;
-  Mode access_rights;
+  Mode mode;
 
   std::vector<std::unique_ptr<BankAccount>> accounts;
+  std::vector<size_t> banks;
   BankAccount *current_account;
 
   std::unique_ptr<QRegularExpressionValidator> card_validator;
@@ -64,11 +66,12 @@ private:
   // methods
   void update();
   void update_grid();
+  void update_combobox();
   void init();
   QTableWidgetItem *get_item(BankAccount *, QString);
 
-  void switch_widget(bool table, bool transfer = true);
-  void clean_transfer_widget();
+  void switch_widget(bool, bool, QWidget *);
+  void send_add_account(size_t);
 };
 
 #endif // DEPOSITMANAGER_H

@@ -2,8 +2,8 @@
 #include "ui_depositmanager.h"
 
 DepositManager::DepositManager(IUser *owner, Mode mode, QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::DepositManager), user(owner),
-      access_rights(mode), current_account(nullptr) {
+    : QMainWindow(parent), ui(new Ui::DepositManager), user(owner), mode(mode),
+      current_account(nullptr) {
   ui->setupUi(this);
   setAttribute(Qt::WA_DeleteOnClose);
   update();
@@ -15,21 +15,23 @@ DepositManager::~DepositManager() { delete ui; }
 
 void DepositManager::update() {
   // clear
-  switch_widget(true, false);
-  ui->tableWidget->setRowCount(0);
-  ui->tableWidget->setColumnCount(1);
+  switch_widget(true, false, ui->table_widget);
+  ui->table_widget->setRowCount(0);
+  ui->table_widget->setColumnCount(1);
   current_account = nullptr;
-  ui->tableWidget->clearSelection();
+  ui->table_widget->clearSelection();
   accounts.clear();
 
   update_grid();
+  if (mode != Company)
+    update_combobox();
 
   // style settings
-  ui->tableWidget->resizeColumnsToContents();
-  ui->tableWidget->resizeRowsToContents();
-  ui->tableWidget->setSelectionMode(
+  ui->table_widget->resizeColumnsToContents();
+  ui->table_widget->resizeRowsToContents();
+  ui->table_widget->setSelectionMode(
       QAbstractItemView::SingleSelection); // only one selection
-  ui->tableWidget->horizontalHeader()->setStretchLastSection(true);
+  ui->table_widget->horizontalHeader()->setStretchLastSection(true);
 }
 
 void DepositManager::update_grid() {
@@ -51,14 +53,29 @@ void DepositManager::update_grid() {
 
     QTableWidgetItem *item = get_item(accounts.back().get(), bank_name);
 
-    ui->tableWidget->insertRow(i);
-    ui->tableWidget->setItem(i, 0, item);
+    ui->table_widget->insertRow(i);
+    ui->table_widget->setItem(i, 0, item);
+  }
+}
+
+void DepositManager::update_combobox() {
+  // clear
+  ui->bank_chooser->clear();
+  banks.clear();
+
+  // fill
+  QSqlQuery query;
+  query.exec(
+      "select BIC, name from system_banks left join companies using(BIC)");
+  while (query.next()) {
+    size_t bank_id = query.value(0).toULongLong();
+    QString bank_name = query.value(1).toString();
+    ui->bank_chooser->addItem(bank_name);
+    banks.push_back(bank_id);
   }
 }
 
 void DepositManager::init() {
-
-  ui->transfer_widget->hide();
   card_validator = std::make_unique<QRegularExpressionValidator>(
       QRegularExpression("^[0-9]{9}$"));
   ui->id_line->setValidator(card_validator.get());
@@ -72,22 +89,22 @@ QTableWidgetItem *DepositManager::get_item(BankAccount *acc, QString bank) {
   return new QTableWidgetItem(item);
 }
 
-void DepositManager::switch_widget(bool to_table, bool to_transfer) {
-  ui->tableWidget->setVisible(to_table);
+void DepositManager::switch_widget(bool to_table, bool to_transfer,
+                                   QWidget *to) {
+  ui->table_widget->setVisible(false);
   ui->new_card_but->setVisible(to_table);
   ui->transfer_but->setVisible(to_table);
   ui->freeze_but->setVisible(to_table);
   ui->withdraw_but->setVisible(to_table);
   ui->log_out_but->setVisible(to_table);
   ui->info_but->setVisible(to_table);
-  ui->transfer_widget->setVisible(!to_table);
+
+  ui->transfer_widget->setVisible(false);
   ui->id_label->setVisible(to_transfer);
   ui->id_line->setVisible(to_transfer);
-}
 
-void DepositManager::clean_transfer_widget() {
-  ui->id_line->clear();
-  ui->amount_line->clear();
+  ui->add_widget->setVisible(false);
+  to->setVisible(true);
 }
 
 void DepositManager::on_log_out_but_clicked() { this->close(); }
@@ -105,20 +122,25 @@ void DepositManager::on_freeze_but_clicked() {
 void DepositManager::on_withdraw_but_clicked() {
   if (!current_account)
     return;
-  switch_widget(false, false);
+  switch_widget(false, false, ui->transfer_widget);
   amount_validator->setTop(current_account->get_balance());
 }
 
-void DepositManager::on_new_card_but_clicked() {}
+void DepositManager::on_new_card_but_clicked() {
+  if (mode == Person)
+    switch_widget(false, false, ui->add_widget);
+  else
+    send_add_account(((Entity *)(user.get()))->bank_bic);
+}
 
 void DepositManager::on_transfer_but_clicked() {
   if (!current_account)
     return;
-  switch_widget(false);
+  switch_widget(false, true, ui->transfer_widget);
   amount_validator->setTop(current_account->get_balance());
 }
 
-void DepositManager::on_tableWidget_cellClicked(int row, int) {
+void DepositManager::on_table_widget_cellClicked(int row, int) {
   current_account = accounts[row].get();
   if (current_account->get_frozen()) {
     ui->freeze_but->setText("Unfreeze");
@@ -166,6 +188,23 @@ void DepositManager::on_confirm_but_clicked() {
 }
 
 void DepositManager::on_cancel_but_clicked() {
-  switch_widget(true);
-  clean_transfer_widget();
+  switch_widget(true, false, ui->table_widget);
+  ui->id_line->clear();
+  ui->amount_line->clear();
+}
+
+void DepositManager::on_cance_ac_but_clicked() {
+  switch_widget(true, false, ui->table_widget);
+}
+
+void DepositManager::on_confirm_ac_but_clicked() {
+  send_add_account(banks[ui->bank_chooser->currentIndex()]);
+}
+
+void DepositManager::send_add_account(size_t bank_id) {
+  std::unique_ptr<BankAccount> to_add(new BankAccount(user->id, bank_id));
+  if (AccountManager::add_account_request(to_add.get()))
+    QMessageBox::information(this, "add card", "Ur request was send to bank.");
+  else
+    qDebug() << "Add account : false";
 }
