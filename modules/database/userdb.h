@@ -40,6 +40,7 @@ public:
 
   // Banks
   Bank *get_bank(size_t id);
+  std::vector<Bank *> get_banks();
 
   // Bank accounts
   bool add_account(BankAccount *);

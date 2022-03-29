@@ -37,7 +37,6 @@ bool UserDB::createTables() {
     res = query.exec("CREATE TABLE system_banks"
                      "("
                      "BIC INTEGER PRIMARY KEY,"
-                     "account INTEGER,"
                      "precent INTEGER"
                      ");");
   }
@@ -204,7 +203,7 @@ Entity *UserDB::get_company(size_t id) {
 }
 
 Bank *UserDB::get_bank(size_t id) {
-  QString query = ("SELECT account, percent "
+  QString query = ("SELECT percent "
                    "FROM system_banks WHERE BIC = ") +
                   QString::number(id);
   exec(query);
@@ -215,7 +214,22 @@ Bank *UserDB::get_bank(size_t id) {
   size_t account = db_query->value(0).toULongLong();
   int percent = db_query->value(1).toInt();
 
-  return new Bank(id, account, percent);
+  return new Bank(id, percent);
+}
+
+std::vector<Bank *> UserDB::get_banks() {
+  std::vector<Bank *> banks;
+  QString query = ("SELECT BIC, percent "
+                   "FROM system_banks");
+  exec(query);
+
+  while (db_query->next()) {
+    size_t BIC = db_query->value(0).toULongLong();
+    int percent = db_query->value(1).toInt();
+    banks.emplace_back(new Bank(BIC, percent));
+  }
+
+  return banks;
 }
 
 // Bank accounts

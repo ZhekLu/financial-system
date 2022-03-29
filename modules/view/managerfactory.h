@@ -1,6 +1,7 @@
 #ifndef MANAGERFACTORY_H
 #define MANAGERFACTORY_H
 
+#include "clientwindow.h"
 #include "depositmanager.h"
 #include "modules/modes.h"
 
@@ -23,10 +24,10 @@ public:
     case OPERATOR:
     case INDIVIDUAL:
     case ENTITY:
-      return new DepositManager(current,
-                                mode == ENTITY ? DepositManager::Company
-                                               : DepositManager::Person,
-                                parent);
+      return new ClientWindow(current,
+                              mode == ENTITY ? ClientWindow::AccessMode::Company
+                                             : ClientWindow::AccessMode::Person,
+                              parent);
     }
   }
 };

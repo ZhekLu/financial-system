@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
+    <width>359</width>
     <height>359</height>
    </rect>
   </property>
@@ -19,7 +19,7 @@
   <widget class="QPushButton" name="cance_but">
    <property name="geometry">
     <rect>
-     <x>50</x>
+     <x>30</x>
      <y>300</y>
      <width>101</width>
      <height>31</height>
@@ -57,7 +57,7 @@ QPushButton:hover{
   <widget class="QPushButton" name="confirm_but">
    <property name="geometry">
     <rect>
-     <x>260</x>
+     <x>230</x>
      <y>300</y>
      <width>101</width>
      <height>31</height>
@@ -95,7 +95,7 @@ QPushButton:hover{
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>130</x>
+     <x>100</x>
      <y>30</y>
      <width>201</width>
      <height>41</height>
@@ -116,7 +116,7 @@ QPushButton:hover{
   <widget class="QComboBox" name="measure_chooser">
    <property name="geometry">
     <rect>
-     <x>60</x>
+     <x>30</x>
      <y>70</y>
      <width>301</width>
      <height>41</height>
@@ -130,7 +130,7 @@ font: 16pt &quot;Segoe UI&quot;;</string>
   <widget class="QComboBox" name="period_chooser">
    <property name="geometry">
     <rect>
-     <x>60</x>
+     <x>30</x>
      <y>120</y>
      <width>301</width>
      <height>41</height>
@@ -144,7 +144,7 @@ font: 16pt &quot;Segoe UI&quot;;</string>
   <widget class="QLabel" name="label_3">
    <property name="geometry">
     <rect>
-     <x>60</x>
+     <x>30</x>
      <y>170</y>
      <width>161</width>
      <height>41</height>
@@ -165,7 +165,7 @@ font: 16pt &quot;Segoe UI&quot;;</string>
   <widget class="QLabel" name="percent_label">
    <property name="geometry">
     <rect>
-     <x>230</x>
+     <x>200</x>
      <y>170</y>
      <width>131</width>
      <height>41</height>
@@ -186,10 +186,10 @@ font: 16pt &quot;Segoe UI&quot;;</string>
   <widget class="QLineEdit" name="amount_line">
    <property name="geometry">
     <rect>
-     <x>150</x>
+     <x>160</x>
      <y>230</y>
-     <width>204</width>
-     <height>35</height>
+     <width>171</width>
+     <height>51</height>
     </rect>
    </property>
    <property name="font">
@@ -206,13 +206,13 @@ color: rgb(0, 0, 0);</string>
     <string/>
    </property>
   </widget>
-  <widget class="QLabel" name="label_4">
+  <widget class="QLabel" name="label_5">
    <property name="geometry">
     <rect>
-     <x>60</x>
-     <y>220</y>
-     <width>71</width>
-     <height>41</height>
+     <x>30</x>
+     <y>230</y>
+     <width>131</width>
+     <height>51</height>
     </rect>
    </property>
    <property name="font">
@@ -224,7 +224,7 @@ color: rgb(0, 0, 0);</string>
     <string notr="true">color: rgb(255, 255, 255);</string>
    </property>
    <property name="text">
-    <string>Amount:</string>
+    <string>Amount :</string>
    </property>
   </widget>
  </widget>
