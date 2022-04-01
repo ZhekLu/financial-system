@@ -1,14 +1,14 @@
 #include "creditwidget.h"
-#include "ui_creditmanager.h"
+#include "ui_creditwidget.h"
 
 CreditWidget::CreditWidget(QWidget *parent)
-    : QWidget(parent), ui(new Ui::CreditManager), account(nullptr) {
+    : QWidget(parent), ui(new Ui::CreditWidget), account(nullptr) {
   ui->setupUi(this);
-
   validator = std::make_unique<QIntValidator>();
   init_labels();
 
-  //  ui->sta
+  ui->stacked_widget->insertWidget(Page::Settings, ui->settings_widget);
+  ui->stacked_widget->setCurrentIndex(Page::Settings);
 }
 
 CreditWidget::~CreditWidget() { delete ui; }
@@ -16,11 +16,12 @@ CreditWidget::~CreditWidget() { delete ui; }
 void CreditWidget::show(BankAccount *current_account) {
   //  SYS
 
-  QWidget::show();
   account = current_account;
 }
 
-void CreditWidget::on_confirm_but_clicked() {}
+void CreditWidget::on_confirm_but_clicked() {
+  ui->stacked_widget->setCurrentIndex(Page::Info);
+}
 
 void CreditWidget::on_cance_but_clicked() { emit closed(); }
 
@@ -48,3 +49,7 @@ void CreditWidget::update_labels(Measure measure) {
 void CreditWidget::on_measure_chooser_currentIndexChanged(int index) {
   update_labels(Measure(index));
 }
+
+void CreditWidget::on_cancel_inf_but_clicked() { emit closed(); }
+
+void CreditWidget::on_confirm_inf_but_clicked() {}

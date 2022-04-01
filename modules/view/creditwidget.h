@@ -1,5 +1,5 @@
-#ifndef CREDIT_WIDGETH_H
-#define CREDIT_WIDGETH_H
+#ifndef CREDITWIDGET_H
+#define CREDITWIDGET_H
 
 #include "modules/entities/bank/bank.h"
 #include "modules/entities/bank/bankaccount.h"
@@ -9,7 +9,7 @@
 #include <vector>
 
 namespace Ui {
-class CreditManager;
+class CreditWidget;
 }
 
 class CreditWidget : public QWidget {
@@ -33,8 +33,14 @@ private slots:
 
   void on_measure_chooser_currentIndexChanged(int index);
 
+  void on_cancel_inf_but_clicked();
+
+  void on_confirm_inf_but_clicked();
+
 private:
-  Ui::CreditManager *ui;
+  enum Page { Info, Settings };
+
+  Ui::CreditWidget *ui;
   BankAccount *account;
   std::unique_ptr<Bank> bank;
 
@@ -47,4 +53,4 @@ private:
   void update_labels(Measure);
 };
 
-#endif // CREDIT_WIDGETH_H
+#endif // CREDITWIDGET_H
