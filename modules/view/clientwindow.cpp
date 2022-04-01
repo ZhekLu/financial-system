@@ -125,7 +125,6 @@ void ClientWindow::on_new_card_but_clicked() {
 void ClientWindow::on_transfer_but_clicked() {
   if (!current_account)
     return;
-  //  switch_widget(false, true, ui->transfer_widget);
   transfer_widget->show(TransferWidget::Mode::Transfer, current_account);
   ui->stacked_widget->setCurrentIndex(WorkMode::TransferView);
 }
@@ -151,29 +150,7 @@ void ClientWindow::mode_widget_closed() {
   ui->stacked_widget->setCurrentIndex(WorkMode::CardView);
 }
 
-void ClientWindow::send_add_account(size_t bank_id) {
-  std::unique_ptr<BankAccount> to_add(new BankAccount(user->id, bank_id));
-  if (AccountManager::add_account_request(to_add.get()))
-    QMessageBox::information(this, "add card", "Ur request was send to bank.");
-  else
-    qDebug() << "Add account : false";
-}
-
 void ClientWindow::on_credit_but_clicked() {
   if (current_account)
     ui->stacked_widget->setCurrentIndex(WorkMode::CreditView);
 }
-
-// void DepositManager::on_cancel_but_clicked() {
-//   switch_widget(true, false, ui->table_widget);
-//   ui->id_line->clear();
-//   ui->amount_line->clear();
-// }
-
-// void DepositManager::on_cance_ac_but_clicked() {
-//   switch_widget(true, false, ui->table_widget);
-// }
-
-// void DepositManager::on_confirm_ac_but_clicked() {
-//   send_add_account(banks[ui->bank_chooser->currentIndex()]);
-// }

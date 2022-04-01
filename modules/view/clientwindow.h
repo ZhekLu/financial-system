@@ -67,9 +67,6 @@ private:
   void init();
   void set_connections();
   QTableWidgetItem *get_item(BankAccount *, QString);
-
-  //  void switch_widget(bool, bool, QWidget *);
-  void send_add_account(size_t);
 };
 
 #endif // CLIENTWINDOW_H

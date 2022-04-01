@@ -4,8 +4,11 @@
 CreditWidget::CreditWidget(QWidget *parent)
     : QWidget(parent), ui(new Ui::CreditManager), account(nullptr) {
   ui->setupUi(this);
+
   validator = std::make_unique<QIntValidator>();
   init_labels();
+
+  //  ui->sta
 }
 
 CreditWidget::~CreditWidget() { delete ui; }
