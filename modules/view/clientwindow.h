@@ -14,6 +14,7 @@
 #include <QMessageBox>
 #include <QTableWidget>
 #include <memory>
+#include <unordered_map>
 
 namespace Ui {
 class ClientWindow;
@@ -55,7 +56,7 @@ private:
   AccessMode mode;
 
   std::vector<std::unique_ptr<BankAccount>> accounts;
-  std::vector<size_t> banks;
+  std::unordered_map<size_t, std::unique_ptr<Bank>> banks;
   BankAccount *current_account;
 
   std::unique_ptr<QRegularExpressionValidator> card_validator;
@@ -64,6 +65,7 @@ private:
   // methods
   void update();
   void update_grid();
+  void update_grid_test();
   //  void update_combobox();
   void init();
   void set_connections();

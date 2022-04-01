@@ -23,7 +23,7 @@ void ClientWindow::update() {
   ui->current_label->clear();
   accounts.clear();
 
-  update_grid();
+  update_grid_test();
   //  if (mode != Company)
   //    update_combobox();
 
@@ -33,6 +33,19 @@ void ClientWindow::update() {
   ui->table_widget->setSelectionMode(
       QAbstractItemView::SingleSelection); // only one selection
   ui->table_widget->horizontalHeader()->setStretchLastSection(true);
+}
+
+void ClientWindow::update_grid_test() {
+  accounts = USER_DB->get_user_accounts(user->get_id());
+  banks = USER_DB->get_hash_banks();
+  for (size_t i = 0; i < accounts.size(); i++) {
+    QString bank_name =
+        QString::fromStdString(banks.at(accounts[i]->bank_id)->get_name());
+    QTableWidgetItem *item = get_item(accounts[i].get(), bank_name);
+
+    ui->table_widget->insertRow(i);
+    ui->table_widget->setItem(i, 0, item);
+  }
 }
 
 void ClientWindow::update_grid() {
@@ -226,7 +239,7 @@ void ClientWindow::send_add_account(size_t bank_id) {
 }
 
 void ClientWindow::on_credit_but_clicked() {
-  //  if (current_account)
-  //    credit_widget->show(current_account);
-  ui->stacked_widget->setCurrentIndex(WorkMode::CreditView);
+  if (current_account)
+    //    credit_widget->show(current_account);
+    ui->stacked_widget->setCurrentIndex(WorkMode::CreditView);
 }

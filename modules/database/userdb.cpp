@@ -184,7 +184,7 @@ void UserDB::remove_company(size_t id) {
 }
 
 Entity *UserDB::get_company(size_t id) {
-  QString query = ("SELECT name, type, PAC, BIC, adress, bank_bic "
+  QString query = ("SELECT name, type, PAC, adress, bank_bic "
                    "FROM companies WHERE BIC = ") +
                   QString::number(id);
   exec(query);
@@ -195,15 +195,14 @@ Entity *UserDB::get_company(size_t id) {
   std::string name = db_query->value(0).toString().toStdString();
   int type = db_query->value(1).toInt();
   size_t PAC = db_query->value(2).toULongLong();
-  size_t BIC = db_query->value(3).toULongLong();
-  std::string adress = db_query->value(4).toString().toStdString();
-  size_t bank_bic = db_query->value(5).toULongLong();
+  std::string adress = db_query->value(3).toString().toStdString();
+  size_t bank_bic = db_query->value(4).toULongLong();
 
-  return new Entity(id, Entity::Type(type), name, PAC, BIC, adress, bank_bic);
+  return new Entity(Entity::Type(type), name, PAC, id, adress, bank_bic);
 }
 
 Bank *UserDB::get_bank(size_t id) {
-  QString query = ("SELECT percent "
+  QString query = ("SELECT percent, name, type, PAC, adress, bank_bic "
                    "FROM system_banks WHERE BIC = ") +
                   QString::number(id);
   exec(query);
@@ -211,22 +210,54 @@ Bank *UserDB::get_bank(size_t id) {
   if (!db_query->next())
     return nullptr;
 
-  size_t account = db_query->value(0).toULongLong();
-  int percent = db_query->value(1).toInt();
+  int percent = db_query->value(0).toInt();
+  std::string name = db_query->value(1).toString().toStdString();
+  int type = db_query->value(2).toInt();
+  size_t PAC = db_query->value(3).toULongLong();
+  std::string adress = db_query->value(4).toString().toStdString();
+  size_t bank_bic = db_query->value(5).toULongLong();
 
-  return new Bank(id, percent);
+  return new Bank(percent, Entity::Type(type), name, PAC, id, adress, bank_bic);
 }
 
 std::vector<Bank *> UserDB::get_banks() {
   std::vector<Bank *> banks;
-  QString query = ("SELECT BIC, percent "
+  QString query = ("SELECT BIC, percent, name, type, PAC, adress, bank_bic "
                    "FROM system_banks");
   exec(query);
 
   while (db_query->next()) {
     size_t BIC = db_query->value(0).toULongLong();
     int percent = db_query->value(1).toInt();
-    banks.emplace_back(new Bank(BIC, percent));
+    std::string name = db_query->value(2).toString().toStdString();
+    int type = db_query->value(3).toInt();
+    size_t PAC = db_query->value(4).toULongLong();
+    std::string adress = db_query->value(5).toString().toStdString();
+    size_t bank_bic = db_query->value(6).toULongLong();
+    banks.push_back(new Bank(percent, Entity::Type(type), name, PAC, BIC,
+                             adress, bank_bic));
+  }
+
+  return banks;
+}
+
+std::unordered_map<size_t, std::unique_ptr<Bank>> UserDB::get_hash_banks() {
+  std::unordered_map<size_t, std::unique_ptr<Bank>> banks;
+  QString query = ("SELECT BIC, percent, name, type, PAC, adress, bank_bic "
+                   "from system_banks "
+                   "left join companies using (BIC)");
+  exec(query);
+
+  while (db_query->next()) {
+    size_t BIC = db_query->value(0).toULongLong();
+    int percent = db_query->value(1).toInt();
+    std::string name = db_query->value(2).toString().toStdString();
+    int type = db_query->value(3).toInt();
+    size_t PAC = db_query->value(4).toULongLong();
+    std::string adress = db_query->value(5).toString().toStdString();
+    size_t bank_bic = db_query->value(6).toULongLong();
+    banks[BIC] = std::make_unique<Bank>(percent, Entity::Type(type), name, PAC,
+                                        BIC, adress, bank_bic);
   }
 
   return banks;
@@ -283,20 +314,23 @@ bool UserDB::contains(BankAccount &acc) {
   return db_query->next();
 }
 
-std::vector<BankAccount *> UserDB::get_user_accounts(size_t user_id) {
-  QString query =
-      ("SELECT id, bank_id, balance FROM accounts WHERE user_id = ") +
-      qs(QString::number(user_id));
+std::vector<std::unique_ptr<BankAccount>>
+UserDB::get_user_accounts(size_t user_id) {
+  QString query = ("SELECT id, bank_id, balance, frozen "
+                   "FROM accounts "
+                   "WHERE user_id = ") +
+                  qs(QString::number(user_id));
   exec(query);
 
-  std::vector<BankAccount *> accounts;
+  std::vector<std::unique_ptr<BankAccount>> accounts;
 
   while (db_query->next()) {
     size_t id = db_query->value(0).toInt();
     size_t bank_id = db_query->value(1).toInt();
     size_t balance = db_query->value(2).toInt();
     bool frozen = db_query->value(3).toBool();
-    accounts.push_back(new BankAccount(id, user_id, bank_id, balance, frozen));
+    accounts.push_back(
+        std::make_unique<BankAccount>(id, user_id, bank_id, balance, frozen));
   }
   return accounts;
 }
