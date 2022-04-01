@@ -4,6 +4,7 @@
 #include <QList>
 #include <QObject>
 #include <set>
+#include <unordered_map>
 #include <vector>
 
 #include "database.h"
@@ -40,13 +41,15 @@ public:
 
   // Banks
   Bank *get_bank(size_t id);
+  std::vector<Bank *> get_banks();
+  std::unordered_map<size_t, std::unique_ptr<Bank>> get_hash_banks();
 
   // Bank accounts
   bool add_account(BankAccount *);
   size_t get_account_balance(size_t id);
   BankAccount *get_account(size_t id);
   bool contains(BankAccount &acc);
-  std::vector<BankAccount *> get_user_accounts(size_t user_id);
+  std::vector<std::unique_ptr<BankAccount>> get_user_accounts(size_t user_id);
   // Update methods
   bool update(BankAccount &);
 

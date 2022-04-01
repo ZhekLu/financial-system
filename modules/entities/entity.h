@@ -7,9 +7,9 @@ class Entity : public IUser {
 public:
   enum Type { IE, LLC, CJSC, OJSC };
 
-  Entity(size_t id, Type type, std::string name, size_t PAC, size_t BIC,
+  Entity(Type type, std::string name, size_t PAC, size_t BIC,
          std::string adress, size_t bank_id)
-      : IUser(id, std::move(name)), type(type), PAC(PAC), BIC(BIC),
+      : IUser(BIC, std::move(name)), type(type), PAC(PAC), BIC(BIC),
         adress(std::move(adress)), bank_bic(bank_id) {}
 
   ~Entity() = default;

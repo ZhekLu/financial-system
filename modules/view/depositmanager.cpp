@@ -4,7 +4,7 @@
 DepositManager::DepositManager(IUser *owner, Mode mode, QWidget *parent)
     : QMainWindow(parent), ui(new Ui::DepositManager), user(owner), mode(mode),
       current_account(nullptr) {
-  credit_widget = std::make_unique<CreditManager>();
+  credit_widget = std::make_unique<CreditWidget>();
   ui->setupUi(this);
   setAttribute(Qt::WA_DeleteOnClose);
   update();

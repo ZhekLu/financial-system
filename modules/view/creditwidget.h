@@ -1,6 +1,7 @@
 #ifndef CREDIT_WIDGETH_H
 #define CREDIT_WIDGETH_H
 
+#include "modules/entities/bank/bank.h"
 #include "modules/entities/bank/bankaccount.h"
 #include <QIntValidator>
 #include <QWidget>
@@ -11,16 +12,19 @@ namespace Ui {
 class CreditManager;
 }
 
-class CreditManager : public QWidget {
+class CreditWidget : public QWidget {
   Q_OBJECT
 
 public:
   enum Measure { MONTH, YEAR };
 
-  explicit CreditManager(QWidget *parent = nullptr);
-  ~CreditManager();
+  explicit CreditWidget(QWidget *parent = nullptr);
+  ~CreditWidget();
 
   void show(BankAccount *account);
+
+signals:
+  void closed();
 
 private slots:
   void on_confirm_but_clicked();
@@ -32,6 +36,7 @@ private slots:
 private:
   Ui::CreditManager *ui;
   BankAccount *account;
+  std::unique_ptr<Bank> bank;
 
   std::unique_ptr<QIntValidator> validator;
 

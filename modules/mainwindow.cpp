@@ -52,4 +52,5 @@ void MainWindow::auth_connection(size_t id, LoginMode mode) {
 
 void MainWindow::on_debug_but_clicked() {
   //    IdGenerator::GenerateId();
+  //    ClientWindow* cl = new ClientWindow()
 }
