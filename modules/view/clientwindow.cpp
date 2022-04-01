@@ -75,19 +75,12 @@ void ClientWindow::update_grid() {
 void ClientWindow::init() {
   credit_widget = std::make_unique<CreditWidget>(this);
   transfer_widget = std::make_unique<TransferWidget>(this);
-  add_widget = std::make_unique<AddCardWidget>(this);
+  add_widget = std::make_unique<AddCardWidget>(user.get(), banks, this);
   set_connections();
   ui->stacked_widget->insertWidget(WorkMode::CreditView, credit_widget.get());
   ui->stacked_widget->insertWidget(WorkMode::AddCardView, add_widget.get());
   ui->stacked_widget->insertWidget(WorkMode::TransferView,
                                    transfer_widget.get());
-
-  card_validator = std::make_unique<QRegularExpressionValidator>(
-      QRegularExpression("^[0-9]{9}$"));
-  //  ui->id_line->setValidator(card_validator.get());
-
-  amount_validator = std::make_unique<QIntValidator>(0, 0);
-  //  ui->amount_line->setValidator(amount_validator.get());
 }
 
 void ClientWindow::set_connections() {
@@ -105,25 +98,6 @@ QTableWidgetItem *ClientWindow::get_item(BankAccount *acc, QString bank) {
   return new QTableWidgetItem(item);
 }
 
-// void ClientWindow::switch_widget(bool to_table, bool to_transfer, QWidget
-// *to) {
-//   ui->table_widget->setVisible(false);
-//   ui->new_card_but->setVisible(to_table);
-//   ui->transfer_but->setVisible(to_table);
-//   ui->freeze_but->setVisible(to_table);
-//   ui->withdraw_but->setVisible(to_table);
-//   ui->log_out_but->setVisible(to_table);
-//   ui->info_but->setVisible(to_table);
-//   ui->credit_but->setEnabled(to_table);
-
-//  ui->transfer_widget->setVisible(false);
-//  ui->id_label->setVisible(to_transfer);
-//  ui->id_line->setVisible(to_transfer);
-
-//  ui->add_widget->setVisible(false);
-//  to->setVisible(true);
-//}
-
 void ClientWindow::on_log_out_but_clicked() { this->close(); }
 
 void ClientWindow::on_info_but_clicked() {
@@ -139,24 +113,20 @@ void ClientWindow::on_freeze_but_clicked() {
 void ClientWindow::on_withdraw_but_clicked() {
   if (!current_account)
     return;
-  //  switch_widget(false, false, ui->transfer_widget);
-  amount_validator->setTop(current_account->get_balance());
+  transfer_widget->show(TransferWidget::Mode::Withdraw, current_account);
   ui->stacked_widget->setCurrentIndex(WorkMode::TransferView);
 }
 
 void ClientWindow::on_new_card_but_clicked() {
+  add_widget->show();
   ui->stacked_widget->setCurrentIndex(WorkMode::AddCardView);
-  //  if (mode == Person)
-  //    ui->stacked_widget->setCurrentIndex(WorkMode::AddCardView);
-  //  else
-  //    send_add_account(((Entity *)(user.get()))->bank_bic);
 }
 
 void ClientWindow::on_transfer_but_clicked() {
   if (!current_account)
     return;
   //  switch_widget(false, true, ui->transfer_widget);
-  amount_validator->setTop(current_account->get_balance());
+  transfer_widget->show(TransferWidget::Mode::Transfer, current_account);
   ui->stacked_widget->setCurrentIndex(WorkMode::TransferView);
 }
 
@@ -181,40 +151,18 @@ void ClientWindow::mode_widget_closed() {
   ui->stacked_widget->setCurrentIndex(WorkMode::CardView);
 }
 
-// void ClientWindow::on_confirm_but_clicked() {
+void ClientWindow::send_add_account(size_t bank_id) {
+  std::unique_ptr<BankAccount> to_add(new BankAccount(user->id, bank_id));
+  if (AccountManager::add_account_request(to_add.get()))
+    QMessageBox::information(this, "add card", "Ur request was send to bank.");
+  else
+    qDebug() << "Add account : false";
+}
 
-//  // check if data is valid
-
-//  if (ui->id_label->isVisible()) {
-//    QString card = ui->id_line->text();
-//    int pos = 0;
-//    if (card_validator->validate(card, pos) != QValidator::Acceptable) {
-//      QMessageBox::warning(this, "input error", "incorrect card number");
-//      return;
-//    }
-//  }
-
-//  size_t amount = ui->amount_line->text().toULongLong();
-//  if (!current_account->can_pay(amount)) {
-//    QMessageBox::warning(this, "input error", "u don't have enought money");
-//    return;
-//  }
-//  if (!amount)
-//    return;
-
-//  if (ui->id_label->isVisible()) {
-//    size_t destination = ui->id_line->text().toULongLong();
-//    if (destination != current_account->id)
-//      qDebug() << "Transaction:"
-//               << AccountManager::transfer_request(current_account,
-//               destination,
-//                                                   amount);
-//  } else {
-//    qDebug() << "Withdraw"
-//             << AccountManager::withdraw_request(current_account, amount);
-//  }
-//  on_cancel_but_clicked();
-//}
+void ClientWindow::on_credit_but_clicked() {
+  if (current_account)
+    ui->stacked_widget->setCurrentIndex(WorkMode::CreditView);
+}
 
 // void DepositManager::on_cancel_but_clicked() {
 //   switch_widget(true, false, ui->table_widget);
@@ -229,17 +177,3 @@ void ClientWindow::mode_widget_closed() {
 // void DepositManager::on_confirm_ac_but_clicked() {
 //   send_add_account(banks[ui->bank_chooser->currentIndex()]);
 // }
-
-void ClientWindow::send_add_account(size_t bank_id) {
-  std::unique_ptr<BankAccount> to_add(new BankAccount(user->id, bank_id));
-  if (AccountManager::add_account_request(to_add.get()))
-    QMessageBox::information(this, "add card", "Ur request was send to bank.");
-  else
-    qDebug() << "Add account : false";
-}
-
-void ClientWindow::on_credit_but_clicked() {
-  if (current_account)
-    //    credit_widget->show(current_account);
-    ui->stacked_widget->setCurrentIndex(WorkMode::CreditView);
-}

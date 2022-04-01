@@ -59,9 +59,6 @@ private:
   std::unordered_map<size_t, std::unique_ptr<Bank>> banks;
   BankAccount *current_account;
 
-  std::unique_ptr<QRegularExpressionValidator> card_validator;
-  std::unique_ptr<QIntValidator> amount_validator;
-
   // methods
   void update();
   void update_grid();

@@ -9,8 +9,8 @@ public:
 
   Entity(Type type, std::string name, size_t PAC, size_t BIC,
          std::string adress, size_t bank_id)
-      : IUser(BIC, std::move(name)), type(type), PAC(PAC), BIC(BIC),
-        adress(std::move(adress)), bank_bic(bank_id) {}
+      : IUser(BIC, LoginMode::ENTITY, std::move(name)), type(type), PAC(PAC),
+        BIC(BIC), adress(std::move(adress)), bank_bic(bank_id) {}
 
   ~Entity() = default;
 
