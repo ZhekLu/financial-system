@@ -5,7 +5,8 @@ bool AccountManager::freeze_request(BankAccount *acc) {
     return false;
   bool old = acc->is_frozen;
   acc->is_frozen = !old;
-  if (send_request(acc, Request(Request::FREEZE, acc->id)))
+  if (send_request(acc,
+                   Request(Request::FREEZE, acc->id, acc->id))) // TODO! user.id
     return true;
   acc->is_frozen = old;
   return false;
@@ -36,7 +37,7 @@ bool AccountManager::transfer_request(BankAccount *acc, size_t destination,
 }
 
 bool AccountManager::add_account_request(BankAccount *acc) {
-  Request r(Request::LOGIN_ACCOUNT, acc->id);
+  Request r(Request::LOGIN_ACCOUNT, acc->id, acc->id); // TODO user.id
   r.is_approved = USER_DB->add_account(acc);
   return send_request(r);
 }
@@ -83,13 +84,15 @@ bool AccountManager::make_transaction(BankAccount *acc, size_t dest,
 
   receiver->balance += sum;
   Transaction t(acc->id, receiver->id, sum);
-  t.is_approved =
-      send_request(acc, receiver.get(), Request(Request::TRANSFER, acc->id));
+  t.is_approved = send_request(
+      acc, receiver.get(),
+      Request(Request::TRANSFER, acc->id, acc->id)); // TODO! user.id
   return send_transaction(t);
 }
 
 bool AccountManager::make_withdraw(BankAccount *acc, size_t sum) {
   Transaction t(acc->id, sum);
-  t.is_approved = send_request(acc, Request(Request::WITHDRAW, acc->id));
+  t.is_approved = send_request(
+      acc, Request(Request::WITHDRAW, acc->id, acc->id)); // TODO! user.id
   return send_transaction(t);
 }

@@ -70,6 +70,7 @@ bool UserDB::createTables() {
                      "id INTEGER PRIMARY KEY, "
                      "type INTEGER, "
                      "sender INTEGER, "
+                     "object INTEGER, "
                      "approved BOOLEAN"
                      ");");
   }
@@ -82,6 +83,21 @@ bool UserDB::createTables() {
                      "receiver INTEGER,"
                      "amount INTEGER,"
                      "approved BOOLEAN"
+                     ");");
+  }
+
+  if (!db.tables().contains("credits") && res) {
+    res = query.exec("CREATE TABLE credits"
+                     "("
+                     "id INTEGER PRIMARY KEY, "
+                     "opened BOOLEAN, "
+                     "user_id INTEGER, "
+                     "start_sum INTEGER,"
+                     "percent INTEGER,"
+                     "start_date DATE,"
+                     "end_date DATE, "
+                     "payment INTEGER, "
+                     "payed_num INTEGER"
                      ");");
   }
 
