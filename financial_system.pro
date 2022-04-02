@@ -15,19 +15,48 @@ SOURCES += \
     mainwindow.cpp \
     database/database.cpp \
     database/userdb.cpp \
-    view/authwidget.cpp
+    modules/entities/bank/accountmanager.cpp \
+    modules/entities/bank/creditmanager.cpp \
+    modules/view/addcardwidget.cpp \
+    modules/view/clientwindow.cpp \
+    modules/view/creditwidget.cpp \
+    modules/view/transferwidget.cpp \
+    view/authwidget.cpp \
 
 HEADERS += \
     mainwindow.h \
+    modules/database/databasemanager.h \
+    modules/database/idgenerator.h \
+    modules/entities/ISystemObject.h \
+    modules/entities/IUser.h \
+    modules/entities/bank/accountmanager.h \
+    modules/entities/bank/bank.h \
+    modules/entities/bank/bankaccount.h \
+    modules/entities/bank/credit.h \
+    modules/entities/bank/creditmanager.h \
+    modules/entities/bank/request.h \
+    modules/entities/bank/transaction.h \
+    modules/entities/entity.h \
+    modules/entities/individual.h \
+    modules/view/addcardwidget.h \
+    modules/view/clientwindow.h \
+    modules/view/creditwidget.h \
+    modules/view/managerfactory.h \
+    modules/view/transferwidget.h \
     singleton.h modes.h \
     database/database.h \
     database/userdb.h \
     entities/systemuser.h \
-    view/authwidget.h
+    view/authwidget.h \
+    entities/individual.h
 
 FORMS += \
     mainwindow.ui \
-    view/authwidget.ui
+    modules/view/addcardwidget.ui \
+    modules/view/clientwindow.ui \
+    modules/view/creditwidget.ui \
+    modules/view/transferwidget.ui \
+    view/authwidget.ui \
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

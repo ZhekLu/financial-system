@@ -4,11 +4,18 @@
 #include <QList>
 #include <QObject>
 #include <set>
+#include <unordered_map>
 #include <vector>
 
 #include "database.h"
+#include "modules/entities/bank/bank.h"
+#include "modules/entities/bank/bankaccount.h"
+#include "modules/entities/bank/credit.h"
+#include "modules/entities/bank/request.h"
+#include "modules/entities/bank/transaction.h"
+#include "modules/entities/entity.h"
+#include "modules/entities/individual.h"
 #include "modules/entities/systemuser.h"
-#include "modules/entities/user.h"
 #include "modules/singleton.h"
 
 class UserDB : public DataBase {
@@ -18,7 +25,6 @@ public:
 
   // Login
   bool is_login_busy(QString login);
-
   bool contains(SystemUser user);
   size_t get_id_by_login(SystemUser user);
 
@@ -26,20 +32,42 @@ public:
   void remove_user(std::string login);
   //  std::vector<SystemUser> users();
 
+  // Users
+  Individual *get_user(size_t id);
+
+  // Companies
+  void add_company(Entity company);
+  void remove_company(size_t id);
+  Entity *get_company(size_t id);
+
+  // Banks
+  Bank *get_bank(size_t id);
+  std::vector<Bank *> get_banks();
+  std::unordered_map<size_t, std::unique_ptr<Bank>> get_hash_banks();
+
+  // Bank accounts
+  bool add_account(BankAccount *);
+  size_t get_account_balance(size_t id);
+  BankAccount *get_account(size_t id);
+  bool contains(BankAccount &acc);
+  std::vector<std::unique_ptr<BankAccount>> get_user_accounts(size_t user_id);
+  // Update methods
+  bool update(BankAccount &);
+
+  // Requests
+  void add_request(Request &);
+
+  // Transactions
+  void add_transaction(Transaction &);
+
+  // Credits
+  bool add_credit(Credit &);
+
   // Debug methods
   void print_all_system_users();
   void print_mode_system_users(LoginMode);
 
-  // Users
-  User *get_user(size_t id);
-
-  //  // Bank accounts
-  //  void add_account(BankAccount product);
-
-  //  // Companies
-  //  void add_company(Company company);
-  //  void remove_company(size_t id);
-
+  // Fill tables
   void test_login();
   void test_users();
 

@@ -1,8 +1,6 @@
 #ifndef MODES_H
 #define MODES_H
 
-enum LoginMode {
-    ADMIN, MANAGER, OPERATOR, INDIVIDUAL, ENTITY
-};
+enum LoginMode { INDIVIDUAL, ENTITY, OPERATOR, MANAGER, ADMIN };
 
 #endif // MODES_H
