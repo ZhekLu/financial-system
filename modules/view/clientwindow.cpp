@@ -73,9 +73,9 @@ void ClientWindow::update_grid() {
 }
 
 void ClientWindow::init() {
-  credit_widget = std::make_unique<CreditWidget>(this);
-  transfer_widget = std::make_unique<TransferWidget>(this);
   add_widget = std::make_unique<AddCardWidget>(user.get(), banks, this);
+  credit_widget = std::make_unique<CreditWidget>(user.get(), banks, this);
+  transfer_widget = std::make_unique<TransferWidget>(this);
   set_connections();
   ui->stacked_widget->insertWidget(WorkMode::CreditView, credit_widget.get());
   ui->stacked_widget->insertWidget(WorkMode::AddCardView, add_widget.get());
@@ -135,12 +135,10 @@ void ClientWindow::on_table_widget_cellClicked(int row, int) {
     ui->freeze_but->setText("Unfreeze");
     ui->transfer_but->setEnabled(false);
     ui->withdraw_but->setEnabled(false);
-    ui->credit_but->setEnabled(false);
   } else {
     ui->freeze_but->setText("Freeze");
     ui->transfer_but->setEnabled(true);
     ui->withdraw_but->setEnabled(true);
-    ui->credit_but->setEnabled(true);
   }
   ui->current_label->setText("Selected account : " +
                              QString::number(current_account->get_id()));
@@ -151,6 +149,6 @@ void ClientWindow::mode_widget_closed() {
 }
 
 void ClientWindow::on_credit_but_clicked() {
-  if (current_account)
-    ui->stacked_widget->setCurrentIndex(WorkMode::CreditView);
+  credit_widget->show();
+  ui->stacked_widget->setCurrentIndex(WorkMode::CreditView);
 }

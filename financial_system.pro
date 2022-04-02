@@ -21,7 +21,6 @@ SOURCES += \
     modules/view/creditwidget.cpp \
     modules/view/transferwidget.cpp \
     view/authwidget.cpp \
-    view/depositmanager.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -46,7 +45,6 @@ HEADERS += \
     database/userdb.h \
     entities/systemuser.h \
     view/authwidget.h \
-    view/depositmanager.h \
     entities/individual.h
 
 FORMS += \
@@ -56,7 +54,6 @@ FORMS += \
     modules/view/creditwidget.ui \
     modules/view/transferwidget.ui \
     view/authwidget.ui \
-    view/depositmanager.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

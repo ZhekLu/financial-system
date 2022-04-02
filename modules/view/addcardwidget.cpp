@@ -7,6 +7,18 @@ AddCardWidget::AddCardWidget(
     : QWidget(parent), ui(new Ui::AddCardWidget), user(user),
       banks(banks_list) {
   ui->setupUi(this);
+  mode = Mode::CardAdder;
+  update_combobox();
+}
+
+AddCardWidget::AddCardWidget(
+    std::unordered_map<size_t, std::unique_ptr<Bank>> &banks_list,
+    QWidget *parent)
+    : QWidget(parent), ui(new Ui::AddCardWidget), user(nullptr),
+      banks(banks_list) {
+  ui->setupUi(this);
+  mode = Mode::BankSelector;
+  ui->confirm_but->setText("Continue");
   update_combobox();
 }
 
@@ -17,9 +29,14 @@ void AddCardWidget::show() { update_combobox(); }
 void AddCardWidget::on_cance_but_clicked() { emit closed(); }
 
 void AddCardWidget::on_confirm_but_clicked() {
-  send_add_account(
-      user->get_id(),
-      banks[banks_indexes[ui->bank_chooser->currentIndex()]]->get_id());
+  if (mode == CardAdder) {
+    send_add_account(
+        user->get_id(),
+        banks[banks_indexes[ui->bank_chooser->currentIndex()]]->get_id());
+    emit closed();
+  } else {
+    emit selected(banks[banks_indexes[ui->bank_chooser->currentIndex()]].get());
+  }
 }
 
 void AddCardWidget::send_add_account(size_t user_id, size_t bank_id) {
@@ -34,7 +51,7 @@ void AddCardWidget::update_combobox() {
   banks_indexes.clear();
 
   // fill
-  if (user->get_role() == LoginMode::ENTITY)
+  if (user && user->get_role() == LoginMode::ENTITY)
     company_mode();
   else
     person_mode();

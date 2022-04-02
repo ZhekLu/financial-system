@@ -116,7 +116,7 @@ font: 16pt &quot;Segoe UI&quot;;</string>
      <string>Amount :</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="confirm_but">
+   <widget class="QPushButton" name="confirm_set_but">
     <property name="geometry">
      <rect>
       <x>220</x>
@@ -177,7 +177,7 @@ color: rgb(0, 0, 0);</string>
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="cance_but">
+   <widget class="QPushButton" name="cancel_set_but">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -212,7 +212,7 @@ QPushButton:hover{
 }</string>
     </property>
     <property name="text">
-     <string>Cancel</string>
+     <string>Back</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_7">
@@ -304,7 +304,7 @@ QPushButton:hover{
 }</string>
      </property>
      <property name="text">
-      <string>Cancel</string>
+      <string>Back</string>
      </property>
     </widget>
     <widget class="QPushButton" name="confirm_inf_but">
@@ -351,7 +351,7 @@ QPushButton:hover{
        <x>10</x>
        <y>90</y>
        <width>331</width>
-       <height>138</height>
+       <height>156</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
@@ -425,9 +425,9 @@ margin:10;
            <string notr="true">color: rgb(0, 0, 0);
 font: 16pt &quot;Segoe UI&quot;;
 border-color: rgb(0, 0, 0);
-border-size:5;
+border-width:5px;
 background-color: rgb(192, 192, 192);
-margim:10;</string>
+</string>
           </property>
           <property name="text">
            <string/>
@@ -447,9 +447,9 @@ margim:10;</string>
            <string notr="true">color: rgb(0, 0, 0);
 font: 16pt &quot;Segoe UI&quot;;
 border-color: rgb(0, 0, 0);
-border-size:5;
+border-width:5px;
 background-color: rgb(192, 192, 192);
-margim:10;</string>
+</string>
           </property>
           <property name="text">
            <string/>
@@ -469,9 +469,9 @@ margim:10;</string>
            <string notr="true">color: rgb(0, 0, 0);
 font: 16pt &quot;Segoe UI&quot;;
 border-color: rgb(0, 0, 0);
-border-size:5;
+border-width:5px;
 background-color: rgb(192, 192, 192);
-margim:10;</string>
+</string>
           </property>
           <property name="text">
            <string/>

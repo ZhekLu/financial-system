@@ -1,7 +1,7 @@
 #ifndef DEPOSITMANAGER_H
 #define DEPOSITMANAGER_H
 
-#include "creditwidget.h"
+//#include "creditwidget.h"
 #include "modules/database/userdb.h"
 #include "modules/entities/bank/accountmanager.h"
 #include "modules/entities/bank/bankaccount.h"
@@ -55,7 +55,7 @@ private slots:
 
 private:
   Ui::DepositManager *ui;
-  std::unique_ptr<CreditWidget> credit_widget;
+  //  std::unique_ptr<CreditWidget> credit_widget;
   //  std::unique_ptr<QTableWidget> table_widget;
 
   std::unique_ptr<IUser> user;

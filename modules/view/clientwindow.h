@@ -63,7 +63,7 @@ private:
   void update();
   void update_grid();
   void update_grid_test();
-  //  void update_combobox();
+
   void init();
   void set_connections();
   QTableWidgetItem *get_item(BankAccount *, QString);

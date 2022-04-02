@@ -22,12 +22,16 @@ public:
       IUser *user,
       std::unordered_map<size_t, std::unique_ptr<Bank>> &banks_list,
       QWidget *parent = nullptr);
+  explicit AddCardWidget(
+      std::unordered_map<size_t, std::unique_ptr<Bank>> &banks_list,
+      QWidget *parent = nullptr);
   ~AddCardWidget();
 
   void show();
 
 signals:
   void closed();
+  void selected(Bank *);
 
 private slots:
   void on_cance_but_clicked();
@@ -35,11 +39,14 @@ private slots:
   void on_confirm_but_clicked();
 
 private:
+  enum Mode { BankSelector, CardAdder };
+
   Ui::AddCardWidget *ui;
 
   IUser *user;
   std::unordered_map<size_t, std::unique_ptr<Bank>> &banks;
   std::vector<size_t> banks_indexes;
+  Mode mode;
 
   void send_add_account(size_t, size_t);
   void update_combobox();

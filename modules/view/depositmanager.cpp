@@ -4,7 +4,7 @@
 DepositManager::DepositManager(IUser *owner, Mode mode, QWidget *parent)
     : QMainWindow(parent), ui(new Ui::DepositManager), user(owner), mode(mode),
       current_account(nullptr) {
-  credit_widget = std::make_unique<CreditWidget>();
+  //  credit_widget = std::make_unique<CreditWidget>();
   ui->setupUi(this);
   setAttribute(Qt::WA_DeleteOnClose);
   update();
@@ -214,6 +214,6 @@ void DepositManager::send_add_account(size_t bank_id) {
 }
 
 void DepositManager::on_credit_but_clicked() {
-  if (current_account)
-    credit_widget->show(current_account);
+  //  if (current_account)
+  //    credit_widget->show();
 }
