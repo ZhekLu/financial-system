@@ -10,6 +10,7 @@
 #include "database.h"
 #include "modules/entities/bank/bank.h"
 #include "modules/entities/bank/bankaccount.h"
+#include "modules/entities/bank/credit.h"
 #include "modules/entities/bank/request.h"
 #include "modules/entities/bank/transaction.h"
 #include "modules/entities/entity.h"
@@ -56,8 +57,11 @@ public:
   // Requests
   void add_request(Request &);
 
-  // Transaction
+  // Transactions
   void add_transaction(Transaction &);
+
+  // Credits
+  bool add_credit(Credit &);
 
   // Debug methods
   void print_all_system_users();

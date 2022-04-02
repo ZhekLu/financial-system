@@ -375,6 +375,8 @@ void UserDB::add_request(Request &r) {
     emit DataBase::updated();
 }
 
+// Transactions
+
 void UserDB::add_transaction(Transaction &t) {
   QString query = QString("INSERT INTO transactions"
                           "(id, sender, receiver, amount, approved) "
@@ -382,6 +384,21 @@ void UserDB::add_transaction(Transaction &t) {
                       .arg(t.get_values_query());
   if (exec(query))
     emit DataBase::updated();
+}
+
+// Credits
+
+bool UserDB::add_credit(Credit &c) {
+  QString query = QString("INSERT INTO credits"
+                          "(id, opened, user_id, start_sum, percent, "
+                          "start_date, end_date, payment, payed_num) "
+                          "VALUES %1;")
+                      .arg(c.get_values_query());
+  if (exec(query)) {
+    emit DataBase::updated();
+    return true;
+  }
+  return false;
 }
 
 // Debug

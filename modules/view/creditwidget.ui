@@ -413,7 +413,7 @@ margin:10;
       <item>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
-         <widget class="QLabel" name="label_12">
+         <widget class="QLabel" name="amount_label">
           <property name="font">
            <font>
             <pointsize>16</pointsize>
@@ -427,6 +427,7 @@ font: 16pt &quot;Segoe UI&quot;;
 border-color: rgb(0, 0, 0);
 border-width:5px;
 background-color: rgb(192, 192, 192);
+padding-left:5px;
 </string>
           </property>
           <property name="text">
@@ -435,7 +436,7 @@ background-color: rgb(192, 192, 192);
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="label_13">
+         <widget class="QLabel" name="period_label">
           <property name="font">
            <font>
             <pointsize>16</pointsize>
@@ -449,6 +450,7 @@ font: 16pt &quot;Segoe UI&quot;;
 border-color: rgb(0, 0, 0);
 border-width:5px;
 background-color: rgb(192, 192, 192);
+padding-left:5px;
 </string>
           </property>
           <property name="text">
@@ -457,7 +459,7 @@ background-color: rgb(192, 192, 192);
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="label_14">
+         <widget class="QLabel" name="pay_label">
           <property name="font">
            <font>
             <pointsize>16</pointsize>
@@ -471,6 +473,7 @@ font: 16pt &quot;Segoe UI&quot;;
 border-color: rgb(0, 0, 0);
 border-width:5px;
 background-color: rgb(192, 192, 192);
+padding-left:5px;
 </string>
           </property>
           <property name="text">

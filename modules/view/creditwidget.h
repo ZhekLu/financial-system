@@ -2,6 +2,7 @@
 #define CREDITWIDGET_H
 
 #include "addcardwidget.h"
+#include "modules/entities/bank/creditmanager.h"
 #include <QIntValidator>
 #include <QWidget>
 #include <memory>
@@ -44,7 +45,9 @@ private:
   std::unique_ptr<AddCardWidget> bank_selector;
 
   IUser *user;
+
   Bank *selected_bank;
+  std::unique_ptr<Credit> current_credit;
 
   std::unique_ptr<QIntValidator> validator;
 
@@ -55,6 +58,9 @@ private:
   void init_labels();
   void update_labels(Measure);
   void show_settings_widget();
+
+  void update_credit();
+  void show_info_widget();
 };
 
 #endif // CREDITWIDGET_H

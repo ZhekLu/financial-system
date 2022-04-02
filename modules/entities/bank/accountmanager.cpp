@@ -86,7 +86,7 @@ bool AccountManager::make_transaction(BankAccount *acc, size_t dest,
   Transaction t(acc->id, receiver->id, sum);
   t.is_approved = send_request(
       acc, receiver.get(),
-      Request(Request::TRANSFER, acc->id, acc->id)); // TODO! user.id
+      Request(Request::TRANSFER, acc->id, t.get_id())); // TODO! user.id
   return send_transaction(t);
 }
 

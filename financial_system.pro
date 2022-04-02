@@ -16,6 +16,7 @@ SOURCES += \
     database/database.cpp \
     database/userdb.cpp \
     modules/entities/bank/accountmanager.cpp \
+    modules/entities/bank/creditmanager.cpp \
     modules/view/addcardwidget.cpp \
     modules/view/clientwindow.cpp \
     modules/view/creditwidget.cpp \
@@ -31,6 +32,8 @@ HEADERS += \
     modules/entities/bank/accountmanager.h \
     modules/entities/bank/bank.h \
     modules/entities/bank/bankaccount.h \
+    modules/entities/bank/credit.h \
+    modules/entities/bank/creditmanager.h \
     modules/entities/bank/request.h \
     modules/entities/bank/transaction.h \
     modules/entities/entity.h \

@@ -16,7 +16,6 @@ public:
 
   // methods
   std::string get_name() const { return name; }
-  size_t get_id() const { return id; }
   LoginMode get_role() const { return mode; }
 
 protected:

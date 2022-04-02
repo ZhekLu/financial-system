@@ -36,7 +36,7 @@ void CreditWidget::init_labels() {
   periods = {3, 1, 6, 2, 12, 5, 24, 10};
   update_labels(MONTH);
 
-  validator = std::make_unique<QIntValidator>();
+  validator = std::make_unique<QIntValidator>(10, 1000000);
   ui->amount_line->setValidator(validator.get());
 }
 
@@ -53,7 +53,28 @@ void CreditWidget::update_labels(Measure measure) {
   }
 }
 
-void CreditWidget::show_settings_widget() {}
+void CreditWidget::show_settings_widget() {
+  ui->stacked_widget->setCurrentIndex(Page::Settings);
+  ui->percent_label->setText(QString::number(selected_bank->get_percent()));
+}
+
+void CreditWidget::update_credit() {
+  size_t period_in_months = ui->period_chooser->currentText().toInt();
+  if (ui->measure_chooser->currentIndex() == Measure::YEAR)
+    period_in_months *= 12;
+  current_credit = std::make_unique<Credit>(
+      user->get_id(), ui->amount_line->text().toULongLong(),
+      selected_bank->get_percent(), period_in_months);
+}
+
+void CreditWidget::show_info_widget() {
+  ui->stacked_widget->setCurrentIndex(Page::Info);
+  update_credit();
+  ui->amount_label->setText(QString::number(current_credit->start_sum));
+  ui->pay_label->setText(QString::number(current_credit->payment));
+  ui->period_label->setText(ui->period_chooser->currentText() + " " +
+                            measures[ui->measure_chooser->currentIndex()]);
+}
 
 void CreditWidget::on_measure_chooser_currentIndexChanged(int index) {
   update_labels(Measure(index));
@@ -64,17 +85,22 @@ void CreditWidget::cancel_but() { emit closed(); }
 void CreditWidget::bank_selected(Bank *bank) {
   selected_bank = bank;
   show_settings_widget();
-  ui->stacked_widget->setCurrentIndex(Page::Settings);
 }
 
 void CreditWidget::on_cancel_inf_but_clicked() {
   ui->stacked_widget->setCurrentIndex(Page::Settings);
 }
 
-void CreditWidget::on_confirm_inf_but_clicked() {}
+void CreditWidget::on_confirm_inf_but_clicked() {
+  qDebug() << "Credit request : "
+           << CreditManager::credit_request(user, *current_credit);
+}
 
 void CreditWidget::on_confirm_set_but_clicked() {
-  ui->stacked_widget->setCurrentIndex(Page::Info);
+  QString amount = ui->amount_line->text();
+  int index = 0;
+  if (validator->validate(amount, index) == QValidator::Acceptable)
+    show_info_widget();
 }
 
 void CreditWidget::on_cancel_set_but_clicked() {

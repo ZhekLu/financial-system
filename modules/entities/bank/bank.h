@@ -20,6 +20,8 @@ public:
            QString("percent: %1\n").arg(QString::number(percent));
   }
 
+  int get_percent() const { return percent; }
+
   int percent;
 };
 

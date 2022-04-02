@@ -18,14 +18,10 @@ void ClientWindow::update() {
   ui->stacked_widget->setCurrentIndex(WorkMode::CardView);
   ui->table_widget->setRowCount(0);
   ui->table_widget->setColumnCount(1);
-  current_account = nullptr;
-  ui->table_widget->clearSelection();
-  ui->current_label->clear();
+  clear_selected();
   accounts.clear();
 
   update_grid_test();
-  //  if (mode != Company)
-  //    update_combobox();
 
   // style settings
   ui->table_widget->resizeColumnsToContents();
@@ -46,6 +42,12 @@ void ClientWindow::update_grid_test() {
     ui->table_widget->insertRow(i);
     ui->table_widget->setItem(i, 0, item);
   }
+}
+
+void ClientWindow::clear_selected() {
+  current_account = nullptr;
+  ui->table_widget->clearSelection();
+  ui->current_label->clear();
 }
 
 void ClientWindow::update_grid() {
@@ -118,6 +120,7 @@ void ClientWindow::on_withdraw_but_clicked() {
 }
 
 void ClientWindow::on_new_card_but_clicked() {
+  clear_selected();
   add_widget->show();
   ui->stacked_widget->setCurrentIndex(WorkMode::AddCardView);
 }
@@ -149,6 +152,7 @@ void ClientWindow::mode_widget_closed() {
 }
 
 void ClientWindow::on_credit_but_clicked() {
+  clear_selected();
   credit_widget->show();
   ui->stacked_widget->setCurrentIndex(WorkMode::CreditView);
 }
