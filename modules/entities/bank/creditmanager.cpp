@@ -14,9 +14,25 @@ bool CreditManager::credit_request(IUser *user, Credit &c) {
   return send_request(r);
 }
 
+CreditManager::CreditManager() { CreditManager::update(); }
+
 bool CreditManager::send_request(Request &r) {
   USER_DB->add_request(r);
   return r.is_approved;
 }
 
 bool CreditManager::send_credit(Credit &c) { return USER_DB->add_credit(c); }
+
+std::vector<QTableWidgetItem *> CreditManager::get_items() {
+  std::vector<QTableWidgetItem *> items;
+  for (auto &c : credits)
+    items.push_back(new QTableWidgetItem(c->get_info()));
+  return items;
+}
+
+bool CreditManager::undo(size_t item_index) {}
+
+void CreditManager::update() {
+  credits.clear();
+  credits = USER_DB->get_credits();
+}

@@ -3,6 +3,7 @@
 
 #include "modules/database/idgenerator.h"
 #include "modules/entities/ISystemObject.h"
+
 #include <QDate>
 #include <cmath>
 
@@ -13,18 +14,17 @@ public:
          size_t payed_num)
       : ISystemObject(id), opened(is_opened), user_id(user_id),
         start_sum(start_sum), percent(percent), start_date(start),
-        end_date(end), payment(monthly_payment), payed_num(payed_num) {
-    // count period;
-  }
+        end_date(end), payment(monthly_payment), payed_num(payed_num) {}
 
   Credit(size_t user_id, size_t start_sum, size_t percent, size_t month_count)
       : Credit(id_creator.GenerateId(), false, user_id, start_sum, percent,
-               QDate(1, 1, 1), QDate(1, 1, 1), 0, 0) {
+               QDate::currentDate(),
+               QDate::currentDate().addMonths(month_count), 0, 0) {
     // logic of counting payment
     // TODO!
     period = month_count;
     int years_num = month_count / 12;
-    double rate = percent / 100;
+    double rate = percent / 100.;
     double finally = start_sum;
     for (int i = 0; i < years_num; i++) {
       finally += finally * rate;
@@ -36,7 +36,7 @@ public:
   // id, opened, user_id, start_sum, percent,
   // start_date, end_date, payment, payed_num
   QString get_values_query() override {
-    return QString("(%1, %2, %3, %4, %5, %6, %7, %8, %9)")
+    return QString("(%1, %2, %3, %4, %5, \"%6\", \"%7\", %8, %9)")
         .arg(QString::number(id), QString::number(opened),
              QString::number(user_id), QString::number(start_sum),
              QString::number(percent), start_date.toString("yyyy-MM-dd"),
@@ -44,7 +44,16 @@ public:
              QString::number(payed_num));
   }
 
-  QString get_info() const override { return {}; }
+  QString get_info() const override {
+    return QString("User: %1\n"
+                   "Sum: %2\n"
+                   "Opened: %3\n"
+                   "Date: %4\n"
+                   "Period: %5\n")
+        .arg(QString::number(user_id), QString::number(start_sum),
+             opened ? "True" : "False", start_date.toString(),
+             QString::number(period));
+  }
 
   bool opened;
   size_t user_id;

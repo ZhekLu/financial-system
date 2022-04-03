@@ -56,12 +56,18 @@ public:
 
   // Requests
   void add_request(Request &);
+  std::vector<std::unique_ptr<Request>> get_requests();
+  std::vector<std::unique_ptr<Request>> get_requests(Request::Type);
+  std::vector<std::unique_ptr<Request>> get_transfer_requests();
 
   // Transactions
   void add_transaction(Transaction &);
+  std::unique_ptr<Transaction> get_transaction(size_t id);
+  std::vector<std::unique_ptr<Transaction>> get_transactions();
 
   // Credits
   bool add_credit(Credit &);
+  std::vector<std::unique_ptr<Credit>> get_credits();
 
   // Debug methods
   void print_all_system_users();

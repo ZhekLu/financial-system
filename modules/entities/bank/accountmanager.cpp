@@ -91,8 +91,8 @@ bool AccountManager::make_transaction(BankAccount *acc, size_t dest,
 }
 
 bool AccountManager::make_withdraw(BankAccount *acc, size_t sum) {
-  Transaction t(acc->id, sum);
+  Transaction t(acc->id, sum, true);
   t.is_approved = send_request(
-      acc, Request(Request::WITHDRAW, acc->id, acc->id)); // TODO! user.id
+      acc, Request(Request::WITHDRAW, acc->id, t.get_id())); // TODO! user.id
   return send_transaction(t);
 }
