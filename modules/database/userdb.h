@@ -51,13 +51,14 @@ public:
   BankAccount *get_account(size_t id);
   bool contains(BankAccount &acc);
   std::vector<std::unique_ptr<BankAccount>> get_user_accounts(size_t user_id);
-  // Update methods
   bool update(BankAccount &);
 
   // Requests
   void add_request(Request &);
   std::vector<std::unique_ptr<Request>> get_requests();
   std::vector<std::unique_ptr<Request>> get_requests(Request::Type);
+  std::vector<std::unique_ptr<Request>> get_requests(Request::Type type,
+                                                     bool viewed);
   std::vector<std::unique_ptr<Request>> get_transfer_requests();
 
   // Transactions
@@ -67,7 +68,9 @@ public:
 
   // Credits
   bool add_credit(Credit &);
+  std::unique_ptr<Credit> get_credit(size_t id);
   std::vector<std::unique_ptr<Credit>> get_credits();
+  bool update(Credit &);
 
   // Debug methods
   void print_all_system_users();

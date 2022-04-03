@@ -14,7 +14,7 @@ public:
                              size_t period_in_months);
   static bool credit_request(IUser *user, Credit &c);
 
-  CreditManager();
+  CreditManager(IUser *user);
   std::vector<QTableWidgetItem *> get_items() override;
   bool undo(size_t item_index) override;
 
@@ -23,9 +23,12 @@ private slots:
 
 private:
   static bool send_request(Request &r);
+  static bool send_request(Credit *c, Request &r);
+
   static bool send_credit(Credit &c);
 
   std::vector<std::unique_ptr<Credit>> credits;
+  std::vector<std::unique_ptr<Request>> requests;
 };
 
 #endif // CREDITMANAGER_H

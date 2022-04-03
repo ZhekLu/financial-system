@@ -1,7 +1,8 @@
 #include "historywidget.h"
 #include "ui_historywidget.h"
 
-HistoryWidget::HistoryWidget(Request::Type request_type, QWidget *parent)
+HistoryWidget::HistoryWidget(IUser *user, Request::Type request_type,
+                             QWidget *parent)
     : QWidget(parent), ui(new Ui::HistoryWidget), type(request_type) {
   ui->setupUi(this);
   connect(USER_DB, &DataBase::updated, this, &HistoryWidget::update);
@@ -10,18 +11,17 @@ HistoryWidget::HistoryWidget(Request::Type request_type, QWidget *parent)
   case Request::TRANSFER:
   case Request::WITHDRAW:
   case Request::TOPUP:
-    manager = std::make_unique<TransferManager>();
-    break;
-  case Request::FREEZE:
-    break;
-  case Request::CREDIT:
-    manager = std::make_unique<CreditManager>();
+    manager = std::make_unique<TransferManager>(user);
     break;
   case Request::INSTALLMENT:
+  case Request::CREDIT:
+    manager = std::make_unique<CreditManager>(user);
     break;
   case Request::LOGIN_ACCOUNT:
     break;
   case Request::LOGIN_USER:
+    break;
+  default:
     break;
   }
   update();
@@ -29,10 +29,19 @@ HistoryWidget::HistoryWidget(Request::Type request_type, QWidget *parent)
 
 HistoryWidget::~HistoryWidget() { delete ui; }
 
+bool HistoryWidget::mark(bool verified) {
+  if (!selection_set())
+    return false;
+  return verified ? manager->verify(current_index)
+                  : manager->undo(current_index);
+}
+
 void HistoryWidget::update() {
   // clear
   ui->table_widget->setRowCount(0);
   ui->table_widget->setColumnCount(1);
+  ui->table_widget->clearSelection();
+  current_index = -1;
 
   update_grid();
 
@@ -54,5 +63,5 @@ void HistoryWidget::update_grid() {
 }
 
 void HistoryWidget::on_table_widget_cellClicked(int row, int) {
-  //    ui->table_widget->currentRow()
+  current_index = row;
 }

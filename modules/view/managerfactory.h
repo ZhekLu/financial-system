@@ -23,7 +23,7 @@ public:
     case ADMIN:
     case MANAGER:
     case OPERATOR:
-      return new SystemWindow(parent);
+      return new SystemWindow(current, parent);
     case INDIVIDUAL:
     case ENTITY:
       return new ClientWindow(current,

@@ -5,7 +5,7 @@
 
 class TransferManager : public IHistoryManager {
 public:
-  TransferManager();
+  TransferManager(IUser *user);
 
   std::vector<QTableWidgetItem *> get_items() override;
   bool undo(size_t item_index) override;

@@ -1,11 +1,16 @@
 #include "transfermanager.h"
 
-TransferManager::TransferManager() { TransferManager::update(); }
+TransferManager::TransferManager(IUser *user) : IHistoryManager(user) {
+  TransferManager::update();
+}
 
 std::vector<QTableWidgetItem *> TransferManager::get_items() {
   std::vector<QTableWidgetItem *> items;
   for (size_t i = 0; i < requests.size(); i++) {
-    QString item = requests[i]->get_info() + transactions[i]->get_info();
+
+    QString item = requests[i]->get_info();
+    if (transactions[i])
+      item += transactions[i]->get_info();
     items.push_back(new QTableWidgetItem(item));
   }
   return items;

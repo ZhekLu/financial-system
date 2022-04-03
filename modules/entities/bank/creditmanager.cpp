@@ -14,11 +14,18 @@ bool CreditManager::credit_request(IUser *user, Credit &c) {
   return send_request(r);
 }
 
-CreditManager::CreditManager() { CreditManager::update(); }
+CreditManager::CreditManager(IUser *user) : IHistoryManager(user) {
+  CreditManager::update();
+}
 
 bool CreditManager::send_request(Request &r) {
   USER_DB->add_request(r);
   return r.is_approved;
+}
+
+bool CreditManager::send_request(Credit *c, Request &r) {
+  r.is_approved = USER_DB->update(*c);
+  return send_request(r);
 }
 
 bool CreditManager::send_credit(Credit &c) { return USER_DB->add_credit(c); }
@@ -34,5 +41,11 @@ bool CreditManager::undo(size_t item_index) {}
 
 void CreditManager::update() {
   credits.clear();
+  requests.clear();
+
+  requests = USER_DB->get_requests(Request::CREDIT, false);
   credits = USER_DB->get_credits();
+  for (auto &r : requests) {
+    credits.push_back(USER_DB->get_credit(r->object_id));
+  }
 }
