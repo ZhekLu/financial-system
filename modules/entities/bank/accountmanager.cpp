@@ -108,3 +108,32 @@ bool AccountManager::make_withdraw(BankAccount *acc, size_t sum) {
       acc, Request(Request::WITHDRAW, acc->id, t.get_id())); // TODO! user.id
   return send_transaction(t);
 }
+
+AccountManager::AccountManager(IUser *user) : IHistoryManager(user) {
+  AccountManager::update();
+}
+
+std::vector<QTableWidgetItem *> AccountManager::get_items() {
+  std::vector<QTableWidgetItem *> items;
+  for (size_t i = 0; i < requests.size(); i++) {
+
+    QString item = requests[i]->get_info();
+    if (transactions[i])
+      item += transactions[i]->get_info();
+    items.push_back(new QTableWidgetItem(item));
+  }
+  return items;
+}
+
+bool AccountManager::undo(size_t item_index) {
+  Transaction *current = transactions[item_index].get();
+  return AccountManager::undo_transfer_request(user->get_id(), *current);
+}
+
+void AccountManager::update() {
+  transactions.clear();
+  requests = USER_DB->get_transfer_requests();
+  for (auto &r : requests) {
+    transactions.push_back(USER_DB->get_transaction(r->object_id));
+  }
+}
