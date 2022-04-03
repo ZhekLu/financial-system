@@ -59,7 +59,9 @@ public:
   std::vector<std::unique_ptr<Request>> get_requests(Request::Type);
   std::vector<std::unique_ptr<Request>> get_requests(Request::Type type,
                                                      bool viewed);
-  std::vector<std::unique_ptr<Request>> get_transfer_requests();
+  std::vector<std::unique_ptr<Request>>
+  get_transfer_requests(bool viewed = false);
+  bool update(Request &r);
 
   // Transactions
   void add_transaction(Transaction &);

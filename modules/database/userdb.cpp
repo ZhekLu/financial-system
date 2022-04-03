@@ -370,7 +370,7 @@ bool UserDB::update(BankAccount &acc) {
 
 void UserDB::add_request(Request &r) {
   QString query = QString("INSERT INTO requests"
-                          "(id, type, sender, object, approved) "
+                          "(id, type, sender, object, approved, viewed) "
                           "VALUES %1;")
                       .arg(r.get_values_query());
   if (exec(query))
@@ -435,10 +435,12 @@ std::vector<std::unique_ptr<Request>> UserDB::get_requests(Request::Type type,
   return requests;
 }
 
-std::vector<std::unique_ptr<Request>> UserDB::get_transfer_requests() {
+std::vector<std::unique_ptr<Request>>
+UserDB::get_transfer_requests(bool viewed) {
   QString query = "SELECT id, type, sender, object, approved "
                   "FROM requests "
-                  "WHERE type < 3;";
+                  "WHERE type < 3 and viewed = " +
+                  QString::number(viewed);
   exec(query);
 
   std::vector<std::unique_ptr<Request>> requests;
@@ -453,6 +455,18 @@ std::vector<std::unique_ptr<Request>> UserDB::get_transfer_requests() {
                                                  sender, object, approved));
   }
   return requests;
+}
+
+bool UserDB::update(Request &r) {
+  QString query =
+      QString("UPDATE requests SET viewed = %1 "
+              "WHERE id = %2;")
+          .arg(QString::number(r.viewed), QString::number(r.get_id()));
+  if (exec(query)) {
+    emit DataBase::updated();
+    return true;
+  }
+  return false;
 }
 
 // Transactions

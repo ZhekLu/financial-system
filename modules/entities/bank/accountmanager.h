@@ -12,7 +12,6 @@ public:
   static bool withdraw_request(BankAccount *acc, size_t sum);
   static bool transfer_request(BankAccount *acc, size_t destination,
                                size_t sum);
-  static bool undo_transfer_request(size_t initiator, Transaction &t);
   static bool add_account_request(BankAccount *acc);
 
   // Manager
@@ -37,6 +36,8 @@ private:
   static bool send_transaction(Transaction &);
   static bool make_transaction(BankAccount *acc, size_t dest, size_t sum);
   static bool make_withdraw(BankAccount *acc, size_t sum);
+
+  static bool undo_transfer_request(size_t initiator, Transaction &t);
 };
 
 #endif // ACCOUNTMANAGER_H

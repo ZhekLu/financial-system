@@ -5,7 +5,7 @@ DataBase::DataBase(QString &databasename, QObject *parent)
 
 DataBase::~DataBase() {
   delete db_query;
-  closeDataBase();
+  DataBase::closeDataBase();
 }
 
 bool DataBase::exec(QString str) { return db_query->exec(str); }

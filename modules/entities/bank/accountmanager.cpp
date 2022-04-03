@@ -45,7 +45,7 @@ bool AccountManager::undo_transfer_request(size_t initiator, Transaction &t) {
   Transaction ut(t.receiver, t.sender, t.amount);
   ut.is_approved = send_request(sender.get(), receiver.get(),
                                 Request(Request::UNDO, initiator, ut.get_id()));
-  return send_transaction(t);
+  return send_transaction(ut);
 }
 
 bool AccountManager::add_account_request(BankAccount *acc) {
@@ -120,6 +120,8 @@ std::vector<QTableWidgetItem *> AccountManager::get_items() {
     QString item = requests[i]->get_info();
     if (transactions[i])
       item += transactions[i]->get_info();
+    else
+      qDebug() << "oaoa";
     items.push_back(new QTableWidgetItem(item));
   }
   return items;
@@ -127,11 +129,19 @@ std::vector<QTableWidgetItem *> AccountManager::get_items() {
 
 bool AccountManager::undo(size_t item_index) {
   Transaction *current = transactions[item_index].get();
-  return AccountManager::undo_transfer_request(user->get_id(), *current);
+  Request *r = requests[item_index].get();
+
+  r->viewed = undo_transfer_request(user->get_id(), *current);
+  if (r->viewed) {
+    qDebug() << "request : " << USER_DB->update(*r);
+    emit IHistoryManager::updated();
+  }
+  return r->viewed;
 }
 
 void AccountManager::update() {
   transactions.clear();
+  requests.clear();
   requests = USER_DB->get_transfer_requests();
   for (auto &r : requests) {
     transactions.push_back(USER_DB->get_transaction(r->object_id));

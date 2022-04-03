@@ -19,6 +19,9 @@ public:
   virtual bool undo(size_t item_index) = 0;
   virtual bool verify(size_t) { return true; }
 
+signals:
+  void updated();
+
 protected:
   IUser *user;
 

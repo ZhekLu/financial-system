@@ -5,7 +5,6 @@ HistoryWidget::HistoryWidget(IUser *user, Request::Type request_type,
                              QWidget *parent)
     : QWidget(parent), ui(new Ui::HistoryWidget), type(request_type) {
   ui->setupUi(this);
-  connect(USER_DB, &DataBase::updated, this, &HistoryWidget::update);
 
   switch (request_type) {
   case Request::TRANSFER:
@@ -24,6 +23,8 @@ HistoryWidget::HistoryWidget(IUser *user, Request::Type request_type,
   default:
     break;
   }
+  connect(manager.get(), &IHistoryManager::updated, this,
+          &HistoryWidget::update);
   update();
 }
 
