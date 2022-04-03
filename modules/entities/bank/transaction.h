@@ -14,7 +14,7 @@ public:
         amount(sum), type(type) {}
   Transaction(size_t from, size_t to, size_t sum)
       : Transaction(Type::TRANSFER, id_creator.GenerateId(), from, to, sum) {}
-  Transaction(size_t from, size_t sum, bool minus = false)
+  Transaction(size_t from, size_t sum, bool minus = true)
       : Transaction(from, 0, sum) {
     if (minus)
       type = Type::WITHDRAW;

@@ -3,12 +3,11 @@
 bool AccountManager::freeze_request(BankAccount *acc) {
   if (!update(acc))
     return false;
-  bool old = acc->is_frozen;
-  acc->is_frozen = !old;
+  acc->revert_frozen();
   if (send_request(acc,
                    Request(Request::FREEZE, acc->id, acc->id))) // TODO! user.id
     return true;
-  acc->is_frozen = old;
+  acc->revert_frozen();
   return false;
 }
 
@@ -16,11 +15,10 @@ bool AccountManager::withdraw_request(BankAccount *acc, size_t sum) {
 
   if (!update(acc))
     return false;
-  size_t old = acc->balance;
-  acc->balance = old - sum;
+  acc->withdraw(sum);
   if (make_withdraw(acc, sum))
     return true;
-  acc->balance = old;
+  acc->top_up(sum);
   return false;
 }
 
@@ -28,12 +26,26 @@ bool AccountManager::transfer_request(BankAccount *acc, size_t destination,
                                       size_t sum) {
   if (!update(acc))
     return false;
-  size_t old = acc->balance;
-  acc->balance = old - sum;
+  acc->withdraw(sum);
   if (make_transaction(acc, destination, sum))
     return true;
-  acc->balance = old;
+  acc->top_up(sum);
   return false;
+}
+
+bool AccountManager::undo_transfer_request(size_t initiator, Transaction &t) {
+  std::unique_ptr<BankAccount> sender(USER_DB->get_account(t.sender));
+  std::unique_ptr<BankAccount> receiver(USER_DB->get_account(t.receiver));
+  if (!sender || (t.type == Transaction::TRANSFER &&
+                  (!receiver || !receiver->can_pay(t.amount))))
+    return false;
+  if (t.type == Transaction::TRANSFER)
+    receiver->withdraw(t.amount);
+  sender->top_up(t.amount);
+  Transaction ut(t.receiver, t.sender, t.amount);
+  ut.is_approved = send_request(sender.get(), receiver.get(),
+                                Request(Request::UNDO, initiator, ut.get_id()));
+  return send_transaction(t);
 }
 
 bool AccountManager::add_account_request(BankAccount *acc) {
@@ -45,7 +57,7 @@ bool AccountManager::add_account_request(BankAccount *acc) {
 bool AccountManager::update(BankAccount *acc) {
   if (check_valid(acc))
     return true;
-  acc->balance = USER_DB->get_account_balance(acc->id);
+  acc->set_balance(USER_DB->get_account_balance(acc->id));
   return check_valid(acc);
 }
 
@@ -82,7 +94,7 @@ bool AccountManager::make_transaction(BankAccount *acc, size_t dest,
   if (!(bool)receiver)
     return false;
 
-  receiver->balance += sum;
+  receiver->top_up(sum);
   Transaction t(acc->id, receiver->id, sum);
   t.is_approved = send_request(
       acc, receiver.get(),

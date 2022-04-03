@@ -2,6 +2,7 @@
 #define TRANSFERMANAGER_H
 
 #include "IHistoryManager.h"
+#include "accountmanager.h"
 
 class TransferManager : public IHistoryManager {
 public:

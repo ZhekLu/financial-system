@@ -21,7 +21,7 @@ public:
   ~HistoryWidget();
 
   bool mark(bool verified);
-  bool selection_set() const { return current_index == -1; }
+  bool selection_set() const { return current_index != -1; }
 
 private slots:
   void update();

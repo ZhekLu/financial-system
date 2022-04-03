@@ -16,7 +16,10 @@ std::vector<QTableWidgetItem *> TransferManager::get_items() {
   return items;
 }
 
-bool TransferManager::undo(size_t item_index) {}
+bool TransferManager::undo(size_t item_index) {
+  Transaction *current = transactions[item_index].get();
+  return AccountManager::undo_transfer_request(user->get_id(), *current);
+}
 
 void TransferManager::update() {
   transactions.clear();

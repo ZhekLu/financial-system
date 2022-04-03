@@ -9,8 +9,8 @@ public:
 
   Entity(Type type, std::string name, size_t PAC, size_t BIC,
          std::string adress, size_t bank_id)
-      : IUser(BIC, LoginMode::ENTITY, std::move(name)), type(type), PAC(PAC),
-        BIC(BIC), adress(std::move(adress)), bank_bic(bank_id) {}
+      : IUser(BIC, LoginMode::ENTITY), name(std::move(name)), type(type),
+        PAC(PAC), BIC(BIC), adress(std::move(adress)), bank_bic(bank_id) {}
 
   ~Entity() = default;
 
@@ -27,7 +27,9 @@ public:
              QString::fromStdString(adress), QString::number(bank_bic));
   }
   QString get_values_query() override { return {}; }
+  std::string get_name() const { return name; }
 
+  std::string name;
   Type type;
   size_t PAC; // YNP
   size_t BIC;

@@ -48,7 +48,7 @@ void AuthWidget::on_enter_btn_clicked() {
     QMessageBox::critical(this, "Authorization", "Wrong login or password");
   } else {
     qDebug() << "auth ok";
-    emit auth_ok(USER_DB->get_id_by_login(SystemUser(login, password, mode)),
+    emit auth_ok(USER_DB->get_user_by_login(SystemUser(login, password, mode)),
                  mode);
     hide();
   }

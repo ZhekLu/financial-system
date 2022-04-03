@@ -8,7 +8,7 @@ public:
   Individual(std::string full_name, std::string pasport_number,
              std::string pasport_id, std::string phone_number,
              std::string email, size_t id = -1)
-      : IUser(id, LoginMode::INDIVIDUAL, std::move(full_name)),
+      : IUser(id, LoginMode::INDIVIDUAL), name(std::move(full_name)),
         pass_number(std::move(pasport_number)), pass_id(std::move(pasport_id)),
         phone_number(std::move(phone_number)), email(std::move(email)) {}
 
@@ -28,8 +28,10 @@ public:
   }
 
   QString get_values_query() override { return {}; }
+  std::string get_name() const { return name; }
 
 private:
+  std::string name;
   std::string pass_number;
   std::string pass_id;
   std::string phone_number;

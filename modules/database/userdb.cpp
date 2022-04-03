@@ -129,7 +129,7 @@ bool UserDB::contains(SystemUser user) {
   return db_query->next();
 }
 
-size_t UserDB::get_id_by_login(SystemUser user) {
+size_t UserDB::get_user_by_login(SystemUser user) {
   QString query = QString("SELECT user_id FROM system_users "
                           "WHERE login = \"%1\" AND "
                           "password = \"%2\" AND "
@@ -149,7 +149,7 @@ void UserDB::login_user(SystemUser user) {
                   qs(QString::fromStdString(user.login)) + "," +
                   qs(QString::fromStdString(user.password)) + "," +
                   qs(QString::number(user.mode)) + "," +
-                  qs(QString::number(user.id)) + ");";
+                  qs(QString::number(user.user_id)) + ");";
   if (exec(query))
     emit DataBase::updated();
 }

@@ -26,7 +26,7 @@ public:
   // Login
   bool is_login_busy(QString login);
   bool contains(SystemUser user);
-  size_t get_id_by_login(SystemUser user);
+  size_t get_user_by_login(SystemUser user);
 
   void login_user(SystemUser user);
   void remove_user(std::string login);

@@ -37,8 +37,10 @@ void SystemWindow::on_undo_but_clicked() {
   switch (ui->tab_widget->currentIndex()) {
   case WidgetType::TRANSACTIONS:
     qDebug() << "Transaction undo : " << transaction_widget->mark(false);
+    break;
   case WidgetType::CREDITS:
     qDebug() << "Credit undo : " << credit_widget->mark(false);
+    break;
   case WidgetType::ACCOUNTS:
     break;
   }

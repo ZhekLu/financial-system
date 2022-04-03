@@ -55,10 +55,10 @@ void HistoryWidget::update() {
 
 void HistoryWidget::update_grid() {
   ui->table_widget->clear();
-  int index = 0;
-  for (auto *item : manager->get_items()) {
-    ui->table_widget->insertRow(index);
-    ui->table_widget->setItem(index, 0, item);
+  auto items = manager->get_items();
+  for (size_t i = 0; i < items.size(); i++) {
+    ui->table_widget->insertRow(i);
+    ui->table_widget->setItem(i, 0, items[i]);
   }
 }
 
