@@ -1,16 +1,5 @@
 #include "accountmanager.h"
 
-bool AccountManager::freeze_request(BankAccount *acc) {
-  if (!update(acc))
-    return false;
-  acc->revert_frozen();
-  if (send_request(acc, Request(Request::FREEZE, acc->get_id(),
-                                acc->get_id()))) // TODO! user.id
-    return true;
-  acc->revert_frozen();
-  return false;
-}
-
 bool AccountManager::freeze_request(size_t sender_id, size_t account_id,
                                     bool freeze) {
   std::unique_ptr<BankAccount> acc(USER_DB->get_account(account_id));
@@ -23,26 +12,20 @@ bool AccountManager::freeze_request(size_t sender_id, size_t account_id,
                       Request(Request::FREEZE, sender_id, acc->get_id()));
 }
 
-bool AccountManager::withdraw_request(BankAccount *acc, size_t sum) {
-
-  if (!update(acc))
+bool AccountManager::withdraw_request(size_t sender_id, size_t account_id,
+                                      size_t sum) {
+  std::unique_ptr<BankAccount> acc(USER_DB->get_account(account_id));
+  if (!acc || !acc->withdraw(sum))
     return false;
-  acc->withdraw(sum);
-  if (make_withdraw(acc, sum))
-    return true;
-  acc->top_up(sum);
-  return false;
+  return make_withdraw(sender_id, acc.get(), sum);
 }
 
-bool AccountManager::transfer_request(BankAccount *acc, size_t destination,
-                                      size_t sum) {
-  if (!update(acc))
+bool AccountManager::transfer_request(size_t sender_id, size_t account_id,
+                                      size_t receiver_id, size_t sum) {
+  std::unique_ptr<BankAccount> acc(USER_DB->get_account(account_id));
+  if (!acc || !acc->withdraw(sum))
     return false;
-  acc->withdraw(sum);
-  if (make_transaction(acc, destination, sum))
-    return true;
-  acc->top_up(sum);
-  return false;
+  return make_transaction(sender_id, acc.get(), receiver_id, sum);
 }
 
 bool AccountManager::undo_transfer_request(size_t initiator, Transaction &t) {
@@ -79,9 +62,8 @@ bool AccountManager::make_undo_withdraw(size_t initiator, BankAccount *acc,
   return send_transaction(ut);
 }
 
-bool AccountManager::add_account_request(BankAccount *acc) {
-  Request r(Request::LOGIN_ACCOUNT, acc->get_id(),
-            acc->get_id()); // TODO user.id
+bool AccountManager::add_account_request(size_t sender_id, BankAccount *acc) {
+  Request r(Request::LOGIN_ACCOUNT, sender_id, acc->get_id());
   r.set_approved(USER_DB->add_account(acc));
   return IHistoryManager::send_request(r);
 }
@@ -115,24 +97,24 @@ bool AccountManager::send_transaction(Transaction &t) {
   return t.is_approved();
 }
 
-bool AccountManager::make_transaction(BankAccount *acc, size_t dest,
-                                      size_t sum) {
+bool AccountManager::make_transaction(size_t sender, BankAccount *acc,
+                                      size_t dest, size_t sum) {
   std::unique_ptr<BankAccount> receiver(USER_DB->get_account(dest));
-  if (!(bool)receiver)
+  if (!receiver)
     return false;
 
   receiver->top_up(sum);
   Transaction t(acc->get_id(), receiver->get_id(), sum);
-  t.set_approved(send_request(
-      acc, receiver.get(),
-      Request(Request::TRANSFER, acc->get_id(), t.get_id()))); // TODO! user.id
+  t.set_approved(send_request(acc, receiver.get(),
+                              Request(Request::TRANSFER, sender, t.get_id())));
   return send_transaction(t);
 }
 
-bool AccountManager::make_withdraw(BankAccount *acc, size_t sum) {
+bool AccountManager::make_withdraw(size_t sender, BankAccount *acc,
+                                   size_t sum) {
   Transaction t(acc->get_id(), sum, true);
-  t.set_approved(send_request(acc, Request(Request::WITHDRAW, acc->get_id(),
-                                           t.get_id()))); // TODO! user.id
+  t.set_approved(
+      send_request(acc, Request(Request::WITHDRAW, sender, t.get_id())));
   return send_transaction(t);
 }
 

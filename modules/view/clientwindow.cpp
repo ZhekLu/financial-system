@@ -76,7 +76,7 @@ void ClientWindow::update_grid() {
 void ClientWindow::init() {
   add_widget = std::make_unique<AddCardWidget>(user.get(), banks, this);
   credit_widget = std::make_unique<CreditWidget>(user.get(), banks, this);
-  transfer_widget = std::make_unique<TransferWidget>(this);
+  transfer_widget = std::make_unique<TransferWidget>(user.get(), this);
   credit_pay_widget =
       std::make_unique<HistoryWidget>(user.get(), Request::CREDIT, true, this);
   set_connections();
@@ -112,7 +112,9 @@ void ClientWindow::on_info_but_clicked() {
 void ClientWindow::on_freeze_but_clicked() {
   if (current_account)
     qDebug() << ui->freeze_but->text()
-             << AccountManager::freeze_request(current_account);
+             << AccountManager::freeze_request(user->get_id(),
+                                               current_account->get_id(),
+                                               !current_account->is_frozen());
 }
 
 void ClientWindow::on_withdraw_but_clicked() {

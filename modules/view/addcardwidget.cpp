@@ -42,7 +42,7 @@ void AddCardWidget::on_confirm_but_clicked() {
 void AddCardWidget::send_add_account(size_t user_id, size_t bank_id) {
   std::unique_ptr<BankAccount> to_add(new BankAccount(user_id, bank_id));
   qDebug() << "Add account : "
-           << AccountManager::add_account_request(to_add.get());
+           << AccountManager::add_account_request(user->get_id(), to_add.get());
 }
 
 void AddCardWidget::update_combobox() {
