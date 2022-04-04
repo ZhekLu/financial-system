@@ -462,7 +462,7 @@ bool UserDB::update(Request &r) {
       QString("UPDATE requests SET viewed = %1 "
               "WHERE id = %2;")
           .arg(QString::number(r.viewed), QString::number(r.get_id()));
-  qDebug() << query;
+  //  qDebug() << query;
   if (exec(query)) {
     qDebug() << "ok";
     emit DataBase::updated();

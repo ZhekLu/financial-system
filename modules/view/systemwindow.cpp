@@ -6,9 +6,10 @@ SystemWindow::SystemWindow(IUser *user, QWidget *parent)
   ui->setupUi(this);
   setAttribute(Qt::WA_DeleteOnClose);
 
-  transaction_widget =
-      std::make_unique<HistoryWidget>(user, Request::Type::TRANSFER);
-  credit_widget = std::make_unique<HistoryWidget>(user, Request::Type::CREDIT);
+  transaction_widget = std::make_unique<HistoryWidget>(
+      user, Request::Type::TRANSFER, false, this);
+  credit_widget =
+      std::make_unique<HistoryWidget>(user, Request::Type::CREDIT, false, this);
 
   ui->tab_widget->insertTab(WidgetType::TRANSACTIONS, transaction_widget.get(),
                             "transactions");

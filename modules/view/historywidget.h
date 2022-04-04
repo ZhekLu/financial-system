@@ -17,7 +17,7 @@ class HistoryWidget : public QWidget {
 
 public:
   explicit HistoryWidget(IUser *user, Request::Type request_type,
-                         QWidget *parent = nullptr);
+                         bool user_mode, QWidget *parent = nullptr);
   ~HistoryWidget();
 
   bool mark(bool verified);
@@ -30,6 +30,7 @@ private slots:
 private:
   Ui::HistoryWidget *ui;
   Request::Type type;
+  bool user_mode;
 
   std::unique_ptr<IHistoryManager> manager;
   int current_index = -1;

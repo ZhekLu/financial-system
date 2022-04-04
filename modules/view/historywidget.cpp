@@ -2,8 +2,9 @@
 #include "ui_historywidget.h"
 
 HistoryWidget::HistoryWidget(IUser *user, Request::Type request_type,
-                             QWidget *parent)
-    : QWidget(parent), ui(new Ui::HistoryWidget), type(request_type) {
+                             bool user_mode, QWidget *parent)
+    : QWidget(parent), ui(new Ui::HistoryWidget), type(request_type),
+      user_mode(user_mode) {
   ui->setupUi(this);
 
   switch (request_type) {
@@ -14,7 +15,7 @@ HistoryWidget::HistoryWidget(IUser *user, Request::Type request_type,
     break;
   case Request::INSTALLMENT:
   case Request::CREDIT:
-    manager = std::make_unique<CreditManager>(user);
+    manager = std::make_unique<CreditManager>(user, user_mode);
     break;
   case Request::LOGIN_ACCOUNT:
   case Request::LOGIN_USER:

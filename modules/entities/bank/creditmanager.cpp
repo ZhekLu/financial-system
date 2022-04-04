@@ -14,7 +14,8 @@ bool CreditManager::credit_request(IUser *user, Credit &c) {
   return IHistoryManager::send_request(r);
 }
 
-CreditManager::CreditManager(IUser *user) : IHistoryManager(user) {
+CreditManager::CreditManager(IUser *user, bool viewed)
+    : IHistoryManager(user), viewed_mode(viewed) {
   connect(USER_DB, &DataBase::updated, this, &CreditManager::update_vars);
   CreditManager::update_vars();
 }
@@ -49,7 +50,7 @@ void CreditManager::update_vars() {
   credits.clear();
   requests.clear();
 
-  requests = USER_DB->get_requests(Request::CREDIT, false);
+  requests = USER_DB->get_requests(Request::CREDIT, viewed_mode);
   for (auto &r : requests) {
     credits.push_back(USER_DB->get_credit(r->object_id));
   }
