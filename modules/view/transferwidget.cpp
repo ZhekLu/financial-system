@@ -1,8 +1,8 @@
 #include "transferwidget.h"
 #include "ui_transferwidget.h"
 
-TransferWidget::TransferWidget(QWidget *parent)
-    : QWidget(parent), ui(new Ui::TransferWidget) {
+TransferWidget::TransferWidget(IUser *user, QWidget *parent)
+    : QWidget(parent), ui(new Ui::TransferWidget), user(user) {
   ui->setupUi(this);
 
   card_validator = std::make_unique<QRegularExpressionValidator>(
@@ -61,12 +61,14 @@ void TransferWidget::on_confirm_but_clicked() {
 
   if (ui->id_label->isVisible()) {
     size_t destination = ui->id_line->text().toULongLong();
-    if (destination != account->id)
+    if (destination != account->get_id())
       qDebug() << "Transaction:"
-               << AccountManager::transfer_request(account, destination,
-                                                   amount);
+               << AccountManager::transfer_request(
+                      user->get_id(), account->get_id(), destination, amount);
   } else {
-    qDebug() << "Withdraw" << AccountManager::withdraw_request(account, amount);
+    qDebug() << "Withdraw"
+             << AccountManager::withdraw_request(user->get_id(),
+                                                 account->get_id(), amount);
   }
   on_cancel_but_clicked();
 }

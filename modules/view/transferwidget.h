@@ -17,7 +17,7 @@ class TransferWidget : public QWidget {
 
 public:
   enum Mode { Transfer, Withdraw, TopUp };
-  explicit TransferWidget(QWidget *parent = nullptr);
+  explicit TransferWidget(IUser *user, QWidget *parent = nullptr);
   ~TransferWidget();
 
   void show(Mode, BankAccount *);
@@ -32,6 +32,7 @@ private slots:
 
 private:
   Ui::TransferWidget *ui;
+  IUser *user;
   BankAccount *account = nullptr;
 
   std::unique_ptr<QRegularExpressionValidator> card_validator;

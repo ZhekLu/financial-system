@@ -3,6 +3,7 @@
 
 #include "addcardwidget.h"
 #include "creditwidget.h"
+#include "historywidget.h"
 #include "modules/database/userdb.h"
 #include "modules/entities/bank/accountmanager.h"
 #include "modules/entities/bank/bankaccount.h"
@@ -43,13 +44,20 @@ private slots:
 
 private:
   // View
-  enum WorkMode { CardView, CreditView, AddCardView, TransferView };
+  enum WorkMode {
+    CardView,
+    CreditView,
+    AddCardView,
+    TransferView,
+    CreditPayView
+  };
   Ui::ClientWindow *ui;
 
   // Mode widgets
   std::unique_ptr<TransferWidget> transfer_widget;
   std::unique_ptr<CreditWidget> credit_widget;
   std::unique_ptr<AddCardWidget> add_widget;
+  std::unique_ptr<HistoryWidget> credit_pay_widget;
 
   // methods
   std::unique_ptr<IUser> user;

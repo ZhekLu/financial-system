@@ -22,6 +22,7 @@ public:
 
   int get_percent() const { return percent; }
 
+private:
   int percent;
 };
 

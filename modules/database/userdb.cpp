@@ -71,7 +71,8 @@ bool UserDB::createTables() {
                      "type INTEGER, "
                      "sender INTEGER, "
                      "object INTEGER, "
-                     "approved BOOLEAN"
+                     "approved BOOLEAN, "
+                     "viewed BOOLEAN"
                      ");");
   }
 
@@ -82,7 +83,8 @@ bool UserDB::createTables() {
                      "sender INTEGER, "
                      "receiver INTEGER,"
                      "amount INTEGER,"
-                     "approved BOOLEAN"
+                     "approved BOOLEAN,"
+                     "type INTEGER"
                      ");");
   }
 
@@ -95,9 +97,9 @@ bool UserDB::createTables() {
                      "start_sum INTEGER,"
                      "percent INTEGER,"
                      "start_date DATE,"
-                     "end_date DATE, "
+                     "period INTEGER, "
                      "payment INTEGER, "
-                     "payed_num INTEGER"
+                     "payed_num INTEGER "
                      ");");
   }
 
@@ -127,7 +129,7 @@ bool UserDB::contains(SystemUser user) {
   return db_query->next();
 }
 
-size_t UserDB::get_id_by_login(SystemUser user) {
+size_t UserDB::get_user_by_login(SystemUser user) {
   QString query = QString("SELECT user_id FROM system_users "
                           "WHERE login = \"%1\" AND "
                           "password = \"%2\" AND "
@@ -147,7 +149,7 @@ void UserDB::login_user(SystemUser user) {
                   qs(QString::fromStdString(user.login)) + "," +
                   qs(QString::fromStdString(user.password)) + "," +
                   qs(QString::number(user.mode)) + "," +
-                  qs(QString::number(user.id)) + ");";
+                  qs(QString::number(user.user_id)) + ");";
   if (exec(query))
     emit DataBase::updated();
 }
@@ -184,11 +186,8 @@ void UserDB::remove_user(std::string login) {
 void UserDB::add_company(Entity company) {
   QString query =
       "INSERT INTO companies(id, name, type, PAC, BIC, adress, bank_bic) "
-      "VALUES" +
-      QString::number(company.get_id()) + "," + qs(company.get_name()) + "," +
-      QString::number(company.type) + "," + QString::number(company.PAC) + "," +
-      QString::number(company.BIC) + "," + qs(company.adress) + "," +
-      QString::number(company.bank_bic) + ");";
+      "VALUES " +
+      company.get_values_query();
   if (exec(query))
     emit DataBase::updated();
 }
@@ -312,9 +311,9 @@ BankAccount *UserDB::get_account(size_t id) {
   if (!db_query->next())
     return nullptr;
 
-  size_t user_id = db_query->value(0).toInt();
-  size_t bank_id = db_query->value(1).toInt();
-  size_t balance = db_query->value(2).toInt();
+  size_t user_id = db_query->value(0).toULongLong();
+  size_t bank_id = db_query->value(1).toULongLong();
+  size_t balance = db_query->value(2).toULongLong();
   bool frozen = db_query->value(3).toBool();
   return new BankAccount(id, user_id, bank_id, balance, frozen);
 }
@@ -323,9 +322,10 @@ bool UserDB::contains(BankAccount &acc) {
   QString query =
       QString("SELECT * FROM accounts WHERE id = %1 and user_id = %2 and "
               "bank_id = %3 and balance = %4 and frozen = %5;")
-          .arg(QString::number(acc.id), QString::number(acc.owner_id),
-               QString::number(acc.bank_id), QString::number(acc.balance),
-               QString::number(acc.is_frozen));
+          .arg(QString::number(acc.get_id()), QString::number(acc.get_owner()),
+               QString::number(acc.get_bank()),
+               QString::number(acc.get_balance()),
+               QString::number(acc.is_frozen()));
   exec(query);
   return db_query->next();
 }
@@ -353,10 +353,9 @@ UserDB::get_user_accounts(size_t user_id) {
 
 bool UserDB::update(BankAccount &acc) {
   QString query =
-      QString("UPDATE accounts SET balance = %1, frozen = %2 "
+      QString("UPDATE accounts SET %1 "
               "WHERE id = %3")
-          .arg(QString::number(acc.balance), QString::number(acc.is_frozen),
-               QString::number(acc.id));
+          .arg(acc.get_update_query(), QString::number(acc.get_id()));
   if (exec(query)) {
     emit DataBase::updated();
     return true;
@@ -368,22 +367,153 @@ bool UserDB::update(BankAccount &acc) {
 
 void UserDB::add_request(Request &r) {
   QString query = QString("INSERT INTO requests"
-                          "(id, type, sender, approved) "
+                          "(id, type, sender, object, approved, viewed) "
                           "VALUES %1;")
                       .arg(r.get_values_query());
   if (exec(query))
     emit DataBase::updated();
 }
 
+std::vector<std::unique_ptr<Request>> UserDB::get_requests() {
+  QString query = "SELECT id, type, sender, object, approved "
+                  "FROM requests;";
+  exec(query);
+
+  std::vector<std::unique_ptr<Request>> requests;
+
+  while (db_query->next()) {
+    size_t id = db_query->value(0).toULongLong();
+    size_t type = db_query->value(1).toInt();
+    size_t sender = db_query->value(2).toULongLong();
+    size_t object = db_query->value(3).toULongLong();
+    bool approved = db_query->value(4).toBool();
+    requests.push_back(std::make_unique<Request>(id, Request::Type(type),
+                                                 sender, object, approved));
+  }
+  return requests;
+}
+
+std::vector<std::unique_ptr<Request>> UserDB::get_requests(Request::Type type) {
+  QString query = "SELECT id, sender, object, approved "
+                  "FROM requests WHERE type = " +
+                  QString::number(type);
+  exec(query);
+
+  std::vector<std::unique_ptr<Request>> requests;
+
+  while (db_query->next()) {
+    size_t id = db_query->value(0).toULongLong();
+    size_t sender = db_query->value(1).toULongLong();
+    size_t object = db_query->value(2).toULongLong();
+    bool approved = db_query->value(3).toBool();
+    requests.push_back(std::make_unique<Request>(id, Request::Type(type),
+                                                 sender, object, approved));
+  }
+  return requests;
+}
+
+std::vector<std::unique_ptr<Request>> UserDB::get_requests(Request::Type type,
+                                                           bool viewed) {
+  QString query = QString("SELECT id, sender, object, approved "
+                          "FROM requests WHERE type = %1 and viewed = %2;")
+                      .arg(QString::number(type), QString::number(viewed));
+  exec(query);
+
+  std::vector<std::unique_ptr<Request>> requests;
+
+  while (db_query->next()) {
+    size_t id = db_query->value(0).toULongLong();
+    size_t sender = db_query->value(1).toULongLong();
+    size_t object = db_query->value(2).toULongLong();
+    bool approved = db_query->value(3).toBool();
+    requests.push_back(
+        std::make_unique<Request>(id, type, sender, object, approved));
+  }
+  return requests;
+}
+
+std::vector<std::unique_ptr<Request>>
+UserDB::get_transfer_requests(bool viewed) {
+  QString query = "SELECT id, type, sender, object, approved "
+                  "FROM requests "
+                  "WHERE type < 3 and viewed = " +
+                  QString::number(viewed);
+  exec(query);
+
+  std::vector<std::unique_ptr<Request>> requests;
+
+  while (db_query->next()) {
+    size_t id = db_query->value(0).toULongLong();
+    int type = db_query->value(1).toInt();
+    size_t sender = db_query->value(2).toULongLong();
+    size_t object = db_query->value(3).toULongLong();
+    bool approved = db_query->value(4).toBool();
+    requests.push_back(std::make_unique<Request>(id, Request::Type(type),
+                                                 sender, object, approved));
+  }
+  return requests;
+}
+
+bool UserDB::update(Request &r) {
+  QString query = QString("UPDATE requests SET %1 "
+                          "WHERE id = %2;")
+                      .arg(r.get_update_query(), QString::number(r.get_id()));
+  //  qDebug() << query;
+  if (exec(query)) {
+    qDebug() << "ok";
+    emit DataBase::updated();
+    return true;
+  }
+  return false;
+}
+
 // Transactions
 
 void UserDB::add_transaction(Transaction &t) {
   QString query = QString("INSERT INTO transactions"
-                          "(id, sender, receiver, amount, approved) "
+                          "(id, sender, receiver, amount, approved, type) "
                           "VALUES %1;")
                       .arg(t.get_values_query());
   if (exec(query))
     emit DataBase::updated();
+}
+
+std::unique_ptr<Transaction> UserDB::get_transaction(size_t id) {
+  QString query = QString("SELECT sender, receiver, amount, approved, type "
+                          "FROM transactions "
+                          "WHERE id = %1;")
+                      .arg(QString::number(id));
+  exec(query);
+
+  if (!db_query->next())
+    return nullptr;
+
+  size_t sender = db_query->value(0).toULongLong();
+  size_t receiver = db_query->value(1).toULongLong();
+  size_t amount = db_query->value(2).toULongLong();
+  bool approved = db_query->value(3).toBool();
+  int type = db_query->value(4).toInt();
+  return std::make_unique<Transaction>(Transaction::Type(type), id, sender,
+                                       receiver, amount, approved);
+}
+
+std::vector<std::unique_ptr<Transaction>> UserDB::get_transactions() {
+  QString query = QString("SELECT id, sender, receiver, amount, approved, type "
+                          "FROM transactions;");
+  exec(query);
+
+  std::vector<std::unique_ptr<Transaction>> transactions;
+  while (db_query->next()) {
+    size_t id = db_query->value(0).toULongLong();
+    size_t sender = db_query->value(1).toULongLong();
+    size_t receiver = db_query->value(2).toULongLong();
+    size_t amount = db_query->value(3).toULongLong();
+    bool approved = db_query->value(4).toBool();
+    int type = db_query->value(5).toInt();
+    transactions.push_back(std::make_unique<Transaction>(
+        Transaction::Type(type), id, sender, receiver, amount, approved));
+  }
+  return transactions;
 }
 
 // Credits
@@ -391,9 +521,70 @@ void UserDB::add_transaction(Transaction &t) {
 bool UserDB::add_credit(Credit &c) {
   QString query = QString("INSERT INTO credits"
                           "(id, opened, user_id, start_sum, percent, "
-                          "start_date, end_date, payment, payed_num) "
+                          "start_date, period, payment, payed_num) "
                           "VALUES %1;")
                       .arg(c.get_values_query());
+
+  if (exec(query)) {
+    emit DataBase::updated();
+    return true;
+  }
+  return false;
+}
+
+std::unique_ptr<Credit> UserDB::get_credit(size_t id) {
+  QString query = QString("SELECT "
+                          "opened, user_id, start_sum, percent, "
+                          "start_date, period, payment, payed_num "
+                          "FROM credits WHERE id = ") +
+                  QString::number((id));
+  exec(query);
+
+  std::unique_ptr<Credit> credit;
+  if (!db_query->next())
+    return nullptr;
+  bool opened = db_query->value(0).toBool();
+  size_t user_id = db_query->value(1).toULongLong();
+  size_t start_sum = db_query->value(2).toULongLong();
+  size_t percent = db_query->value(3).toULongLong();
+  QDate start_date = db_query->value(4).toDate();
+  size_t period = db_query->value(5).toULongLong();
+  size_t payment = db_query->value(6).toULongLong();
+  size_t payed_num = db_query->value(7).toULongLong();
+  credit = std::make_unique<Credit>(id, opened, user_id, start_sum, percent,
+                                    start_date, period, payment, payed_num);
+
+  return credit;
+}
+
+std::vector<std::unique_ptr<Credit>> UserDB::get_credits() {
+  QString query = QString("SELECT "
+                          "id, opened, user_id, start_sum, percent, "
+                          "start_date, period, payment, payed_num "
+                          "FROM credits;");
+  exec(query);
+
+  std::vector<std::unique_ptr<Credit>> credits;
+  while (db_query->next()) {
+    size_t id = db_query->value(0).toULongLong();
+    bool opened = db_query->value(1).toBool();
+    size_t user_id = db_query->value(2).toULongLong();
+    size_t start_sum = db_query->value(3).toULongLong();
+    size_t percent = db_query->value(4).toULongLong();
+    QDate start_date = db_query->value(5).toDate();
+    size_t period = db_query->value(6).toULongLong();
+    size_t payment = db_query->value(7).toULongLong();
+    size_t payed_num = db_query->value(8).toULongLong();
+    credits.push_back(std::make_unique<Credit>(id, opened, user_id, start_sum,
+                                               percent, start_date, period,
+                                               payment, payed_num));
+  }
+  return credits;
+}
+
+bool UserDB::update(Credit &c) {
+  QString query = QString("UPDATE credits SET %1 WHERE id = %2")
+                      .arg(c.get_update_query(), QString::number(c.get_id()));
   if (exec(query)) {
     emit DataBase::updated();
     return true;

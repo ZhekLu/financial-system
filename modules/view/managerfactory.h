@@ -4,6 +4,7 @@
 #include "clientwindow.h"
 #include "depositmanager.h"
 #include "modules/modes.h"
+#include "systemwindow.h"
 
 class ManagerFactory {
 public:
@@ -22,6 +23,7 @@ public:
     case ADMIN:
     case MANAGER:
     case OPERATOR:
+      return new SystemWindow(current, parent);
     case INDIVIDUAL:
     case ENTITY:
       return new ClientWindow(current,

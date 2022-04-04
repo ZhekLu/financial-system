@@ -42,7 +42,7 @@ void AddCardWidget::on_confirm_but_clicked() {
 void AddCardWidget::send_add_account(size_t user_id, size_t bank_id) {
   std::unique_ptr<BankAccount> to_add(new BankAccount(user_id, bank_id));
   qDebug() << "Add account : "
-           << AccountManager::add_account_request(to_add.get());
+           << AccountManager::add_account_request(user->get_id(), to_add.get());
 }
 
 void AddCardWidget::update_combobox() {
@@ -59,14 +59,13 @@ void AddCardWidget::update_combobox() {
 
 void AddCardWidget::company_mode() {
   Entity *company = (Entity *)user;
-  banks_indexes.push_back(company->bank_bic);
-  ui->bank_chooser->addItem(
-      QString::fromStdString(banks[banks_indexes.back()]->get_name()));
+  banks_indexes.push_back(company->get_bank());
+  ui->bank_chooser->addItem(banks[banks_indexes.back()]->get_name());
 }
 
 void AddCardWidget::person_mode() {
   for (auto &bank : banks) {
-    ui->bank_chooser->addItem(QString::fromStdString(bank.second->get_name()));
+    ui->bank_chooser->addItem(bank.second->get_name());
     banks_indexes.push_back(bank.second->get_id());
   }
 }

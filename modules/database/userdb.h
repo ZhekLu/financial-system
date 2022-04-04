@@ -26,7 +26,7 @@ public:
   // Login
   bool is_login_busy(QString login);
   bool contains(SystemUser user);
-  size_t get_id_by_login(SystemUser user);
+  size_t get_user_by_login(SystemUser user);
 
   void login_user(SystemUser user);
   void remove_user(std::string login);
@@ -51,17 +51,28 @@ public:
   BankAccount *get_account(size_t id);
   bool contains(BankAccount &acc);
   std::vector<std::unique_ptr<BankAccount>> get_user_accounts(size_t user_id);
-  // Update methods
   bool update(BankAccount &);
 
   // Requests
   void add_request(Request &);
+  std::vector<std::unique_ptr<Request>> get_requests();
+  std::vector<std::unique_ptr<Request>> get_requests(Request::Type);
+  std::vector<std::unique_ptr<Request>> get_requests(Request::Type type,
+                                                     bool viewed);
+  std::vector<std::unique_ptr<Request>>
+  get_transfer_requests(bool viewed = false);
+  bool update(Request &r);
 
   // Transactions
   void add_transaction(Transaction &);
+  std::unique_ptr<Transaction> get_transaction(size_t id);
+  std::vector<std::unique_ptr<Transaction>> get_transactions();
 
   // Credits
   bool add_credit(Credit &);
+  std::unique_ptr<Credit> get_credit(size_t id);
+  std::vector<std::unique_ptr<Credit>> get_credits();
+  bool update(Credit &);
 
   // Debug methods
   void print_all_system_users();
