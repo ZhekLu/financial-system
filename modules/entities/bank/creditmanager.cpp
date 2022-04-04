@@ -4,13 +4,13 @@ bool CreditManager::credit_request(IUser *user, Bank *bank, size_t amount,
                                    size_t period_in_months) {
   Credit c(user->get_id(), amount, bank->get_percent(), period_in_months);
   Request r(Request::CREDIT, user->get_id(), c.get_id());
-  r.is_approved = send_credit(c);
+  r.set_approved(send_credit(c));
   return IHistoryManager::send_request(r);
 }
 
 bool CreditManager::credit_request(IUser *user, Credit &c) {
   Request r(Request::CREDIT, user->get_id(), c.get_id());
-  r.is_approved = send_credit(c);
+  r.set_approved(send_credit(c));
   return IHistoryManager::send_request(r);
 }
 
@@ -21,7 +21,7 @@ CreditManager::CreditManager(IUser *user, bool viewed)
 }
 
 bool CreditManager::send_request(Credit *c, Request &r) {
-  r.is_approved = USER_DB->update(*c);
+  r.set_approved(USER_DB->update(*c));
   return IHistoryManager::send_request(r);
 }
 
@@ -40,10 +40,10 @@ bool CreditManager::mark(size_t item_index, bool verify) {
   Request ur(verify ? Request::VERIFY : Request::UNDO, user->get_id(),
              r->get_id());
   current->set_open(verify);
-  r->viewed = USER_DB->update(*current);
-  if (r->viewed)
+  r->set_viewed(USER_DB->update(*current));
+  if (r->is_viewed())
     qDebug() << "Request : " << USER_DB->update(*r);
-  return r->viewed;
+  return r->is_viewed();
 }
 
 void CreditManager::update_vars() {
@@ -52,6 +52,6 @@ void CreditManager::update_vars() {
 
   requests = USER_DB->get_requests(Request::CREDIT, viewed_mode);
   for (auto &r : requests) {
-    credits.push_back(USER_DB->get_credit(r->object_id));
+    credits.push_back(USER_DB->get_credit(r->get_object()));
   }
 }

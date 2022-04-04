@@ -24,7 +24,7 @@ protected:
 
   static bool send_request(Request &r) {
     USER_DB->add_request(r);
-    return r.is_approved;
+    return r.is_approved();
   }
 
 private slots:

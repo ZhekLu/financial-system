@@ -10,6 +10,7 @@ class AccountManager : public IHistoryManager {
   Q_OBJECT
 public:
   static bool freeze_request(BankAccount *acc);
+  static bool freeze_request(size_t sender_id, size_t account_id, bool freeze);
   static bool withdraw_request(BankAccount *acc, size_t sum);
   static bool transfer_request(BankAccount *acc, size_t destination,
                                size_t sum);

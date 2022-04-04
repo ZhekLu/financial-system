@@ -186,11 +186,8 @@ void UserDB::remove_user(std::string login) {
 void UserDB::add_company(Entity company) {
   QString query =
       "INSERT INTO companies(id, name, type, PAC, BIC, adress, bank_bic) "
-      "VALUES" +
-      QString::number(company.get_id()) + "," + qs(company.get_name()) + "," +
-      QString::number(company.type) + "," + QString::number(company.PAC) + "," +
-      QString::number(company.BIC) + "," + qs(company.adress) + "," +
-      QString::number(company.bank_bic) + ");";
+      "VALUES " +
+      company.get_values_query();
   if (exec(query))
     emit DataBase::updated();
 }
@@ -325,9 +322,10 @@ bool UserDB::contains(BankAccount &acc) {
   QString query =
       QString("SELECT * FROM accounts WHERE id = %1 and user_id = %2 and "
               "bank_id = %3 and balance = %4 and frozen = %5;")
-          .arg(QString::number(acc.id), QString::number(acc.owner_id),
-               QString::number(acc.bank_id), QString::number(acc.balance),
-               QString::number(acc.is_frozen));
+          .arg(QString::number(acc.get_id()), QString::number(acc.get_owner()),
+               QString::number(acc.get_bank()),
+               QString::number(acc.get_balance()),
+               QString::number(acc.is_frozen()));
   exec(query);
   return db_query->next();
 }
@@ -355,10 +353,9 @@ UserDB::get_user_accounts(size_t user_id) {
 
 bool UserDB::update(BankAccount &acc) {
   QString query =
-      QString("UPDATE accounts SET balance = %1, frozen = %2 "
+      QString("UPDATE accounts SET %1 "
               "WHERE id = %3")
-          .arg(QString::number(acc.balance), QString::number(acc.is_frozen),
-               QString::number(acc.id));
+          .arg(acc.get_update_query(), QString::number(acc.get_id()));
   if (exec(query)) {
     emit DataBase::updated();
     return true;
@@ -458,10 +455,9 @@ UserDB::get_transfer_requests(bool viewed) {
 }
 
 bool UserDB::update(Request &r) {
-  QString query =
-      QString("UPDATE requests SET viewed = %1 "
-              "WHERE id = %2;")
-          .arg(QString::number(r.viewed), QString::number(r.get_id()));
+  QString query = QString("UPDATE requests SET %1 "
+                          "WHERE id = %2;")
+                      .arg(r.get_update_query(), QString::number(r.get_id()));
   //  qDebug() << query;
   if (exec(query)) {
     qDebug() << "ok";
@@ -587,12 +583,8 @@ std::vector<std::unique_ptr<Credit>> UserDB::get_credits() {
 }
 
 bool UserDB::update(Credit &c) {
-  QString query =
-      QString(
-          "UPDATE credits SET opened = %1, start_date = '%2', payed_num = %3 "
-          "WHERE id = %4")
-          .arg(QString::number(c.opened), c.start_date.toString("yyyy-MM-dd"),
-               QString::number(c.payed_num), QString::number(c.get_id()));
+  QString query = QString("UPDATE credits SET %1 WHERE id = %2")
+                      .arg(c.get_update_query(), QString::number(c.get_id()));
   if (exec(query)) {
     emit DataBase::updated();
     return true;

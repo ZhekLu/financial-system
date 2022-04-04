@@ -70,8 +70,8 @@ void CreditWidget::update_credit() {
 void CreditWidget::show_info_widget() {
   ui->stacked_widget->setCurrentIndex(Page::Info);
   update_credit();
-  ui->amount_label->setText(QString::number(current_credit->start_sum));
-  ui->pay_label->setText(QString::number(current_credit->payment));
+  ui->amount_label->setText(QString::number(current_credit->get_start_sum()));
+  ui->pay_label->setText(QString::number(current_credit->get_payment()));
   ui->period_label->setText(ui->period_chooser->currentText() + " " +
                             measures[ui->measure_chooser->currentIndex()]);
 }

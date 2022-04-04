@@ -35,8 +35,7 @@ void ClientWindow::update_grid_test() {
   accounts = USER_DB->get_user_accounts(user->get_id());
   banks = USER_DB->get_hash_banks();
   for (size_t i = 0; i < accounts.size(); i++) {
-    QString bank_name =
-        QString::fromStdString(banks.at(accounts[i]->bank_id)->get_name());
+    QString bank_name = banks.at(accounts[i]->get_bank())->get_name();
     QTableWidgetItem *item = get_item(accounts[i].get(), bank_name);
 
     ui->table_widget->insertRow(i);
@@ -56,7 +55,7 @@ void ClientWindow::update_grid() {
   query.exec(QString("select id, bank_id, balance, frozen, name "
                      "from accounts inner join companies "
                      "on accounts.bank_id=companies.BIC where user_id=%1 ;")
-                 .arg(QString::number(user->id)));
+                 .arg(QString::number(user->get_id())));
   for (int i = 0; query.next(); i++) {
 
     size_t id = query.value(0).toULongLong();
@@ -64,8 +63,8 @@ void ClientWindow::update_grid() {
     size_t balance = query.value(2).toULongLong();
     bool frozen = query.value(3).toBool();
     QString bank_name = query.value(4).toString();
-    accounts.push_back(
-        std::make_unique<BankAccount>(id, user->id, bank_id, balance, frozen));
+    accounts.push_back(std::make_unique<BankAccount>(id, user->get_id(),
+                                                     bank_id, balance, frozen));
 
     QTableWidgetItem *item = get_item(accounts.back().get(), bank_name);
 
@@ -78,11 +77,15 @@ void ClientWindow::init() {
   add_widget = std::make_unique<AddCardWidget>(user.get(), banks, this);
   credit_widget = std::make_unique<CreditWidget>(user.get(), banks, this);
   transfer_widget = std::make_unique<TransferWidget>(this);
+  credit_pay_widget =
+      std::make_unique<HistoryWidget>(user.get(), Request::CREDIT, true, this);
   set_connections();
   ui->stacked_widget->insertWidget(WorkMode::CreditView, credit_widget.get());
   ui->stacked_widget->insertWidget(WorkMode::AddCardView, add_widget.get());
   ui->stacked_widget->insertWidget(WorkMode::TransferView,
                                    transfer_widget.get());
+  ui->stacked_widget->insertWidget(WorkMode::CreditPayView,
+                                   credit_pay_widget.get());
 }
 
 void ClientWindow::set_connections() {
@@ -134,7 +137,7 @@ void ClientWindow::on_transfer_but_clicked() {
 
 void ClientWindow::on_table_widget_cellClicked(int row, int) {
   current_account = accounts[row].get();
-  if (current_account->get_frozen()) {
+  if (current_account->is_frozen()) {
     ui->freeze_but->setText("Unfreeze");
     ui->transfer_but->setEnabled(false);
     ui->withdraw_but->setEnabled(false);

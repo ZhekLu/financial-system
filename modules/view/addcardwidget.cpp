@@ -59,14 +59,13 @@ void AddCardWidget::update_combobox() {
 
 void AddCardWidget::company_mode() {
   Entity *company = (Entity *)user;
-  banks_indexes.push_back(company->bank_bic);
-  ui->bank_chooser->addItem(
-      QString::fromStdString(banks[banks_indexes.back()]->get_name()));
+  banks_indexes.push_back(company->get_bank());
+  ui->bank_chooser->addItem(banks[banks_indexes.back()]->get_name());
 }
 
 void AddCardWidget::person_mode() {
   for (auto &bank : banks) {
-    ui->bank_chooser->addItem(QString::fromStdString(bank.second->get_name()));
+    ui->bank_chooser->addItem(bank.second->get_name());
     banks_indexes.push_back(bank.second->get_id());
   }
 }
