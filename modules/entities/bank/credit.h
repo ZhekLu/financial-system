@@ -54,6 +54,13 @@ public:
              QString::number(period));
   }
 
+  void set_open(bool value) {
+    opened = value;
+    if (value)
+      start_date = QDate::currentDate();
+  }
+  void pay_fee() { payed_num++; }
+
   bool opened;
   size_t user_id;
   size_t start_sum;

@@ -16,13 +16,12 @@ public:
 
   CreditManager(IUser *user);
   std::vector<QTableWidgetItem *> get_items() override;
-  bool undo(size_t item_index) override;
+  bool mark(size_t item_index, bool verify) override;
 
 private slots:
-  void update() override;
+  void update_vars() override;
 
 private:
-  static bool send_request(Request &r);
   static bool send_request(Credit *c, Request &r);
 
   static bool send_credit(Credit &c);

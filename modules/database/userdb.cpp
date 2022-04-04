@@ -378,7 +378,7 @@ void UserDB::add_request(Request &r) {
 }
 
 std::vector<std::unique_ptr<Request>> UserDB::get_requests() {
-  QString query = "SELECT id, type, sender, object, approved"
+  QString query = "SELECT id, type, sender, object, approved "
                   "FROM requests;";
   exec(query);
 
@@ -397,7 +397,7 @@ std::vector<std::unique_ptr<Request>> UserDB::get_requests() {
 }
 
 std::vector<std::unique_ptr<Request>> UserDB::get_requests(Request::Type type) {
-  QString query = "SELECT id, sender, object, approved"
+  QString query = "SELECT id, sender, object, approved "
                   "FROM requests WHERE type = " +
                   QString::number(type);
   exec(query);
@@ -417,8 +417,8 @@ std::vector<std::unique_ptr<Request>> UserDB::get_requests(Request::Type type) {
 
 std::vector<std::unique_ptr<Request>> UserDB::get_requests(Request::Type type,
                                                            bool viewed) {
-  QString query = QString("SELECT id, sender, object, approved"
-                          "FROM requests WHERE type = %1 and viewed = %2")
+  QString query = QString("SELECT id, sender, object, approved "
+                          "FROM requests WHERE type = %1 and viewed = %2;")
                       .arg(QString::number(type), QString::number(viewed));
   exec(query);
 
@@ -429,8 +429,8 @@ std::vector<std::unique_ptr<Request>> UserDB::get_requests(Request::Type type,
     size_t sender = db_query->value(1).toULongLong();
     size_t object = db_query->value(2).toULongLong();
     bool approved = db_query->value(3).toBool();
-    requests.push_back(std::make_unique<Request>(id, Request::Type(type),
-                                                 sender, object, approved));
+    requests.push_back(
+        std::make_unique<Request>(id, type, sender, object, approved));
   }
   return requests;
 }
@@ -462,7 +462,9 @@ bool UserDB::update(Request &r) {
       QString("UPDATE requests SET viewed = %1 "
               "WHERE id = %2;")
           .arg(QString::number(r.viewed), QString::number(r.get_id()));
+  qDebug() << query;
   if (exec(query)) {
+    qDebug() << "ok";
     emit DataBase::updated();
     return true;
   }
@@ -538,7 +540,8 @@ std::unique_ptr<Credit> UserDB::get_credit(size_t id) {
   QString query = QString("SELECT "
                           "opened, user_id, start_sum, percent, "
                           "start_date, period, payment, payed_num "
-                          "FROM credits;");
+                          "FROM credits WHERE id = ") +
+                  QString::number((id));
   exec(query);
 
   std::unique_ptr<Credit> credit;
@@ -585,8 +588,9 @@ std::vector<std::unique_ptr<Credit>> UserDB::get_credits() {
 
 bool UserDB::update(Credit &c) {
   QString query =
-      QString("UPDATE credits SET opened = %1, start_date = %2, payed_num = %3 "
-              "WHERE id = %4")
+      QString(
+          "UPDATE credits SET opened = %1, start_date = '%2', payed_num = %3 "
+          "WHERE id = %4")
           .arg(QString::number(c.opened), c.start_date.toString("yyyy-MM-dd"),
                QString::number(c.payed_num), QString::number(c.get_id()));
   if (exec(query)) {

@@ -39,19 +39,37 @@ bool AccountManager::undo_transfer_request(size_t initiator, Transaction &t) {
   if (!sender || (t.type == Transaction::TRANSFER &&
                   (!receiver || !receiver->can_pay(t.amount))))
     return false;
-  if (t.type == Transaction::TRANSFER)
-    receiver->withdraw(t.amount);
-  sender->top_up(t.amount);
-  Transaction ut(t.receiver, t.sender, t.amount);
-  ut.is_approved = send_request(sender.get(), receiver.get(),
+
+  return t.type == Transaction::TRANSFER
+             ? make_undo_transaction(initiator, sender.get(), receiver.get(), t)
+             : make_undo_withdraw(initiator, sender.get(), t);
+}
+
+bool AccountManager::make_undo_transaction(size_t initiator,
+                                           BankAccount *sender,
+                                           BankAccount *receiver,
+                                           Transaction &original) {
+  receiver->withdraw(original.amount);
+  sender->top_up(original.amount);
+  Transaction ut(original.receiver, original.sender, original.amount);
+  ut.is_approved = send_request(sender, receiver,
                                 Request(Request::UNDO, initiator, ut.get_id()));
+  return send_transaction(ut);
+}
+
+bool AccountManager::make_undo_withdraw(size_t initiator, BankAccount *acc,
+                                        Transaction &original) {
+  acc->top_up(original.amount);
+  Transaction ut(acc->get_id(), original.amount, false);
+  ut.is_approved =
+      send_request(acc, Request(Request::UNDO, initiator, ut.get_id()));
   return send_transaction(ut);
 }
 
 bool AccountManager::add_account_request(BankAccount *acc) {
   Request r(Request::LOGIN_ACCOUNT, acc->id, acc->id); // TODO user.id
   r.is_approved = USER_DB->add_account(acc);
-  return send_request(r);
+  return IHistoryManager::send_request(r);
 }
 
 bool AccountManager::update(BankAccount *acc) {
@@ -65,14 +83,9 @@ bool AccountManager::check_valid(BankAccount *acc) {
   return USER_DB->contains(*acc);
 }
 
-bool AccountManager::send_request(Request &r) {
-  USER_DB->add_request(r);
-  return r.is_approved;
-}
-
 bool AccountManager::send_request(BankAccount *acc, Request r) {
   r.is_approved = USER_DB->update(*acc);
-  return send_request(r);
+  return IHistoryManager::send_request(r);
 }
 
 bool AccountManager::send_request(BankAccount *acc, BankAccount *sec,
@@ -80,7 +93,7 @@ bool AccountManager::send_request(BankAccount *acc, BankAccount *sec,
   r.is_approved = USER_DB->update(*acc);
   if (r.is_approved)
     r.is_approved = USER_DB->update(*sec);
-  return send_request(r);
+  return IHistoryManager::send_request(r);
 }
 
 bool AccountManager::send_transaction(Transaction &t) {
@@ -110,7 +123,8 @@ bool AccountManager::make_withdraw(BankAccount *acc, size_t sum) {
 }
 
 AccountManager::AccountManager(IUser *user) : IHistoryManager(user) {
-  AccountManager::update();
+  connect(USER_DB, &DataBase::updated, this, &AccountManager::update_vars);
+  AccountManager::update_vars();
 }
 
 std::vector<QTableWidgetItem *> AccountManager::get_items() {
@@ -120,26 +134,24 @@ std::vector<QTableWidgetItem *> AccountManager::get_items() {
     QString item = requests[i]->get_info();
     if (transactions[i])
       item += transactions[i]->get_info();
-    else
-      qDebug() << "oaoa";
     items.push_back(new QTableWidgetItem(item));
   }
   return items;
 }
 
-bool AccountManager::undo(size_t item_index) {
-  Transaction *current = transactions[item_index].get();
-  Request *r = requests[item_index].get();
+bool AccountManager::mark(size_t item_index, bool verify) {
+  if (verify)
+    return true;
+  std::unique_ptr<Transaction> current = std::move(transactions[item_index]);
+  std::unique_ptr<Request> r = std::move(requests[item_index]);
 
   r->viewed = undo_transfer_request(user->get_id(), *current);
-  if (r->viewed) {
-    qDebug() << "request : " << USER_DB->update(*r);
-    emit IHistoryManager::updated();
-  }
+  if (r->viewed)
+    qDebug() << "Request : " << USER_DB->update(*r);
   return r->viewed;
 }
 
-void AccountManager::update() {
+void AccountManager::update_vars() {
   transactions.clear();
   requests.clear();
   requests = USER_DB->get_transfer_requests();

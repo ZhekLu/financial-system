@@ -7,6 +7,7 @@
 #include "request.h"
 
 class AccountManager : public IHistoryManager {
+  Q_OBJECT
 public:
   static bool freeze_request(BankAccount *acc);
   static bool withdraw_request(BankAccount *acc, size_t sum);
@@ -18,10 +19,10 @@ public:
   AccountManager(IUser *user);
 
   std::vector<QTableWidgetItem *> get_items() override;
-  bool undo(size_t item_index) override;
+  bool mark(size_t item_index, bool verify = false) override;
 
 private slots:
-  void update() override;
+  void update_vars() override;
 
 private:
   std::vector<std::unique_ptr<Transaction>> transactions;
@@ -29,7 +30,6 @@ private:
 
   static bool update(BankAccount *acc);
   static bool check_valid(BankAccount *acc);
-  static bool send_request(Request &);
   static bool send_request(BankAccount *acc, Request);
   static bool send_request(BankAccount *acc, BankAccount *sec, Request r);
 
@@ -38,6 +38,10 @@ private:
   static bool make_withdraw(BankAccount *acc, size_t sum);
 
   static bool undo_transfer_request(size_t initiator, Transaction &t);
+  static bool make_undo_transaction(size_t initiator, BankAccount *sen,
+                                    BankAccount *rec, Transaction &original);
+  static bool make_undo_withdraw(size_t initiator, BankAccount *acc,
+                                 Transaction &original);
 };
 
 #endif // ACCOUNTMANAGER_H

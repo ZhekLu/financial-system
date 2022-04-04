@@ -11,13 +11,10 @@ class IHistoryManager : public QObject {
   Q_OBJECT
 
 public:
-  IHistoryManager(IUser *sender) : user(sender) {
-    connect(USER_DB, &DataBase::updated, this, &IHistoryManager::update);
-  }
+  IHistoryManager(IUser *sender) : user(sender) {}
 
   virtual std::vector<QTableWidgetItem *> get_items() = 0;
-  virtual bool undo(size_t item_index) = 0;
-  virtual bool verify(size_t) { return true; }
+  virtual bool mark(size_t item_index, bool verify) = 0;
 
 signals:
   void updated();
@@ -25,8 +22,13 @@ signals:
 protected:
   IUser *user;
 
+  static bool send_request(Request &r) {
+    USER_DB->add_request(r);
+    return r.is_approved;
+  }
+
 private slots:
-  virtual void update() = 0;
+  virtual void update_vars() = 0;
 };
 
 #endif // IHISTORYMANAGER_H

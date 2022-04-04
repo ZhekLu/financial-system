@@ -5,27 +5,23 @@ bool CreditManager::credit_request(IUser *user, Bank *bank, size_t amount,
   Credit c(user->get_id(), amount, bank->get_percent(), period_in_months);
   Request r(Request::CREDIT, user->get_id(), c.get_id());
   r.is_approved = send_credit(c);
-  return send_request(r);
+  return IHistoryManager::send_request(r);
 }
 
 bool CreditManager::credit_request(IUser *user, Credit &c) {
   Request r(Request::CREDIT, user->get_id(), c.get_id());
   r.is_approved = send_credit(c);
-  return send_request(r);
+  return IHistoryManager::send_request(r);
 }
 
 CreditManager::CreditManager(IUser *user) : IHistoryManager(user) {
-  CreditManager::update();
-}
-
-bool CreditManager::send_request(Request &r) {
-  USER_DB->add_request(r);
-  return r.is_approved;
+  connect(USER_DB, &DataBase::updated, this, &CreditManager::update_vars);
+  CreditManager::update_vars();
 }
 
 bool CreditManager::send_request(Credit *c, Request &r) {
   r.is_approved = USER_DB->update(*c);
-  return send_request(r);
+  return IHistoryManager::send_request(r);
 }
 
 bool CreditManager::send_credit(Credit &c) { return USER_DB->add_credit(c); }
@@ -37,14 +33,23 @@ std::vector<QTableWidgetItem *> CreditManager::get_items() {
   return items;
 }
 
-bool CreditManager::undo(size_t item_index) {}
+bool CreditManager::mark(size_t item_index, bool verify) {
+  Credit *current = credits[item_index].get();
+  std::unique_ptr<Request> r = std::move(requests[item_index]);
+  Request ur(verify ? Request::VERIFY : Request::UNDO, user->get_id(),
+             r->get_id());
+  current->set_open(verify);
+  r->viewed = USER_DB->update(*current);
+  if (r->viewed)
+    qDebug() << "Request : " << USER_DB->update(*r);
+  return r->viewed;
+}
 
-void CreditManager::update() {
+void CreditManager::update_vars() {
   credits.clear();
   requests.clear();
 
   requests = USER_DB->get_requests(Request::CREDIT, false);
-  credits = USER_DB->get_credits();
   for (auto &r : requests) {
     credits.push_back(USER_DB->get_credit(r->object_id));
   }
