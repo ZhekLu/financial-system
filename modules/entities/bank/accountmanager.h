@@ -28,8 +28,6 @@ private:
   std::vector<std::unique_ptr<Transaction>> transactions;
   std::vector<std::unique_ptr<Request>> requests;
 
-  static bool update(BankAccount *acc);
-  static bool check_valid(BankAccount *acc);
   static bool send_request(BankAccount *acc, Request);
   static bool send_request(BankAccount *acc, BankAccount *sec, Request r);
 

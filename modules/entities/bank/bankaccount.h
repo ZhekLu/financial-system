@@ -15,10 +15,7 @@ public:
   void top_up(size_t value) { balance += value; }
   bool withdraw(size_t value);
   bool can_pay(size_t value) const { return balance >= value; }
-
-  void set_frozen(bool value) { frozen = value; }
   void revert_frozen() { frozen = !frozen; }
-  void set_balance(size_t value) { balance = value; } // TODO! remove
 
   // getters
   size_t get_balance() const { return balance; }

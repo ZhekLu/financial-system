@@ -68,17 +68,6 @@ bool AccountManager::add_account_request(size_t sender_id, BankAccount *acc) {
   return IHistoryManager::send_request(r);
 }
 
-bool AccountManager::update(BankAccount *acc) {
-  if (check_valid(acc))
-    return true;
-  acc->set_balance(USER_DB->get_account_balance(acc->get_id()));
-  return check_valid(acc);
-}
-
-bool AccountManager::check_valid(BankAccount *acc) {
-  return USER_DB->contains(*acc);
-}
-
 bool AccountManager::send_request(BankAccount *acc, Request r) {
   r.set_approved(USER_DB->update(*acc));
   return IHistoryManager::send_request(r);
