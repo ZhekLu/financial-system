@@ -13,10 +13,7 @@ class LoanManager : public IHistoryManager {
 public:
   enum LoanType { CREDIT, INSTALLMENT };
 
-  static bool credit_request(IUser *user, Bank *bank, size_t amount,
-                             size_t period_in_months);
   static bool credit_request(IUser *user, Credit &c);
-  static bool loan_request(IUser *user, Loan &l, bool is_credit);
   static bool loan_request(IUser *user, Loan &l, LoanType type);
 
   LoanManager(IUser *user, bool viewed);
