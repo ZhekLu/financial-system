@@ -37,6 +37,8 @@ HEADERS += \
     modules/entities/bank/bankaccount.h \
     modules/entities/bank/credit.h \
     modules/entities/bank/creditmanager.h \
+    modules/entities/bank/installment.h \
+    modules/entities/bank/loan.h \
     modules/entities/bank/request.h \
     modules/entities/bank/transaction.h \
     modules/entities/entity.h \

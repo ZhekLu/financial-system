@@ -6,6 +6,7 @@ MainWindow::MainWindow(QWidget *parent)
   ui->setupUi(this);
   aw = new AuthWidget();
   connect(aw, &AuthWidget::auth_ok, this, &MainWindow::auth_connection);
+  ui->debug_but->setVisible(false);
 }
 
 MainWindow::~MainWindow() {

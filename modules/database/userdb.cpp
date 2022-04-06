@@ -532,6 +532,20 @@ bool UserDB::add_credit(Credit &c) {
   return false;
 }
 
+bool UserDB::add_loan(Loan &l) {
+  QString query = QString("INSERT INTO credits"
+                          "(id, opened, user_id, start_sum, percent, "
+                          "start_date, period, payment, payed_num) "
+                          "VALUES %1;")
+                      .arg(l.get_values_query());
+
+  if (exec(query)) {
+    emit DataBase::updated();
+    return true;
+  }
+  return false;
+}
+
 std::unique_ptr<Credit> UserDB::get_credit(size_t id) {
   QString query = QString("SELECT "
                           "opened, user_id, start_sum, percent, "

@@ -158,6 +158,12 @@ void ClientWindow::mode_widget_closed() {
 
 void ClientWindow::on_credit_but_clicked() {
   clear_selected();
-  credit_widget->show();
+  credit_widget->show(CreditWidget::CREDIT);
+  ui->stacked_widget->setCurrentIndex(WorkMode::CreditView);
+}
+
+void ClientWindow::on_installment_but_clicked() {
+  clear_selected();
+  credit_widget->show(CreditWidget::INSTALLMENT);
   ui->stacked_widget->setCurrentIndex(WorkMode::CreditView);
 }

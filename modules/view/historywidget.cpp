@@ -15,7 +15,7 @@ HistoryWidget::HistoryWidget(IUser *user, Request::Type request_type,
     break;
   case Request::INSTALLMENT:
   case Request::CREDIT:
-    manager = std::make_unique<CreditManager>(user, user_mode);
+    manager = std::make_unique<LoanManager>(user, user_mode);
     break;
   case Request::LOGIN_ACCOUNT:
   case Request::LOGIN_USER:

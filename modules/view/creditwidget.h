@@ -17,6 +17,7 @@ class CreditWidget : public QWidget {
 
 public:
   enum Measure { MONTH, YEAR };
+  enum Mode { CREDIT, INSTALLMENT };
 
   explicit CreditWidget(
       IUser *user,
@@ -24,7 +25,7 @@ public:
       QWidget *parent = nullptr);
   ~CreditWidget();
 
-  void show();
+  void show(Mode mode);
 
 signals:
   void closed();
@@ -45,9 +46,11 @@ private:
   std::unique_ptr<AddCardWidget> bank_selector;
 
   IUser *user;
+  Mode current_mode;
+  //    LoanManager::LoanType current_t
 
   Bank *selected_bank;
-  std::unique_ptr<Credit> current_credit;
+  std::unique_ptr<Loan> current_credit;
 
   std::unique_ptr<QIntValidator> validator;
 

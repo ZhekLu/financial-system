@@ -42,6 +42,8 @@ private slots:
   void on_table_widget_cellClicked(int, int);
   void mode_widget_closed();
 
+  void on_installment_but_clicked();
+
 private:
   // View
   enum WorkMode {
