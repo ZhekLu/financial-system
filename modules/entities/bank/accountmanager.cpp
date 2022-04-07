@@ -112,7 +112,7 @@ AccountManager::AccountManager(IUser *user) : IHistoryManager(user) {
   AccountManager::update_vars();
 }
 
-std::vector<QTableWidgetItem *> AccountManager::get_items() {
+std::vector<QTableWidgetItem *> AccountManager::get_items() const {
   std::vector<QTableWidgetItem *> items;
   for (size_t i = 0; i < requests.size(); i++) {
 
@@ -134,6 +134,10 @@ bool AccountManager::mark(size_t item_index, bool verify) {
   if (r->is_viewed())
     qDebug() << "Request : " << USER_DB->update(*r);
   return r->is_viewed();
+}
+
+size_t AccountManager::get_selected(size_t index) const {
+  return transactions[index]->get_id();
 }
 
 void AccountManager::update_vars() {

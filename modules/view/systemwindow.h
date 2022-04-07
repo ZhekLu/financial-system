@@ -17,13 +17,9 @@ public:
 
 private slots:
   void on_tab_widget_tabBarClicked(int index);
-
   void on_verify_but_clicked();
-
   void on_undo_but_clicked();
-
   void on_info_but_clicked();
-
   void on_log_out_but_clicked();
 
 private:

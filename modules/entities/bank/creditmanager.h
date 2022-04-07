@@ -13,23 +13,26 @@ class LoanManager : public IHistoryManager {
 public:
   enum LoanType { CREDIT, INSTALLMENT };
 
-  static bool credit_request(IUser *user, Credit &c);
   static bool loan_request(IUser *user, Loan &l, LoanType type);
 
-  LoanManager(IUser *user, bool viewed);
-  std::vector<QTableWidgetItem *> get_items() override;
+  // non static
+  LoanManager(LoanType loan_type, IUser *user, ItemsType items_type);
+
   bool mark(size_t item_index, bool verify) override;
+  size_t get_selected(size_t index) const override;
+  std::vector<QTableWidgetItem *> get_items() const override;
 
 private slots:
   void update_vars() override;
 
 private:
+  // static methods
   static bool send_request(Credit *c, Request &r);
   static bool send_credit(Credit &c);
   static bool send_loan(Loan &l);
 
-  bool viewed_mode;
-
+  // fields
+  LoanType loan_type;
   std::vector<std::unique_ptr<Credit>> credits;
   std::vector<std::unique_ptr<Request>> requests;
 };

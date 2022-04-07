@@ -77,15 +77,14 @@ void ClientWindow::init() {
   add_widget = std::make_unique<AddCardWidget>(user.get(), banks, this);
   credit_widget = std::make_unique<CreditWidget>(user.get(), banks, this);
   transfer_widget = std::make_unique<TransferWidget>(user.get(), this);
-  credit_pay_widget =
-      std::make_unique<HistoryWidget>(user.get(), Request::CREDIT, true, this);
+  manage_window = std::make_unique<ClientManageWindow>(user.get(), this);
+
   set_connections();
+
   ui->stacked_widget->insertWidget(WorkMode::CreditView, credit_widget.get());
   ui->stacked_widget->insertWidget(WorkMode::AddCardView, add_widget.get());
   ui->stacked_widget->insertWidget(WorkMode::TransferView,
                                    transfer_widget.get());
-  ui->stacked_widget->insertWidget(WorkMode::CreditPayView,
-                                   credit_pay_widget.get());
 }
 
 void ClientWindow::set_connections() {
@@ -96,6 +95,8 @@ void ClientWindow::set_connections() {
           &ClientWindow::mode_widget_closed);
   connect(transfer_widget.get(), &TransferWidget::closed, this,
           &ClientWindow::mode_widget_closed);
+  connect(manage_window.get(), &ClientManageWindow::closed, this,
+          &ClientWindow::manage_window_closed);
 }
 
 QTableWidgetItem *ClientWindow::get_item(BankAccount *acc, QString bank) {
@@ -137,6 +138,23 @@ void ClientWindow::on_transfer_but_clicked() {
   ui->stacked_widget->setCurrentIndex(WorkMode::TransferView);
 }
 
+void ClientWindow::on_credit_but_clicked() {
+  clear_selected();
+  credit_widget->show(LoanManager::CREDIT);
+  ui->stacked_widget->setCurrentIndex(WorkMode::CreditView);
+}
+
+void ClientWindow::on_installment_but_clicked() {
+  clear_selected();
+  credit_widget->show(LoanManager::INSTALLMENT);
+  ui->stacked_widget->setCurrentIndex(WorkMode::CreditView);
+}
+
+void ClientWindow::on_manage_but_clicked() {
+  manage_window->show();
+  this->hide();
+}
+
 void ClientWindow::on_table_widget_cellClicked(int row, int) {
   current_account = accounts[row].get();
   if (current_account->is_frozen()) {
@@ -156,14 +174,7 @@ void ClientWindow::mode_widget_closed() {
   ui->stacked_widget->setCurrentIndex(WorkMode::CardView);
 }
 
-void ClientWindow::on_credit_but_clicked() {
-  clear_selected();
-  credit_widget->show(LoanManager::CREDIT);
-  ui->stacked_widget->setCurrentIndex(WorkMode::CreditView);
-}
-
-void ClientWindow::on_installment_but_clicked() {
-  clear_selected();
-  credit_widget->show(LoanManager::INSTALLMENT);
-  ui->stacked_widget->setCurrentIndex(WorkMode::CreditView);
+void ClientWindow::manage_window_closed() {
+  this->show();
+  manage_window->hide();
 }

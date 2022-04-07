@@ -2,6 +2,7 @@
 #define CLIENTWINDOW_H
 
 #include "addcardwidget.h"
+#include "clientmanagewindow.h"
 #include "creditwidget.h"
 #include "historywidget.h"
 #include "modules/database/userdb.h"
@@ -38,11 +39,13 @@ private slots:
   void on_credit_but_clicked();
   void on_info_but_clicked();
   void on_log_out_but_clicked();
+  void on_installment_but_clicked();
+  void on_manage_but_clicked();
+
   // Widgets
   void on_table_widget_cellClicked(int, int);
   void mode_widget_closed();
-
-  void on_installment_but_clicked();
+  void manage_window_closed();
 
 private:
   // View
@@ -59,7 +62,7 @@ private:
   std::unique_ptr<TransferWidget> transfer_widget;
   std::unique_ptr<CreditWidget> credit_widget;
   std::unique_ptr<AddCardWidget> add_widget;
-  std::unique_ptr<HistoryWidget> credit_pay_widget;
+  std::unique_ptr<ClientManageWindow> manage_window;
 
   // methods
   std::unique_ptr<IUser> user;

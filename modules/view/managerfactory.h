@@ -31,6 +31,7 @@ public:
                                              : ClientWindow::AccessMode::Person,
                               parent);
     }
+    return nullptr;
   }
 };
 

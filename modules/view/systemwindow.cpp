@@ -7,9 +7,9 @@ SystemWindow::SystemWindow(IUser *user, QWidget *parent)
   setAttribute(Qt::WA_DeleteOnClose);
 
   transaction_widget = std::make_unique<HistoryWidget>(
-      user, Request::Type::TRANSFER, false, this);
-  credit_widget =
-      std::make_unique<HistoryWidget>(user, Request::Type::CREDIT, false, this);
+      user, Request::Type::TRANSFER, IHistoryManager::ItemsType::SYSTEM, this);
+  credit_widget = std::make_unique<HistoryWidget>(
+      user, Request::Type::CREDIT, IHistoryManager::ItemsType::SYSTEM, this);
 
   ui->tab_widget->insertTab(WidgetType::TRANSACTIONS, transaction_widget.get(),
                             "transactions");
@@ -49,4 +49,8 @@ void SystemWindow::on_undo_but_clicked() {
 
 void SystemWindow::on_info_but_clicked() {}
 
-void SystemWindow::on_log_out_but_clicked() { this->close(); }
+void SystemWindow::on_log_out_but_clicked() {
+  //  user.release(); only for user mode
+  // emit was_hided();
+  this->close();
+}

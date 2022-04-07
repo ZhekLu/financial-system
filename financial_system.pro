@@ -18,6 +18,7 @@ SOURCES += \
     modules/entities/bank/accountmanager.cpp \
     modules/entities/bank/creditmanager.cpp \
     modules/view/addcardwidget.cpp \
+    modules/view/clientmanagewindow.cpp \
     modules/view/clientwindow.cpp \
     modules/view/creditwidget.cpp \
     modules/view/historywidget.cpp \
@@ -44,6 +45,7 @@ HEADERS += \
     modules/entities/entity.h \
     modules/entities/individual.h \
     modules/view/addcardwidget.h \
+    modules/view/clientmanagewindow.h \
     modules/view/clientwindow.h \
     modules/view/creditwidget.h \
     modules/view/historywidget.h \
@@ -60,6 +62,7 @@ HEADERS += \
 FORMS += \
     mainwindow.ui \
     modules/view/addcardwidget.ui \
+    modules/view/clientmanagewindow.ui \
     modules/view/clientwindow.ui \
     modules/view/creditwidget.ui \
     modules/view/historywidget.ui \

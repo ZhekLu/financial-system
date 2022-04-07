@@ -11,16 +11,21 @@ class IHistoryManager : public QObject {
   Q_OBJECT
 
 public:
-  IHistoryManager(IUser *sender) : user(sender) {}
+  enum ItemsType { CLIENT, SYSTEM, NON };
 
-  virtual std::vector<QTableWidgetItem *> get_items() = 0;
+  IHistoryManager(IUser *sender, ItemsType type) : user(sender), mode(type) {}
+  IHistoryManager(IUser *sender) : user(sender), mode(NON) {}
+
+  virtual std::vector<QTableWidgetItem *> get_items() const = 0;
   virtual bool mark(size_t item_index, bool verify) = 0;
+  virtual size_t get_selected(size_t index) const = 0;
 
 signals:
   void updated();
 
 protected:
   IUser *user;
+  ItemsType mode;
 
   static bool send_request(Request &r) {
     USER_DB->add_request(r);

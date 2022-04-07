@@ -18,8 +18,9 @@ public:
   // Manager
   AccountManager(IUser *user);
 
-  std::vector<QTableWidgetItem *> get_items() override;
+  std::vector<QTableWidgetItem *> get_items() const override;
   bool mark(size_t item_index, bool verify = false) override;
+  size_t get_selected(size_t index) const override;
 
 private slots:
   void update_vars() override;
