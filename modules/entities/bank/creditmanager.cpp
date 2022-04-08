@@ -9,7 +9,11 @@ bool LoanManager::loan_request(IUser *user, Loan &l, LoanType type) {
 
 LoanManager::LoanManager(LoanType loan_type, IUser *user, ItemsType items_type)
     : IHistoryManager(user, items_type), loan_type(loan_type) {
+  // init
+  request_type =
+      loan_type == LoanType::CREDIT ? Request::CREDIT : Request::INSTALLMENT;
   connect(USER_DB, &DataBase::updated, this, &LoanManager::update_vars);
+  // upd
   LoanManager::update_vars();
 }
 
@@ -24,13 +28,15 @@ bool LoanManager::send_loan(Loan &l) { return USER_DB->add_loan(l); }
 
 std::vector<QTableWidgetItem *> LoanManager::get_items() const {
   std::vector<QTableWidgetItem *> items;
-  for (auto &c : credits)
-    items.push_back(new QTableWidgetItem(c->get_info()));
+  for (size_t i = 0; i < requests.size(); i++) {
+    QString item = requests[i]->get_info() + '\n' + credits[i]->get_info();
+    items.push_back(new QTableWidgetItem(item));
+  }
   return items;
 }
 
 bool LoanManager::mark(size_t item_index, bool verify) {
-  Credit *current = credits[item_index].get();
+  Loan *current = credits[item_index].get();
   std::unique_ptr<Request> r = std::move(requests[item_index]);
   Request ur(verify ? Request::VERIFY : Request::UNDO, user->get_id(),
              r->get_id());
@@ -49,8 +55,8 @@ void LoanManager::update_vars() {
   credits.clear();
   requests.clear();
 
-  requests = USER_DB->get_requests(Request::CREDIT, mode == ItemsType::CLIENT);
+  requests = USER_DB->get_requests(request_type, mode == ItemsType::CLIENT);
   for (auto &r : requests) {
-    credits.push_back(USER_DB->get_credit(r->get_object()));
+    credits.push_back(USER_DB->get_loan(r->get_object()));
   }
 }

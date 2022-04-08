@@ -546,7 +546,7 @@ bool UserDB::add_loan(Loan &l) {
   return false;
 }
 
-std::unique_ptr<Credit> UserDB::get_credit(size_t id) {
+std::unique_ptr<Loan> UserDB::get_loan(size_t id) {
   QString query = QString("SELECT "
                           "opened, user_id, start_sum, percent, "
                           "start_date, period, payment, payed_num "
@@ -554,7 +554,7 @@ std::unique_ptr<Credit> UserDB::get_credit(size_t id) {
                   QString::number((id));
   exec(query);
 
-  std::unique_ptr<Credit> credit;
+  std::unique_ptr<Loan> loan;
   if (!db_query->next())
     return nullptr;
   bool opened = db_query->value(0).toBool();
@@ -565,10 +565,10 @@ std::unique_ptr<Credit> UserDB::get_credit(size_t id) {
   size_t period = db_query->value(5).toULongLong();
   size_t payment = db_query->value(6).toULongLong();
   size_t payed_num = db_query->value(7).toULongLong();
-  credit = std::make_unique<Credit>(id, opened, user_id, start_sum, percent,
-                                    start_date, period, payment, payed_num);
+  loan = std::make_unique<Loan>(id, opened, user_id, start_sum, percent,
+                                start_date, period, payment, payed_num);
 
-  return credit;
+  return loan;
 }
 
 std::vector<std::unique_ptr<Credit>> UserDB::get_credits() {
@@ -596,9 +596,9 @@ std::vector<std::unique_ptr<Credit>> UserDB::get_credits() {
   return credits;
 }
 
-bool UserDB::update(Credit &c) {
+bool UserDB::update(Loan &l) {
   QString query = QString("UPDATE credits SET %1 WHERE id = %2")
-                      .arg(c.get_update_query(), QString::number(c.get_id()));
+                      .arg(l.get_update_query(), QString::number(l.get_id()));
   if (exec(query)) {
     emit DataBase::updated();
     return true;

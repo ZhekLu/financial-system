@@ -71,9 +71,9 @@ public:
   // Credits
   bool add_credit(Credit &);
   bool add_loan(Loan &);
-  std::unique_ptr<Credit> get_credit(size_t id);
+  std::unique_ptr<Loan> get_loan(size_t id);
   std::vector<std::unique_ptr<Credit>> get_credits();
-  bool update(Credit &);
+  bool update(Loan &);
 
   // Debug methods
   void print_all_system_users();

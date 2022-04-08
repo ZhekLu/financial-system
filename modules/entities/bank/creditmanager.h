@@ -33,7 +33,8 @@ private:
 
   // fields
   LoanType loan_type;
-  std::vector<std::unique_ptr<Credit>> credits;
+  Request::Type request_type;
+  std::vector<std::unique_ptr<Loan>> credits;
   std::vector<std::unique_ptr<Request>> requests;
 };
 
