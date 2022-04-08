@@ -76,10 +76,11 @@ inline QString Loan::get_info() const {
                  "Sum: %2\n"
                  "Opened: %3\n"
                  "Date: %4\n"
-                 "Period: %5\n")
+                 "Period: %5\n"
+                 "Payed: %6\n")
       .arg(QString::number(user_id), QString::number(start_sum),
            opened ? "True" : "False", start_date.toString(),
-           QString::number(period));
+           QString::number(period), QString::number(payed_num));
 }
 
 inline void Loan::set_open(bool value) {

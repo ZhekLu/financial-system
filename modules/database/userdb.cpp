@@ -433,6 +433,27 @@ std::vector<std::unique_ptr<Request>> UserDB::get_requests(Request::Type type,
 }
 
 std::vector<std::unique_ptr<Request>>
+UserDB::get_requests(size_t sender, Request::Type type, bool viewed) {
+  QString query =
+      QString("SELECT id, object, approved "
+              "FROM requests WHERE sender = %1 and type = %2 and viewed = %3;")
+          .arg(QString::number(sender), QString::number(type),
+               QString::number(viewed));
+  exec(query);
+
+  std::vector<std::unique_ptr<Request>> requests;
+
+  while (db_query->next()) {
+    size_t id = db_query->value(0).toULongLong();
+    size_t object = db_query->value(1).toULongLong();
+    bool approved = db_query->value(2).toBool();
+    requests.push_back(
+        std::make_unique<Request>(id, type, sender, object, approved));
+  }
+  return requests;
+}
+
+std::vector<std::unique_ptr<Request>>
 UserDB::get_transfer_requests(bool viewed) {
   QString query = "SELECT id, type, sender, object, approved "
                   "FROM requests "

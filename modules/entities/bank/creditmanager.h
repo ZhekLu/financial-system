@@ -36,6 +36,8 @@ private:
   Request::Type request_type;
   std::vector<std::unique_ptr<Loan>> credits;
   std::vector<std::unique_ptr<Request>> requests;
+
+  void update_requests();
 };
 
 #endif // CREDITMANAGER_H

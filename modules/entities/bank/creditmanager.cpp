@@ -29,7 +29,9 @@ bool LoanManager::send_loan(Loan &l) { return USER_DB->add_loan(l); }
 std::vector<QTableWidgetItem *> LoanManager::get_items() const {
   std::vector<QTableWidgetItem *> items;
   for (size_t i = 0; i < requests.size(); i++) {
-    QString item = requests[i]->get_info() + '\n' + credits[i]->get_info();
+    QString item = requests[i]->get_info();
+    // if (credits[i])
+    item += credits[i]->get_info();
     items.push_back(new QTableWidgetItem(item));
   }
   return items;
@@ -52,11 +54,24 @@ size_t LoanManager::get_selected(size_t index) const {
 }
 
 void LoanManager::update_vars() {
-  credits.clear();
-  requests.clear();
+  update_requests();
 
-  requests = USER_DB->get_requests(request_type, mode == ItemsType::CLIENT);
+  // update credits;
+  credits.clear();
   for (auto &r : requests) {
     credits.push_back(USER_DB->get_loan(r->get_object()));
+  }
+}
+
+void LoanManager::update_requests() {
+  requests.clear();
+  switch (mode) {
+  case IHistoryManager::CLIENT:
+    requests = USER_DB->get_requests(user->get_id(), request_type, true);
+    break;
+  case IHistoryManager::SYSTEM:
+    requests = USER_DB->get_requests(request_type, false);
+  case IHistoryManager::NON:
+    break;
   }
 }
