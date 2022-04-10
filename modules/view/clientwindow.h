@@ -6,8 +6,8 @@
 #include "creditwidget.h"
 #include "historywidget.h"
 #include "modules/database/userdb.h"
-#include "modules/entities/bank/transactionmanager.h"
 #include "modules/entities/bank/bankaccount.h"
+#include "modules/entities/bank/transactionmanager.h"
 #include "modules/entities/entity.h"
 #include "modules/entities/individual.h"
 #include "transferwidget.h"
@@ -36,6 +36,7 @@ private slots:
   void on_transfer_but_clicked();
   void on_withdraw_but_clicked();
   void on_freeze_but_clicked();
+  void on_block_but_clicked();
   void on_credit_but_clicked();
   void on_info_but_clicked();
   void on_log_out_but_clicked();

@@ -10,6 +10,7 @@ class TransactionManager : public IHistoryManager {
   Q_OBJECT
 public:
   static bool freeze_request(size_t sender_id, size_t account_id, bool freeze);
+  static bool block_request(size_t sender_id, size_t account_id, bool block);
   static bool withdraw_request(size_t sender_id, size_t account_id, size_t sum);
   static bool transfer_request(size_t sender_id, size_t account_id,
                                size_t receiver_id, size_t sum);

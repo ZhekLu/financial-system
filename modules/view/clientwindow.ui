@@ -21,7 +21,7 @@
     <property name="geometry">
      <rect>
       <x>420</x>
-      <y>230</y>
+      <y>250</y>
       <width>101</width>
       <height>31</height>
      </rect>
@@ -59,7 +59,7 @@ QPushButton:hover{
     <property name="geometry">
      <rect>
       <x>420</x>
-      <y>150</y>
+      <y>130</y>
       <width>101</width>
       <height>31</height>
      </rect>
@@ -97,7 +97,7 @@ QPushButton:hover{
     <property name="geometry">
      <rect>
       <x>420</x>
-      <y>190</y>
+      <y>170</y>
       <width>101</width>
       <height>31</height>
      </rect>
@@ -135,7 +135,7 @@ QPushButton:hover{
     <property name="geometry">
      <rect>
       <x>420</x>
-      <y>20</y>
+      <y>0</y>
       <width>101</width>
       <height>31</height>
      </rect>
@@ -173,7 +173,7 @@ QPushButton:hover{
     <property name="geometry">
      <rect>
       <x>420</x>
-      <y>330</y>
+      <y>340</y>
       <width>101</width>
       <height>31</height>
      </rect>
@@ -249,7 +249,7 @@ QPushButton:hover{
     <property name="geometry">
      <rect>
       <x>420</x>
-      <y>110</y>
+      <y>90</y>
       <width>101</width>
       <height>31</height>
      </rect>
@@ -928,7 +928,7 @@ color: rgb(255, 255, 255);</string>
     <property name="geometry">
      <rect>
       <x>420</x>
-      <y>270</y>
+      <y>290</y>
       <width>101</width>
       <height>31</height>
      </rect>
@@ -966,7 +966,7 @@ QPushButton:hover{
     <property name="geometry">
      <rect>
       <x>420</x>
-      <y>60</y>
+      <y>40</y>
       <width>101</width>
       <height>31</height>
      </rect>
@@ -998,6 +998,44 @@ QPushButton:hover{
     </property>
     <property name="text">
      <string>Mange</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="block_but">
+    <property name="geometry">
+     <rect>
+      <x>420</x>
+      <y>210</y>
+      <width>101</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>-1</pointsize>
+      <underline>false</underline>
+      <strikeout>false</strikeout>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+  font-size: 12px;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 15px;
+}
+QPushButton:hover{
+ background-color: rgb(85, 195, 89);
+}</string>
+    </property>
+    <property name="text">
+     <string>Block</string>
     </property>
    </widget>
   </widget>

@@ -14,6 +14,19 @@ bool TransactionManager::freeze_request(size_t sender_id, size_t account_id,
                       Request(Request::FREEZE, sender_id, acc->get_id()));
 }
 
+bool TransactionManager::block_request(size_t sender_id, size_t account_id,
+                                       bool block) {
+  std::unique_ptr<BankAccount> acc(USER_DB->get_account(account_id));
+  if (!acc)
+    return false;
+  if (acc->is_blocked() == block)
+    return true;
+  Request::Type type = block ? Request::BLOCK : Request::UNBLOCK;
+  Request r(type, sender_id, acc->get_id());
+  IHistoryManager::send_request(r);
+  return true;
+}
+
 bool TransactionManager::withdraw_request(size_t sender_id, size_t account_id,
                                           size_t sum) {
   std::unique_ptr<BankAccount> acc(USER_DB->get_account(account_id));

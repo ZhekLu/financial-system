@@ -113,9 +113,17 @@ void ClientWindow::on_info_but_clicked() {
 void ClientWindow::on_freeze_but_clicked() {
   if (current_account)
     qDebug() << ui->freeze_but->text()
-             << TransactionManager::freeze_request(user->get_id(),
-                                               current_account->get_id(),
-                                               !current_account->is_frozen());
+             << TransactionManager::freeze_request(
+                    user->get_id(), current_account->get_id(),
+                    !current_account->is_frozen());
+}
+
+void ClientWindow::on_block_but_clicked() {
+  if (current_account)
+    qDebug() << ui->block_but->text()
+             << TransactionManager::block_request(
+                    user->get_id(), current_account->get_id(),
+                    !current_account->is_blocked());
 }
 
 void ClientWindow::on_withdraw_but_clicked() {
@@ -157,15 +165,14 @@ void ClientWindow::on_manage_but_clicked() {
 
 void ClientWindow::on_table_widget_cellClicked(int row, int) {
   current_account = accounts[row].get();
-  if (current_account->is_frozen()) {
-    ui->freeze_but->setText("Unfreeze");
-    ui->transfer_but->setEnabled(false);
-    ui->withdraw_but->setEnabled(false);
-  } else {
-    ui->freeze_but->setText("Freeze");
-    ui->transfer_but->setEnabled(true);
-    ui->withdraw_but->setEnabled(true);
-  }
+  bool vis = !current_account->is_frozen() && !current_account->is_blocked();
+
+  ui->freeze_but->setText(current_account->is_frozen() ? "Unfreeze" : "Freeze");
+  ui->block_but->setText(current_account->is_blocked() ? "Unblock" : "Block");
+
+  ui->transfer_but->setEnabled(vis);
+  ui->withdraw_but->setEnabled(vis);
+
   ui->current_label->setText("Selected account : " +
                              QString::number(current_account->get_id()));
 }

@@ -24,6 +24,7 @@ public:
   size_t get_owner() const { return owner_id; }
   size_t get_bank() const { return bank_id; }
   bool is_frozen() const { return frozen; }
+  bool is_blocked() const { return blocked; }
   bool is_available() const { return !frozen && !blocked && available; }
 
   // id, user_id, bank_id, balance, frozen, blocked, available
@@ -76,9 +77,10 @@ inline QString BankAccount::get_update_query() {
 inline QString BankAccount::get_info() const {
   return QString("id: %1\n"
                  "balance: %2\n"
-                 "frozen: %3\n")
+                 "frozen: %3\n"
+                 "blocked: %4\n")
       .arg(QString::number(id), QString::number(balance),
-           frozen ? "True" : "False");
+           frozen ? "True" : "False", blocked ? "True" : "False");
 }
 
 #endif // BANKACCOUNT_H

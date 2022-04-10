@@ -19,7 +19,10 @@ public:
     LOGIN_USER,
     // system
     UNDO,
-    VERIFY
+    VERIFY,
+    // block
+    BLOCK,
+    UNBLOCK
   };
 
   Request(size_t id, Type type, size_t from, size_t object,
@@ -69,7 +72,8 @@ inline QString Request::get_values_query() {
 }
 
 inline QString Request::get_update_query() const {
-  return QString("viewed = %1").arg(QString::number(viewed));
+  return QString("approved = %1, viewed = %2")
+      .arg(QString::number(approved), QString::number(viewed));
 }
 
 inline QString Request::get_info() const {

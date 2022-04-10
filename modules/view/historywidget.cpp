@@ -51,7 +51,6 @@ void HistoryWidget::manager_factory(IUser *user, Request::Type request_type) {
   switch (request_type) {
   case Request::TRANSFER:
   case Request::WITHDRAW:
-  case Request::TOPUP:
     manager = std::make_unique<TransactionManager>(user);
     break;
   case Request::INSTALLMENT:
