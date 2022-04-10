@@ -3,9 +3,10 @@
 
 #include "modules/database/userdb.h"
 #include "modules/entities/IUser.h"
-#include "modules/entities/bank/transactionmanager.h"
+#include "modules/entities/bank/accountmanager.h"
 #include "modules/entities/bank/loanmanager.h"
 #include "modules/entities/bank/request.h"
+#include "modules/entities/bank/transactionmanager.h"
 #include <QWidget>
 
 namespace Ui {

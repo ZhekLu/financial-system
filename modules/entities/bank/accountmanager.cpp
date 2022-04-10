@@ -15,11 +15,33 @@ AccountManager::AccountManager(IUser *user, ItemsType) : IHistoryManager(user) {
   AccountManager::update_vars();
 }
 
-std::vector<QTableWidgetItem *> AccountManager::get_items() const {}
+std::vector<QTableWidgetItem *> AccountManager::get_items() const {
+  std::vector<QTableWidgetItem *> items;
+  for (size_t i = 0; i < requests.size(); i++) {
+    QString item = requests[i]->get_info() + accounts[i]->get_info();
+    items.push_back(new QTableWidgetItem(item));
+  }
+  return items;
+}
 
-bool AccountManager::mark(size_t item_index, bool verify) {}
+bool AccountManager::mark(size_t item_index, bool verify) {
+  BankAccount *current = accounts[item_index].get();
+  std::unique_ptr<Request> r = std::move(requests[item_index]);
+  current->set_available(verify);
 
-size_t AccountManager::get_selected(size_t index) const {}
+  Request ur(verify ? Request::VERIFY : Request::UNDO, user->get_id(),
+             r->get_id());
+  ur.set_approved(USER_DB->update(*current));
+
+  r->set_viewed(IHistoryManager::send_request(ur));
+  if (r->is_viewed())
+    qDebug() << "Request : " << USER_DB->update(*r);
+  return r->is_viewed();
+}
+
+size_t AccountManager::get_selected(size_t index) const {
+  return accounts[index]->get_id();
+}
 
 void AccountManager::update_vars() {
   requests.clear();
@@ -29,4 +51,12 @@ void AccountManager::update_vars() {
   for (auto &r : requests) {
     accounts.push_back(USER_DB->get_account(r->get_object()));
   }
+}
+
+bool AccountManager::approve_login(BankAccount *acc) {
+  Request r(Request::VERIFY, user->get_id(), acc->get_id());
+  acc->set_available(true);
+
+  r.set_approved(USER_DB->update(*acc));
+  return IHistoryManager::send_request(r);
 }

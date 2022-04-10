@@ -340,10 +340,11 @@ bool UserDB::contains(BankAccount &acc) {
 
 std::vector<std::unique_ptr<BankAccount>>
 UserDB::get_user_accounts(size_t user_id) {
-  QString query = ("SELECT id, bank_id, balance, frozen, blocked, available "
-                   "FROM accounts "
-                   "WHERE user_id = ") +
-                  qs(QString::number(user_id));
+  QString query =
+      QString("SELECT id, bank_id, balance, frozen, blocked, available "
+              "FROM accounts "
+              "WHERE user_id = %1 and available = 1")
+          .arg(QString::number(user_id));
   exec(query);
 
   std::vector<std::unique_ptr<BankAccount>> accounts;

@@ -46,8 +46,11 @@ bool LoanManager::mark(size_t item_index, bool verify) {
   std::unique_ptr<Request> r = std::move(requests[item_index]);
   Request ur(verify ? Request::VERIFY : Request::UNDO, user->get_id(),
              r->get_id());
+
   current->set_open(verify);
-  r->set_viewed(USER_DB->update(*current));
+  ur.set_approved(USER_DB->update(*current));
+
+  r->set_viewed(IHistoryManager::send_request(ur));
   if (r->is_viewed())
     qDebug() << "Request : " << USER_DB->update(*r);
   return r->is_viewed();

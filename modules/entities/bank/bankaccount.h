@@ -17,6 +17,7 @@ public:
   bool withdraw(size_t value);
   bool can_pay(size_t value) const { return balance >= value; }
   void revert_frozen() { frozen = !frozen; }
+  void set_available(bool value) { available = value; }
 
   // getters
   size_t get_balance() const { return balance; }

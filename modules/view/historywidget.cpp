@@ -63,6 +63,8 @@ void HistoryWidget::manager_factory(IUser *user, Request::Type request_type) {
                                             user_mode);
     break;
   case Request::LOGIN_ACCOUNT:
+    manager = std::make_unique<AccountManager>(user, user_mode);
+    break;
   case Request::LOGIN_USER:
     break;
   default:

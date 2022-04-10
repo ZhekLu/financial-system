@@ -31,6 +31,7 @@ private:
   std::unique_ptr<HistoryWidget> transaction_widget;
   std::unique_ptr<HistoryWidget> credit_widget;
   std::unique_ptr<HistoryWidget> installment_widget;
+  std::unique_ptr<HistoryWidget> accounts_widget;
 };
 
 #endif // SYSTEMWINDOW_H

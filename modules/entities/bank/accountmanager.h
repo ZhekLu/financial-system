@@ -21,6 +21,8 @@ private slots:
 private:
   std::vector<std::unique_ptr<BankAccount>> accounts;
   std::vector<std::unique_ptr<Request>> requests;
+
+  bool approve_login(BankAccount *acc);
 };
 
 #endif // ACCOUNTMANAGER_H
