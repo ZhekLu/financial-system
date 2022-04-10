@@ -32,6 +32,8 @@ private:
   static bool send_request(BankAccount *acc, BankAccount *sec, Request r);
 
   static bool send_transaction(Transaction &);
+  static bool make_transaction(size_t sender, BankAccount *from,
+                               BankAccount *to, size_t sum);
   static bool make_transaction(size_t sender, BankAccount *acc, size_t dest,
                                size_t sum);
   static bool make_withdraw(size_t sender, BankAccount *acc, size_t sum);
