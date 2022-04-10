@@ -9,7 +9,7 @@ public:
   static bool add_account_request(size_t sender_id, BankAccount *acc);
 
   // Manager
-  AccountManager(IUser *user);
+  AccountManager(IUser *user, ItemsType items_type = ItemsType::SYSTEM);
 
   std::vector<QTableWidgetItem *> get_items() const override;
   bool mark(size_t item_index, bool verify = false) override;
@@ -19,7 +19,7 @@ private slots:
   void update_vars() override;
 
 private:
-  //    std::vector<std::unique_ptr<Transaction>> transactions;
+  std::vector<std::unique_ptr<BankAccount>> accounts;
   std::vector<std::unique_ptr<Request>> requests;
 };
 

@@ -1,5 +1,5 @@
-#ifndef CREDITMANAGER_H
-#define CREDITMANAGER_H
+#ifndef LOANMANAGER_H
+#define LOANMANAGER_H
 
 #include "IHistoryManager.h"
 #include "credit.h"
@@ -40,4 +40,4 @@ private:
   void update_requests();
 };
 
-#endif // CREDITMANAGER_H
+#endif // LOANMANAGER_H

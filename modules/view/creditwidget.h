@@ -2,7 +2,7 @@
 #define CREDITWIDGET_H
 
 #include "addcardwidget.h"
-#include "modules/entities/bank/creditmanager.h"
+#include "modules/entities/bank/loanmanager.h"
 #include <QIntValidator>
 #include <QWidget>
 #include <memory>

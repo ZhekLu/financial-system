@@ -1,4 +1,6 @@
-#include "creditmanager.h"
+#include "loanmanager.h"
+
+// Static
 
 bool LoanManager::loan_request(IUser *user, Loan &l, LoanType type) {
   Request r(type == LoanType::CREDIT ? Request::CREDIT : Request::INSTALLMENT,
@@ -6,6 +8,8 @@ bool LoanManager::loan_request(IUser *user, Loan &l, LoanType type) {
   r.set_approved(send_loan(l));
   return IHistoryManager::send_request(r);
 }
+
+// Object
 
 LoanManager::LoanManager(LoanType loan_type, IUser *user, ItemsType items_type)
     : IHistoryManager(user, items_type), loan_type(loan_type) {

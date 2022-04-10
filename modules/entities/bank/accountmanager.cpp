@@ -10,7 +10,7 @@ bool AccountManager::add_account_request(size_t sender_id, BankAccount *acc) {
 
 // Object
 
-AccountManager::AccountManager(IUser *user) : IHistoryManager(user) {
+AccountManager::AccountManager(IUser *user, ItemsType) : IHistoryManager(user) {
   connect(USER_DB, &DataBase::updated, this, &AccountManager::update_vars);
   AccountManager::update_vars();
 }
@@ -21,4 +21,12 @@ bool AccountManager::mark(size_t item_index, bool verify) {}
 
 size_t AccountManager::get_selected(size_t index) const {}
 
-void AccountManager::update_vars() {}
+void AccountManager::update_vars() {
+  requests.clear();
+  accounts.clear();
+
+  requests = USER_DB->get_requests(Request::Type::LOGIN_ACCOUNT, false);
+  for (auto &r : requests) {
+    accounts.push_back(USER_DB->get_account(r->get_object()));
+  }
+}

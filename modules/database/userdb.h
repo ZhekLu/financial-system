@@ -48,7 +48,7 @@ public:
   // Bank accounts
   bool add_account(BankAccount *);
   size_t get_account_balance(size_t id);
-  BankAccount *get_account(size_t id);
+  std::unique_ptr<BankAccount> get_account(size_t id);
   bool contains(BankAccount &acc);
   std::vector<std::unique_ptr<BankAccount>> get_user_accounts(size_t user_id);
   bool update(BankAccount &);

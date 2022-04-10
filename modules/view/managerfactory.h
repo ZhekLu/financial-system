@@ -2,7 +2,6 @@
 #define MANAGERFACTORY_H
 
 #include "clientwindow.h"
-#include "depositmanager.h"
 #include "modules/modes.h"
 #include "systemwindow.h"
 

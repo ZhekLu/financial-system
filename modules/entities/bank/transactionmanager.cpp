@@ -41,6 +41,9 @@ bool TransactionManager::undo_transfer_request(size_t initiator,
                   (!receiver || !receiver->can_pay(t.get_amount()))))
     return false;
 
+  if (!t.is_approved())
+    return false;
+
   return t.get_type() == Transaction::TRANSFER
              ? make_undo_transaction(initiator, sender.get(), receiver.get(), t)
              : make_undo_withdraw(initiator, sender.get(), t);
