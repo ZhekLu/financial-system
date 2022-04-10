@@ -41,8 +41,10 @@ bool TransactionManager::undo_transfer_request(size_t initiator,
                   (!receiver || !receiver->can_pay(t.get_amount()))))
     return false;
 
-  if (!t.is_approved())
-    return false;
+  if (!t.is_approved()) {
+    //    return !IHistoryManager::send_request(Request)
+    return false; // whaaaat is there needed
+  }
 
   return t.get_type() == Transaction::TRANSFER
              ? make_undo_transaction(initiator, sender.get(), receiver.get(), t)
@@ -53,12 +55,19 @@ bool TransactionManager::make_undo_transaction(size_t initiator,
                                                BankAccount *sender,
                                                BankAccount *receiver,
                                                Transaction &original) {
+
   receiver->withdraw(original.get_amount());
   sender->top_up(original.get_amount());
+
   Transaction ut(original.get_receiver(), original.get_sender(),
                  original.get_amount());
+  //  Request ur(Request::UNDO, initiator, ut.get_id());
+  //  if (original.is_approved())
   ut.set_approved(send_request(sender, receiver,
                                Request(Request::UNDO, initiator, ut.get_id())));
+  //  else
+  //    IHistoryManager::send_request(ur);
+
   return send_transaction(ut);
 }
 
@@ -165,7 +174,8 @@ size_t TransactionManager::get_selected(size_t index) const {
 void TransactionManager::update_vars() {
   transactions.clear();
   requests.clear();
-  requests = USER_DB->get_transfer_requests();
+  //  requests = USER_DB->get_transfer_requests();
+  requests = USER_DB->get_requests(Request::TRANSFER, false);
   for (auto &r : requests) {
     transactions.push_back(USER_DB->get_transaction(r->get_object()));
   }
