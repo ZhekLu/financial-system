@@ -3,7 +3,7 @@
 
 #include "modules/database/userdb.h"
 #include "modules/entities/IUser.h"
-#include "modules/entities/bank/accountmanager.h"
+#include "modules/entities/bank/transactionmanager.h"
 #include "modules/entities/bank/creditmanager.h"
 #include "modules/entities/bank/request.h"
 #include <QWidget>

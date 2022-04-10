@@ -1,5 +1,5 @@
 #include "clientmanagewindow.h"
-#include "ui_usermanagewindow.h"
+#include "ui_clientmanagewindow.h"
 
 ClientManageWindow::ClientManageWindow(IUser *user, QWidget *parent)
     : QMainWindow(parent), ui(new Ui::UserManageWindow), user(user) {

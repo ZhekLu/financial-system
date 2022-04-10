@@ -52,7 +52,7 @@ void HistoryWidget::manager_factory(IUser *user, Request::Type request_type) {
   case Request::TRANSFER:
   case Request::WITHDRAW:
   case Request::TOPUP:
-    manager = std::make_unique<AccountManager>(user);
+    manager = std::make_unique<TransactionManager>(user);
     break;
   case Request::INSTALLMENT:
     manager = std::make_unique<LoanManager>(LoanManager::LoanType::INSTALLMENT,

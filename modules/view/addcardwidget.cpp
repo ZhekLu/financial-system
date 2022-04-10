@@ -34,9 +34,10 @@ void AddCardWidget::on_confirm_but_clicked() {
         user->get_id(),
         banks[banks_indexes[ui->bank_chooser->currentIndex()]]->get_id());
     emit closed();
-  } else {
-    emit selected(banks[banks_indexes[ui->bank_chooser->currentIndex()]].get());
+    return;
   }
+
+  emit selected(banks[banks_indexes[ui->bank_chooser->currentIndex()]].get());
 }
 
 void AddCardWidget::send_add_account(size_t user_id, size_t bank_id) {

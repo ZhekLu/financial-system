@@ -7,6 +7,8 @@ class Entity : public IUser {
 public:
   enum Type { IE, LLC, CJSC, OJSC };
 
+  static inline std::vector<QString> type_string{"IE", "LLC", "CJSC", "OJSC"};
+
   Entity(Type type, std::string name, size_t PAC, size_t BIC,
          std::string adress, size_t bank_id);
 

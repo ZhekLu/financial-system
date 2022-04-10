@@ -17,11 +17,13 @@ SOURCES += \
     database/userdb.cpp \
     modules/entities/bank/accountmanager.cpp \
     modules/entities/bank/creditmanager.cpp \
+    modules/entities/bank/transactionmanager.cpp \
     modules/view/addcardwidget.cpp \
     modules/view/clientmanagewindow.cpp \
     modules/view/clientwindow.cpp \
     modules/view/creditwidget.cpp \
     modules/view/historywidget.cpp \
+    modules/view/registrationwidget.cpp \
     modules/view/systemwindow.cpp \
     modules/view/transferwidget.cpp \
     view/authwidget.cpp \
@@ -42,6 +44,7 @@ HEADERS += \
     modules/entities/bank/loan.h \
     modules/entities/bank/request.h \
     modules/entities/bank/transaction.h \
+    modules/entities/bank/transactionmanager.h \
     modules/entities/entity.h \
     modules/entities/individual.h \
     modules/view/addcardwidget.h \
@@ -50,6 +53,7 @@ HEADERS += \
     modules/view/creditwidget.h \
     modules/view/historywidget.h \
     modules/view/managerfactory.h \
+    modules/view/registrationwidget.h \
     modules/view/systemwindow.h \
     modules/view/transferwidget.h \
     singleton.h modes.h \
@@ -66,6 +70,7 @@ FORMS += \
     modules/view/clientwindow.ui \
     modules/view/creditwidget.ui \
     modules/view/historywidget.ui \
+    modules/view/registrationwidget.ui \
     modules/view/systemwindow.ui \
     modules/view/transferwidget.ui \
     view/authwidget.ui \

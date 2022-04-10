@@ -34,6 +34,7 @@ void SystemWindow::on_verify_but_clicked() {
   switch (ui->tab_widget->currentIndex()) {
   case WidgetType::CREDITS:
     qDebug() << "Credit verify : " << credit_widget->mark(true);
+    break;
   case WidgetType::INSTALLMENTS:
     qDebug() << "Installment verify : " << installment_widget->mark(true);
   case WidgetType::ACCOUNTS:

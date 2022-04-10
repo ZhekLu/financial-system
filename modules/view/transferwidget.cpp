@@ -63,11 +63,11 @@ void TransferWidget::on_confirm_but_clicked() {
     size_t destination = ui->id_line->text().toULongLong();
     if (destination != account->get_id())
       qDebug() << "Transaction:"
-               << AccountManager::transfer_request(
+               << TransactionManager::transfer_request(
                       user->get_id(), account->get_id(), destination, amount);
   } else {
     qDebug() << "Withdraw"
-             << AccountManager::withdraw_request(user->get_id(),
+             << TransactionManager::withdraw_request(user->get_id(),
                                                  account->get_id(), amount);
   }
   on_cancel_but_clicked();

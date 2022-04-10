@@ -6,6 +6,7 @@
 #include "modes.h"
 #include "view/authwidget.h"
 #include "view/managerfactory.h"
+#include "view/registrationwidget.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -22,25 +23,21 @@ public:
 
 private slots:
   void on_ind_log_but_clicked();
-
   void on_ent_log_but_clicked();
-
   void on_man_log_but_clicked();
-
   void on_op_log_but_clicked();
-
   void on_adm_log_but_clicked();
+  void on_exit_but_clicked();
+  void on_debug_but_clicked();
+  void on_reg_but_clicked();
 
   void auth_connection(size_t, LoginMode);
-
-  void on_exit_but_clicked();
-
-  void on_debug_but_clicked();
 
 private:
   // fields
   Ui::MainWindow *ui;
   AuthWidget *aw;
+  std::unique_ptr<RegistrationWidget> rw;
 
   // methods
   void on_login_button_clicked(LoginMode mode);
