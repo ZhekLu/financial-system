@@ -2,6 +2,33 @@
 
 // Static
 
+bool AccountManager::freeze_request(size_t sender_id, size_t account_id,
+                                    bool freeze) {
+  std::unique_ptr<BankAccount> acc(USER_DB->get_account(account_id));
+  if (!acc)
+    return false;
+  if (acc->is_frozen() == freeze)
+    return true;
+  acc->revert_frozen();
+
+  Request r(Request::FREEZE, sender_id, acc->get_id());
+  r.set_approved(USER_DB->update(*acc));
+  return IHistoryManager::send_request(r);
+}
+
+bool AccountManager::block_request(size_t sender_id, size_t account_id,
+                                   bool block) {
+  std::unique_ptr<BankAccount> acc(USER_DB->get_account(account_id));
+  if (!acc)
+    return false;
+  if (acc->is_blocked() == block)
+    return true;
+  Request::Type type = block ? Request::BLOCK : Request::UNBLOCK;
+  Request r(type, sender_id, acc->get_id());
+  IHistoryManager::send_request(r);
+  return true;
+}
+
 bool AccountManager::add_account_request(size_t sender_id, BankAccount *acc) {
   Request r(Request::LOGIN_ACCOUNT, sender_id, acc->get_id());
   r.set_approved(USER_DB->add_account(acc));

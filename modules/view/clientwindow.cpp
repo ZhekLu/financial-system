@@ -113,17 +113,17 @@ void ClientWindow::on_info_but_clicked() {
 void ClientWindow::on_freeze_but_clicked() {
   if (current_account)
     qDebug() << ui->freeze_but->text()
-             << TransactionManager::freeze_request(
-                    user->get_id(), current_account->get_id(),
-                    !current_account->is_frozen());
+             << AccountManager::freeze_request(user->get_id(),
+                                               current_account->get_id(),
+                                               !current_account->is_frozen());
 }
 
 void ClientWindow::on_block_but_clicked() {
   if (current_account)
     qDebug() << ui->block_but->text()
-             << TransactionManager::block_request(
-                    user->get_id(), current_account->get_id(),
-                    !current_account->is_blocked());
+             << AccountManager::block_request(user->get_id(),
+                                              current_account->get_id(),
+                                              !current_account->is_blocked());
 }
 
 void ClientWindow::on_withdraw_but_clicked() {

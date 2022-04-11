@@ -6,6 +6,8 @@
 class AccountManager : public IHistoryManager {
   Q_OBJECT
 public:
+  static bool freeze_request(size_t sender_id, size_t account_id, bool freeze);
+  static bool block_request(size_t sender_id, size_t account_id, bool freeze);
   static bool add_account_request(size_t sender_id, BankAccount *acc);
 
   // Manager
