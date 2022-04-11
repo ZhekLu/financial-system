@@ -40,7 +40,8 @@ void CreditWidget::init_labels() {
   ui->amount_line->setValidator(validator.get());
 }
 
-void CreditWidget::show() {
+void CreditWidget::show(LoanManager::LoanType mode) {
+  current_mode = mode;
   ui->stacked_widget->setCurrentIndex(Page::Select);
   bank_selector->show();
   ui->amount_line->clear();
@@ -54,6 +55,10 @@ void CreditWidget::update_labels(Measure measure) {
 }
 
 void CreditWidget::show_settings_widget() {
+  bool visible = current_mode == LoanManager::LoanType::CREDIT;
+  ui->percent_label->setVisible(visible);
+  ui->percent_text_label->setVisible(visible);
+
   ui->stacked_widget->setCurrentIndex(Page::Settings);
   ui->percent_label->setText(QString::number(selected_bank->get_percent()));
 }
@@ -62,9 +67,18 @@ void CreditWidget::update_credit() {
   size_t period_in_months = ui->period_chooser->currentText().toInt();
   if (ui->measure_chooser->currentIndex() == Measure::YEAR)
     period_in_months *= 12;
-  current_credit = std::make_unique<Credit>(
-      user->get_id(), ui->amount_line->text().toULongLong(),
-      selected_bank->get_percent(), period_in_months);
+  switch (current_mode) {
+  case LoanManager::LoanType::CREDIT:
+    current_credit = std::make_unique<Credit>(
+        user->get_id(), ui->amount_line->text().toULongLong(),
+        selected_bank->get_percent(), period_in_months);
+    break;
+  case LoanManager::LoanType::INSTALLMENT:
+    current_credit = std::make_unique<Installment>(
+        user->get_id(), ui->amount_line->text().toULongLong(),
+        period_in_months);
+    break;
+  }
 }
 
 void CreditWidget::show_info_widget() {
@@ -92,8 +106,10 @@ void CreditWidget::on_cancel_inf_but_clicked() {
 }
 
 void CreditWidget::on_confirm_inf_but_clicked() {
-  qDebug() << "Credit request : "
-           << CreditManager::credit_request(user, *current_credit);
+  qDebug() << (current_mode == LoanManager::LoanType::CREDIT ? "Credit"
+                                                             : "Installment")
+           << " request : "
+           << LoanManager::loan_request(user, *current_credit, current_mode);
 }
 
 void CreditWidget::on_confirm_set_but_clicked() {

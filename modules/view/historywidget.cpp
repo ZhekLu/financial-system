@@ -2,27 +2,13 @@
 #include "ui_historywidget.h"
 
 HistoryWidget::HistoryWidget(IUser *user, Request::Type request_type,
-                             bool user_mode, QWidget *parent)
+                             IHistoryManager::ItemsType user_mode,
+                             QWidget *parent)
     : QWidget(parent), ui(new Ui::HistoryWidget), type(request_type),
       user_mode(user_mode) {
   ui->setupUi(this);
+  manager_factory(user, request_type);
 
-  switch (request_type) {
-  case Request::TRANSFER:
-  case Request::WITHDRAW:
-  case Request::TOPUP:
-    manager = std::make_unique<AccountManager>(user);
-    break;
-  case Request::INSTALLMENT:
-  case Request::CREDIT:
-    manager = std::make_unique<CreditManager>(user, user_mode);
-    break;
-  case Request::LOGIN_ACCOUNT:
-  case Request::LOGIN_USER:
-    break;
-  default:
-    break;
-  }
   connect(USER_DB, &DataBase::updated, this, &HistoryWidget::update);
   update();
 }
@@ -58,6 +44,30 @@ void HistoryWidget::update_grid() {
   for (size_t i = 0; i < items.size(); i++) {
     ui->table_widget->insertRow(i);
     ui->table_widget->setItem(i, 0, items[i]);
+  }
+}
+
+void HistoryWidget::manager_factory(IUser *user, Request::Type request_type) {
+  switch (request_type) {
+  case Request::TRANSFER:
+  case Request::WITHDRAW:
+    manager = std::make_unique<TransactionManager>(user);
+    break;
+  case Request::INSTALLMENT:
+    manager = std::make_unique<LoanManager>(LoanManager::LoanType::INSTALLMENT,
+                                            user, user_mode);
+    break;
+  case Request::CREDIT:
+    manager = std::make_unique<LoanManager>(LoanManager::LoanType::CREDIT, user,
+                                            user_mode);
+    break;
+  case Request::LOGIN_ACCOUNT:
+    manager = std::make_unique<AccountManager>(user, user_mode);
+    break;
+  case Request::LOGIN_USER:
+    break;
+  default:
+    break;
   }
 }
 

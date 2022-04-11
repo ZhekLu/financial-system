@@ -25,8 +25,7 @@ void TransferWidget::show(Mode mode, BankAccount *acc) {
   ui->id_label->setVisible(visible);
   ui->id_line->setVisible(visible);
 
-  if (visible)
-    amount_validator->setTop(account->get_balance());
+  amount_validator->setTop(account->get_balance());
 }
 
 void TransferWidget::on_cancel_but_clicked() {
@@ -63,12 +62,12 @@ void TransferWidget::on_confirm_but_clicked() {
     size_t destination = ui->id_line->text().toULongLong();
     if (destination != account->get_id())
       qDebug() << "Transaction:"
-               << AccountManager::transfer_request(
+               << TransactionManager::transfer_request(
                       user->get_id(), account->get_id(), destination, amount);
   } else {
     qDebug() << "Withdraw"
-             << AccountManager::withdraw_request(user->get_id(),
-                                                 account->get_id(), amount);
+             << TransactionManager::withdraw_request(user->get_id(),
+                                                     account->get_id(), amount);
   }
   on_cancel_but_clicked();
 }

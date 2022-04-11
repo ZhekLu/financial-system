@@ -215,7 +215,7 @@ QPushButton:hover{
      <string>Back</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_7">
+   <widget class="QLabel" name="percent_text_label">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -487,6 +487,8 @@ padding-left:5px;
     </widget>
    </widget>
   </widget>
+  <zorder>stacked_widget</zorder>
+  <zorder>settings_widget</zorder>
  </widget>
  <resources/>
  <connections/>

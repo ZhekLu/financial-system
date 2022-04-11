@@ -4,8 +4,9 @@
 #include "modules/database/userdb.h"
 #include "modules/entities/IUser.h"
 #include "modules/entities/bank/accountmanager.h"
-#include "modules/entities/bank/creditmanager.h"
+#include "modules/entities/bank/loanmanager.h"
 #include "modules/entities/bank/request.h"
+#include "modules/entities/bank/transactionmanager.h"
 #include <QWidget>
 
 namespace Ui {
@@ -17,11 +18,13 @@ class HistoryWidget : public QWidget {
 
 public:
   explicit HistoryWidget(IUser *user, Request::Type request_type,
-                         bool user_mode, QWidget *parent = nullptr);
+                         IHistoryManager::ItemsType user_mode,
+                         QWidget *parent = nullptr);
   ~HistoryWidget();
 
   bool mark(bool verified);
   bool selection_set() const { return current_index != -1; }
+  size_t get_selected() const { return manager->get_selected(current_index); }
 
 private slots:
   void update();
@@ -30,12 +33,13 @@ private slots:
 private:
   Ui::HistoryWidget *ui;
   Request::Type type;
-  bool user_mode;
+  IHistoryManager::ItemsType user_mode;
 
   std::unique_ptr<IHistoryManager> manager;
   int current_index = -1;
 
   void update_grid();
+  void manager_factory(IUser *user, Request::Type request_type);
 };
 
 #endif // HISTORYWIDGET_H

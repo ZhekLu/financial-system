@@ -2,7 +2,7 @@
 #define CREDITWIDGET_H
 
 #include "addcardwidget.h"
-#include "modules/entities/bank/creditmanager.h"
+#include "modules/entities/bank/loanmanager.h"
 #include <QIntValidator>
 #include <QWidget>
 #include <memory>
@@ -24,7 +24,7 @@ public:
       QWidget *parent = nullptr);
   ~CreditWidget();
 
-  void show();
+  void show(LoanManager::LoanType mode);
 
 signals:
   void closed();
@@ -45,9 +45,11 @@ private:
   std::unique_ptr<AddCardWidget> bank_selector;
 
   IUser *user;
+  //  Mode current_mode;
+  LoanManager::LoanType current_mode;
 
   Bank *selected_bank;
-  std::unique_ptr<Credit> current_credit;
+  std::unique_ptr<Loan> current_credit;
 
   std::unique_ptr<QIntValidator> validator;
 
