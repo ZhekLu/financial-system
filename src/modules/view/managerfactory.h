@@ -2,6 +2,7 @@
 #define MANAGERFACTORY_H
 
 #include "clientwindow.h"
+#include "entityclientwindow.h"
 #include "modules/modes.h"
 #include "systemwindow.h"
 
@@ -24,14 +25,14 @@ public:
     case OPERATOR:
       return new SystemWindow(current, parent);
     case INDIVIDUAL:
-    case ENTITY:
-      return new ClientWindow(current,
-                              mode == ENTITY ? ClientWindow::AccessMode::Company
-                                             : ClientWindow::AccessMode::Person,
+      return new ClientWindow(current, ClientWindow::AccessMode::Person,
                               parent);
+    case ENTITY:
+      return new EntityClientWindow((Entity *)current, parent);
     }
     return nullptr;
   }
+  // todo! refactor this mehtod
 };
 
 #endif // MANAGERFACTORY_H
