@@ -2,16 +2,17 @@
 
 // Static
 
-bool AccountAddManager::deposit_request(size_t initiator_id, size_t bank_id,
-                                        size_t account_id,
-                                        size_t period_in_month,
-                                        size_t percent) {
+bool AccountAddManager::deposit_request(size_t initiator_id, size_t account_id,
+                                        size_t period_in_month) {
   auto account = USER_DB->get_account(account_id);
   if (!account || !account->is_available())
     return false;
 
-  AccountAdd deposit(initiator_id, bank_id, account_id, QDate::currentDate(),
-                     period_in_month, account->get_balance(), percent);
+  auto bank = USER_DB->get_bank(account->get_bank());
+
+  AccountAdd deposit(initiator_id, account->get_bank(), account_id,
+                     QDate::currentDate(), period_in_month,
+                     account->get_balance(), bank->get_percent());
   Request r(Request::DEPOSIT, initiator_id, deposit.get_id());
 
   return send_add(deposit, r);

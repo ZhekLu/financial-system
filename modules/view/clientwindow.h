@@ -2,11 +2,11 @@
 #define CLIENTWINDOW_H
 
 #include "addcardwidget.h"
+#include "additionwidget.h"
 #include "clientmanagewindow.h"
 #include "creditwidget.h"
 #include "historywidget.h"
 #include "modules/database/userdb.h"
-#include "modules/entities/bank/accountaddmanager.h"
 #include "modules/entities/bank/accountmanager.h"
 #include "modules/entities/bank/bankaccount.h"
 #include "modules/entities/entity.h"
@@ -50,7 +50,6 @@ private slots:
   void on_table_widget_cellClicked(int, int);
   void mode_widget_closed();
   void manage_window_closed();
-  void deposit_selected(size_t period);
 
 private:
   // View
@@ -68,10 +67,10 @@ private:
   std::unique_ptr<TransferWidget> transfer_widget;
   std::unique_ptr<CreditWidget> credit_widget;
   std::unique_ptr<AddCardWidget> add_widget;
-  std::unique_ptr<PeriodWidget> deposit_period_widget;
+  std::unique_ptr<AdditionWidget> deposit_widget;
   std::unique_ptr<ClientManageWindow> manage_window;
 
-  // methods
+  // fields
   std::unique_ptr<IUser> user;
   AccessMode mode;
 
@@ -81,6 +80,7 @@ private:
 
   // methods
   void update();
+  void update_variables();
   void update_grid();
   void update_grid_test();
   void clear_selected();

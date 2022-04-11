@@ -14,8 +14,6 @@ void PeriodWidget::on_confirm_but_clicked() {
   if (ui->measure_chooser->currentIndex() == Measure::YEAR)
     period_in_months *= 12;
   emit selected(period_in_months);
-
-  on_cance_but_clicked();
 }
 
 void PeriodWidget::on_cance_but_clicked() {

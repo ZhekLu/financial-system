@@ -235,23 +235,24 @@ Entity *UserDB::get_company(size_t id) {
   return new Entity(Entity::Type(type), name, PAC, id, adress, bank_bic);
 }
 
-Bank *UserDB::get_bank(size_t id) {
-  QString query = ("SELECT percent, name, type, PAC, adress, bank_bic "
-                   "FROM system_banks WHERE BIC = ") +
-                  QString::number(id);
-  exec(query);
+std::unique_ptr<Bank> UserDB::get_bank(size_t id) {
+  QString query =
+      ("SELECT percent, name, type, PAC, adress, bank_bic "
+       "FROM system_banks LEFT JOIN companies using(BIC) WHERE BIC = ") +
+      QString::number(id);
 
   if (!db_query->next())
     return nullptr;
 
-  int percent = db_query->value(0).toInt();
+  size_t percent = db_query->value(0).toInt();
   std::string name = db_query->value(1).toString().toStdString();
   int type = db_query->value(2).toInt();
   size_t PAC = db_query->value(3).toULongLong();
   std::string adress = db_query->value(4).toString().toStdString();
   size_t bank_bic = db_query->value(5).toULongLong();
 
-  return new Bank(percent, Entity::Type(type), name, PAC, id, adress, bank_bic);
+  return std::make_unique<Bank>(percent, Entity::Type(type), name, PAC, id,
+                                adress, bank_bic);
 }
 
 std::vector<Bank *> UserDB::get_banks() {

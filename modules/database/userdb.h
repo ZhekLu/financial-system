@@ -42,7 +42,7 @@ public:
   Entity *get_company(size_t id);
 
   // Banks
-  Bank *get_bank(size_t id);
+  std::unique_ptr<Bank> get_bank(size_t id);
   std::vector<Bank *> get_banks();
   std::unordered_map<size_t, std::unique_ptr<Bank>> get_hash_banks();
 

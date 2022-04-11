@@ -7,9 +7,8 @@
 class AccountAddManager : public IHistoryManager {
   Q_OBJECT
 public:
-  static bool deposit_request(size_t initiator_id, size_t bank_id,
-                              size_t account_id, size_t period_in_month,
-                              size_t percent);
+  static bool deposit_request(size_t initiator_id, size_t account_id,
+                              size_t period_in_month);
   static bool salary_request(size_t initiator_id, size_t bank_id,
                              size_t account_id, size_t period_in_month,
                              size_t salary_amount);
