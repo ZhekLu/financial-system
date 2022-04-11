@@ -42,6 +42,7 @@ public:
   bool is_approved() const { return approved; }
   bool is_viewed() const { return viewed; }
   size_t get_object() const { return object_id; }
+  Type get_type() const { return type; }
 
 private:
   Type type;
@@ -52,8 +53,9 @@ private:
 
   static inline IdGenerator id_creator{9, "requests", "id"};
   static inline std::vector<QString> type_string{
-      "TRANSFER",    "WITHDRAW",      "TOP UP",     "FREEZE", "CREDIT",
-      "INSTALLMENT", "LOGIN_ACCOUNT", "LOGIN_USER", "UNDO",   "VERIFY"};
+      "TRANSFER", "WITHDRAW",    "TOP UP",        "FREEZE",
+      "CREDIT",   "INSTALLMENT", "LOGIN_ACCOUNT", "LOGIN_USER",
+      "UNDO",     "VERIFY",      "BLOCK",         "UNBLOCK"};
 };
 
 inline Request::Request(size_t id, Type type, size_t from, size_t object,

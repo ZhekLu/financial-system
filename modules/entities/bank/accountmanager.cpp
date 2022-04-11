@@ -37,7 +37,8 @@ bool AccountManager::add_account_request(size_t sender_id, BankAccount *acc) {
 
 // Object
 
-AccountManager::AccountManager(IUser *user, ItemsType) : IHistoryManager(user) {
+AccountManager::AccountManager(IUser *user, Mode mode, ItemsType)
+    : IHistoryManager(user), mode(mode) {
   connect(USER_DB, &DataBase::updated, this, &AccountManager::update_vars);
   AccountManager::update_vars();
 }
@@ -54,7 +55,17 @@ std::vector<QTableWidgetItem *> AccountManager::get_items() const {
 bool AccountManager::mark(size_t item_index, bool verify) {
   BankAccount *current = accounts[item_index].get();
   std::unique_ptr<Request> r = std::move(requests[item_index]);
-  current->set_available(verify);
+
+  switch (mode) {
+  case AccountManager::LOGIN:
+    current->set_available(verify);
+    break;
+  case AccountManager::BLOCK:
+    bool blocked = r->get_type() == Request::BLOCK;
+    if (verify)
+      current->set_blocked(blocked);
+    break;
+  }
 
   Request ur(verify ? Request::VERIFY : Request::UNDO, user->get_id(),
              r->get_id());
@@ -74,7 +85,9 @@ void AccountManager::update_vars() {
   requests.clear();
   accounts.clear();
 
-  requests = USER_DB->get_requests(Request::Type::LOGIN_ACCOUNT, false);
+  requests = mode == Mode::LOGIN
+                 ? USER_DB->get_requests(Request::Type::LOGIN_ACCOUNT, false)
+                 : USER_DB->get_block_requests(false);
   for (auto &r : requests) {
     accounts.push_back(USER_DB->get_account(r->get_object()));
   }

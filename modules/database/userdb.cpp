@@ -386,7 +386,7 @@ void UserDB::add_request(Request &r) {
 }
 
 std::vector<std::unique_ptr<Request>> UserDB::get_requests() {
-  QString query = "SELECT id, type, sender, object, approved "
+  QString query = "SELECT id, type, sender, object, approved, viewed "
                   "FROM requests;";
   exec(query);
 
@@ -398,14 +398,15 @@ std::vector<std::unique_ptr<Request>> UserDB::get_requests() {
     size_t sender = db_query->value(2).toULongLong();
     size_t object = db_query->value(3).toULongLong();
     bool approved = db_query->value(4).toBool();
-    requests.push_back(std::make_unique<Request>(id, Request::Type(type),
-                                                 sender, object, approved));
+    bool viewed = db_query->value(5).toBool();
+    requests.push_back(std::make_unique<Request>(
+        id, Request::Type(type), sender, object, approved, viewed));
   }
   return requests;
 }
 
 std::vector<std::unique_ptr<Request>> UserDB::get_requests(Request::Type type) {
-  QString query = "SELECT id, sender, object, approved "
+  QString query = "SELECT id, sender, object, approved, viewed "
                   "FROM requests WHERE type = " +
                   QString::number(type);
   exec(query);
@@ -417,8 +418,9 @@ std::vector<std::unique_ptr<Request>> UserDB::get_requests(Request::Type type) {
     size_t sender = db_query->value(1).toULongLong();
     size_t object = db_query->value(2).toULongLong();
     bool approved = db_query->value(3).toBool();
-    requests.push_back(std::make_unique<Request>(id, Request::Type(type),
-                                                 sender, object, approved));
+    bool viewed = db_query->value(4).toBool();
+    requests.push_back(std::make_unique<Request>(
+        id, Request::Type(type), sender, object, approved, viewed));
   }
   return requests;
 }
@@ -438,7 +440,7 @@ std::vector<std::unique_ptr<Request>> UserDB::get_requests(Request::Type type,
     size_t object = db_query->value(2).toULongLong();
     bool approved = db_query->value(3).toBool();
     requests.push_back(
-        std::make_unique<Request>(id, type, sender, object, approved));
+        std::make_unique<Request>(id, type, sender, object, approved, viewed));
   }
   return requests;
 }
@@ -459,7 +461,28 @@ UserDB::get_requests(size_t sender, Request::Type type, bool viewed) {
     size_t object = db_query->value(1).toULongLong();
     bool approved = db_query->value(2).toBool();
     requests.push_back(
-        std::make_unique<Request>(id, type, sender, object, approved));
+        std::make_unique<Request>(id, type, sender, object, approved, viewed));
+  }
+  return requests;
+}
+
+std::vector<std::unique_ptr<Request>> UserDB::get_block_requests(bool viewed) {
+  QString query = "SELECT id, type, sender, object, approved "
+                  "FROM requests "
+                  "WHERE (type = 10 OR type = 11) and viewed = " +
+                  QString::number(viewed);
+  exec(query);
+
+  std::vector<std::unique_ptr<Request>> requests;
+
+  while (db_query->next()) {
+    size_t id = db_query->value(0).toULongLong();
+    int type = db_query->value(1).toInt();
+    size_t sender = db_query->value(2).toULongLong();
+    size_t object = db_query->value(3).toULongLong();
+    bool approved = db_query->value(4).toBool();
+    requests.push_back(std::make_unique<Request>(
+        id, Request::Type(type), sender, object, approved, viewed));
   }
   return requests;
 }
@@ -480,8 +503,8 @@ UserDB::get_transfer_requests(bool viewed) {
     size_t sender = db_query->value(2).toULongLong();
     size_t object = db_query->value(3).toULongLong();
     bool approved = db_query->value(4).toBool();
-    requests.push_back(std::make_unique<Request>(id, Request::Type(type),
-                                                 sender, object, approved));
+    requests.push_back(std::make_unique<Request>(
+        id, Request::Type(type), sender, object, approved, viewed));
   }
   return requests;
 }
