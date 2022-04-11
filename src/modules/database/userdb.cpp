@@ -542,13 +542,15 @@ bool UserDB::update(Request &r) {
 
 // Transactions
 
-void UserDB::add_transaction(Transaction &t) {
+bool UserDB::add_transaction(Transaction &t) {
   QString query = QString("INSERT INTO transactions"
                           "(id, sender, receiver, amount, approved, type) "
                           "VALUES %1;")
                       .arg(t.get_values_query());
-  if (exec(query))
-    emit DataBase::updated();
+  if (!exec(query))
+    return false;
+  emit DataBase::updated();
+  return true;
 }
 
 std::unique_ptr<Transaction> UserDB::get_transaction(size_t id) {

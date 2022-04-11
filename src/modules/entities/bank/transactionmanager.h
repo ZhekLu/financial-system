@@ -13,6 +13,9 @@ public:
   static bool transfer_request(size_t sender_id, size_t account_id,
                                size_t receiver_id, size_t sum);
 
+  static bool entity_transfer_request(size_t sender_id, size_t account_id,
+                                      size_t receiver_id, size_t sum);
+
   // Manager
   TransactionManager(IUser *user);
 
@@ -33,6 +36,8 @@ private:
   static bool send_transaction(Transaction &);
   static bool make_transaction(size_t sender, BankAccount *from,
                                BankAccount *to, size_t sum);
+  static bool make_transaction_request(size_t sender, BankAccount *from,
+                                       BankAccount *to, size_t sum);
   static bool make_transaction(size_t sender, BankAccount *acc, size_t dest,
                                size_t sum);
   static bool make_withdraw(size_t sender, BankAccount *acc, size_t sum);

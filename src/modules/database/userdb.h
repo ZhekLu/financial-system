@@ -68,7 +68,7 @@ public:
   bool update(Request &r);
 
   // Transactions
-  void add_transaction(Transaction &);
+  bool add_transaction(Transaction &);
   std::unique_ptr<Transaction> get_transaction(size_t id);
   std::vector<std::unique_ptr<Transaction>> get_transactions();
 

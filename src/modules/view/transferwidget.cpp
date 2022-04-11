@@ -1,8 +1,8 @@
 #include "transferwidget.h"
 #include "ui_transferwidget.h"
 
-TransferWidget::TransferWidget(IUser *user, QWidget *parent)
-    : QWidget(parent), ui(new Ui::TransferWidget), user(user) {
+TransferWidget::TransferWidget(IUser *user, Type type, QWidget *parent)
+    : QWidget(parent), ui(new Ui::TransferWidget), user(user), type(type) {
   ui->setupUi(this);
 
   card_validator = std::make_unique<QRegularExpressionValidator>(
@@ -61,15 +61,27 @@ void TransferWidget::on_confirm_but_clicked() {
   if (ui->id_label->isVisible()) {
     size_t destination = ui->id_line->text().toULongLong();
     if (destination != account->get_id())
-      qDebug() << "Transaction:"
-               << TransactionManager::transfer_request(
-                      user->get_id(), account->get_id(), destination, amount);
+      send_transaction(destination, amount);
   } else {
-    qDebug() << "Withdraw"
-             << TransactionManager::withdraw_request(user->get_id(),
-                                                     account->get_id(), amount);
+    send_withdraw(amount);
   }
   on_cancel_but_clicked();
+}
+
+void TransferWidget::send_transaction(size_t destination, size_t amount) {
+  qDebug() << "Transaction:"
+           << (type == Type::User
+                   ? TransactionManager::transfer_request(
+                         user->get_id(), account->get_id(), destination, amount)
+                   : TransactionManager::entity_transfer_request(
+                         user->get_id(), account->get_id(), destination,
+                         amount));
+}
+
+void TransferWidget::send_withdraw(size_t amount) {
+  qDebug() << "Withdraw"
+           << TransactionManager::withdraw_request(user->get_id(),
+                                                   account->get_id(), amount);
 }
 
 void TransferWidget::show_warning(bool wrong_card) {

@@ -21,6 +21,17 @@ bool TransactionManager::transfer_request(size_t sender_id, size_t account_id,
   return make_transaction(sender_id, sender.get(), receiver.get(), sum);
 }
 
+bool TransactionManager::entity_transfer_request(size_t sender_id,
+                                                 size_t account_id,
+                                                 size_t receiver_id,
+                                                 size_t sum) {
+  std::unique_ptr<BankAccount> sender(USER_DB->get_account(account_id));
+  std::unique_ptr<BankAccount> receiver(USER_DB->get_account(receiver_id));
+  if (!sender || !receiver)
+    return false;
+  return make_transaction(sender_id, sender.get(), receiver.get(), sum);
+}
+
 bool TransactionManager::undo_transfer_request(size_t initiator,
                                                Transaction &t) {
   std::unique_ptr<BankAccount> sender(USER_DB->get_account(t.get_sender()));
@@ -101,6 +112,24 @@ bool TransactionManager::make_transaction(size_t sender, BankAccount *from,
   t.set_approved(
       send_request(from, to, Request(Request::TRANSFER, sender, t.get_id())));
   return send_transaction(t);
+}
+
+bool TransactionManager::make_transaction_request(size_t sender,
+                                                  BankAccount *from,
+                                                  BankAccount *to, size_t sum) {
+  // check if accounts are not in freeze
+  if (!from->is_available() || !to->is_available())
+    return false;
+
+  // can pay?
+  if (!from->can_pay(sum))
+    return false;
+
+  Transaction t(from->get_id(), to->get_id(), sum);
+  Request r(Request::TRANSFER, sender, t.get_id());
+  r.set_approved(USER_DB->add_transaction(t));
+
+  return IHistoryManager::send_request(r);
 }
 
 bool TransactionManager::make_transaction(size_t sender, BankAccount *acc,
