@@ -13,7 +13,7 @@ SystemWindow::SystemWindow(IUser *user, QWidget *parent)
   installment_widget =
       std::make_unique<HistoryWidget>(user, Request::Type::INSTALLMENT,
                                       IHistoryManager::ItemsType::SYSTEM, this);
-  installment_widget =
+  accounts_widget =
       std::make_unique<HistoryWidget>(user, Request::Type::LOGIN_ACCOUNT,
                                       IHistoryManager::ItemsType::SYSTEM, this);
 
@@ -23,7 +23,7 @@ SystemWindow::SystemWindow(IUser *user, QWidget *parent)
                             "credits");
   ui->tab_widget->insertTab(WidgetType::INSTALLMENTS, installment_widget.get(),
                             "installment");
-  ui->tab_widget->insertTab(WidgetType::ACCOUNTS, installment_widget.get(),
+  ui->tab_widget->insertTab(WidgetType::ACCOUNTS, accounts_widget.get(),
                             "accounts");
   ui->tab_widget->setCurrentIndex(WidgetType::CREDITS);
 }
