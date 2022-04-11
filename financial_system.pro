@@ -15,6 +15,7 @@ SOURCES += \
     mainwindow.cpp \
     database/database.cpp \
     database/userdb.cpp \
+    modules/entities/bank/accountadd.cpp \
     modules/entities/bank/accountmanager.cpp \
     modules/entities/bank/loanmanager.cpp \
     modules/entities/bank/transactionmanager.cpp \
@@ -35,6 +36,7 @@ HEADERS += \
     modules/entities/ISystemObject.h \
     modules/entities/IUser.h \
     modules/entities/bank/IHistoryManager.h \
+    modules/entities/bank/accountadd.h \
     modules/entities/bank/accountmanager.h \
     modules/entities/bank/bank.h \
     modules/entities/bank/bankaccount.h \

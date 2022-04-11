@@ -10,6 +10,9 @@
 
 class Credit : public Loan {
 public:
+  static size_t count_payment(size_t sum, size_t period_in_month,
+                              size_t percent);
+
   Credit(size_t id, bool is_opened, size_t user_id, size_t start_sum,
          size_t percent, QDate start, size_t duration, size_t monthly_payment,
          size_t payed_num);
@@ -17,25 +20,27 @@ public:
   Credit(size_t user_id, size_t start_sum, size_t percent, size_t month_count);
 };
 
+inline size_t Credit::count_payment(size_t sum, size_t period_in_month,
+                                    size_t percent) {
+  double rate = percent / 100. / 12.;
+  double finally = sum;
+  for (size_t i = 0; i < period_in_month; i++)
+    finally += finally * rate;
+  size_t payment = round(finally / period_in_month);
+  return payment;
+}
+
 inline Credit::Credit(size_t id, bool is_opened, size_t user_id,
                       size_t start_sum, size_t percent, QDate start,
                       size_t duration, size_t monthly_payment, size_t payed_num)
-    : Loan(id, is_opened, user_id, start_sum, percent, start, monthly_payment,
-           payed_num, duration) {}
+    : Loan(id, is_opened, user_id, start_sum, percent, start, duration,
+           monthly_payment, payed_num) {}
 
 inline Credit::Credit(size_t user_id, size_t start_sum, size_t percent,
                       size_t month_count)
     : Credit(id_creator.GenerateId(), false, user_id, start_sum, percent,
              QDate::currentDate(), month_count, 0, 0) {
-  // logic of counting payment
-  period = month_count;
-  int years_num = month_count / 12;
-  double rate = percent / 100.;
-  double finally = start_sum;
-  for (int i = 0; i < years_num; i++) {
-    finally += finally * rate;
-  }
-  payment = round(finally / month_count);
+  payment = count_payment(start_sum, period, percent);
   finally_sum = payment * month_count;
 }
 

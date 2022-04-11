@@ -105,6 +105,23 @@ bool UserDB::createTables() {
                      ");");
   }
 
+  if (!db.tables().contains("account_adds") && res) {
+    res = query.exec("CREATE TABLE account_adds"
+                     "("
+                     "id INTEGER PRIMARY KEY, "
+                     "type INTEGER, "
+                     "approved BOOLEAN, "
+                     "user_id INTEGER, "
+                     "bank_id INTEGER,"
+                     "account_id INTEGER,"
+                     "start_date DATE,"
+                     "period INTEGER, "
+                     "payment INTEGER, "
+                     "percent INTEGER, "
+                     "payed_num INTEGER "
+                     ");");
+  }
+
   return res;
 }
 
