@@ -240,7 +240,7 @@ std::unique_ptr<Bank> UserDB::get_bank(size_t id) {
       ("SELECT percent, name, type, PAC, adress, bank_bic "
        "FROM system_banks LEFT JOIN companies using(BIC) WHERE BIC = ") +
       QString::number(id);
-
+  exec(query);
   if (!db_query->next())
     return nullptr;
 
