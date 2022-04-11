@@ -77,6 +77,7 @@ void ClientWindow::init() {
   add_widget = std::make_unique<AddCardWidget>(user.get(), banks, this);
   credit_widget = std::make_unique<CreditWidget>(user.get(), banks, this);
   transfer_widget = std::make_unique<TransferWidget>(user.get(), this);
+  deposit_period_widget = std::make_unique<PeriodWidget>(this);
   manage_window = std::make_unique<ClientManageWindow>(user.get(), this);
 
   set_connections();
@@ -85,15 +86,22 @@ void ClientWindow::init() {
   ui->stacked_widget->insertWidget(WorkMode::AddCardView, add_widget.get());
   ui->stacked_widget->insertWidget(WorkMode::TransferView,
                                    transfer_widget.get());
+  ui->stacked_widget->insertWidget(WorkMode::DepositView,
+                                   deposit_period_widget.get());
 }
 
 void ClientWindow::set_connections() {
   connect(USER_DB, &DataBase::updated, this, &ClientWindow::update);
+  connect(deposit_period_widget.get(), &PeriodWidget::selected, this,
+          &ClientWindow::deposit_selected);
+  // close events
   connect(credit_widget.get(), &CreditWidget::closed, this,
           &ClientWindow::mode_widget_closed);
   connect(add_widget.get(), &AddCardWidget::closed, this,
           &ClientWindow::mode_widget_closed);
   connect(transfer_widget.get(), &TransferWidget::closed, this,
+          &ClientWindow::mode_widget_closed);
+  connect(deposit_period_widget.get(), &PeriodWidget::closed, this,
           &ClientWindow::mode_widget_closed);
   connect(manage_window.get(), &ClientManageWindow::closed, this,
           &ClientWindow::manage_window_closed);
@@ -158,6 +166,12 @@ void ClientWindow::on_installment_but_clicked() {
   ui->stacked_widget->setCurrentIndex(WorkMode::CreditView);
 }
 
+void ClientWindow::on_deposit_but_clicked() {
+  if (!current_account)
+    return;
+  ui->stacked_widget->setCurrentIndex(WorkMode::DepositView);
+}
+
 void ClientWindow::on_manage_but_clicked() {
   manage_window->show();
   this->hide();
@@ -184,4 +198,12 @@ void ClientWindow::mode_widget_closed() {
 void ClientWindow::manage_window_closed() {
   this->show();
   manage_window->hide();
+}
+
+void ClientWindow::deposit_selected(size_t period) {
+  qDebug() << ui->deposit_but->text()
+           << AccountAddManager::deposit_request(
+                  user->get_id(), current_account->get_bank(),
+                  current_account->get_id(), period,
+                  banks[current_account->get_bank()]->get_percent());
 }
