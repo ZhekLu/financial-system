@@ -6,7 +6,7 @@
 
 class Bank : public Entity {
 public:
-  Bank(int percent, Type type, std::string name, size_t PAC, size_t BIC,
+  Bank(size_t percent, Type type, std::string name, size_t PAC, size_t BIC,
        std::string adress, size_t bank_id = 0)
       : Entity(type, std::move(name), PAC, BIC, std::move(adress), bank_id),
         percent(percent) {}
@@ -23,7 +23,7 @@ public:
   int get_percent() const { return percent; }
 
 private:
-  int percent;
+  size_t percent;
 };
 
 #endif // BANK_H

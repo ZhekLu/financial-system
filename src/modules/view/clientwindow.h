@@ -2,14 +2,16 @@
 #define CLIENTWINDOW_H
 
 #include "addcardwidget.h"
+#include "additionwidget.h"
 #include "clientmanagewindow.h"
 #include "creditwidget.h"
 #include "historywidget.h"
 #include "modules/database/userdb.h"
+#include "modules/entities/bank/accountmanager.h"
 #include "modules/entities/bank/bankaccount.h"
-#include "modules/entities/bank/transactionmanager.h"
 #include "modules/entities/entity.h"
 #include "modules/entities/individual.h"
+#include "periodwidget.h"
 #include "transferwidget.h"
 
 #include <QMainWindow>
@@ -38,9 +40,10 @@ private slots:
   void on_freeze_but_clicked();
   void on_block_but_clicked();
   void on_credit_but_clicked();
+  void on_installment_but_clicked();
+  void on_deposit_but_clicked();
   void on_info_but_clicked();
   void on_log_out_but_clicked();
-  void on_installment_but_clicked();
   void on_manage_but_clicked();
 
   // Widgets
@@ -55,6 +58,7 @@ private:
     CreditView,
     AddCardView,
     TransferView,
+    DepositView,
     CreditPayView
   };
   Ui::ClientWindow *ui;
@@ -63,9 +67,10 @@ private:
   std::unique_ptr<TransferWidget> transfer_widget;
   std::unique_ptr<CreditWidget> credit_widget;
   std::unique_ptr<AddCardWidget> add_widget;
+  std::unique_ptr<AdditionWidget> deposit_widget;
   std::unique_ptr<ClientManageWindow> manage_window;
 
-  // methods
+  // fields
   std::unique_ptr<IUser> user;
   AccessMode mode;
 
@@ -75,6 +80,7 @@ private:
 
   // methods
   void update();
+  void update_variables();
   void update_grid();
   void update_grid_test();
   void clear_selected();

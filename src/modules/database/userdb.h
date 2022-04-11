@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "database.h"
+#include "modules/entities/bank/accountadd.h"
 #include "modules/entities/bank/bank.h"
 #include "modules/entities/bank/bankaccount.h"
 #include "modules/entities/bank/credit.h"
@@ -41,7 +42,7 @@ public:
   Entity *get_company(size_t id);
 
   // Banks
-  Bank *get_bank(size_t id);
+  std::unique_ptr<Bank> get_bank(size_t id);
   std::vector<Bank *> get_banks();
   std::unordered_map<size_t, std::unique_ptr<Bank>> get_hash_banks();
 
@@ -61,6 +62,7 @@ public:
                                                      bool viewed);
   std::vector<std::unique_ptr<Request>>
   get_requests(size_t sender, Request::Type type, bool viewed);
+  std::vector<std::unique_ptr<Request>> get_block_requests(bool viewed);
   std::vector<std::unique_ptr<Request>>
   get_transfer_requests(bool viewed = false);
   bool update(Request &r);
@@ -76,6 +78,9 @@ public:
   std::unique_ptr<Loan> get_loan(size_t id);
   std::vector<std::unique_ptr<Credit>> get_credits();
   bool update(Loan &);
+
+  // Adds
+  bool add_add(AccountAdd &);
 
   // Debug methods
   void print_all_system_users();

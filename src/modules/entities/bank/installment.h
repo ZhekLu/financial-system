@@ -28,9 +28,9 @@ inline Installment::Installment(size_t user_id, size_t start_sum,
     : Installment(id_creator.GenerateId(), false, user_id, start_sum,
                   QDate::currentDate(), month_count, 0, 0) {
   // logic of counting payment
-  double rate = percent / 100.;
-  double finally = start_sum * rate;
-  payment = round(finally / month_count);
+  payment = round(start_sum / month_count);
+  if (!payment)
+    payment = 1;
   finally_sum = payment * month_count;
 }
 

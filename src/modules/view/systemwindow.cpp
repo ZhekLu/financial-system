@@ -16,6 +16,8 @@ SystemWindow::SystemWindow(IUser *user, QWidget *parent)
   accounts_widget =
       std::make_unique<HistoryWidget>(user, Request::Type::LOGIN_ACCOUNT,
                                       IHistoryManager::ItemsType::SYSTEM, this);
+  blocks_widget = std::make_unique<HistoryWidget>(
+      user, Request::Type::BLOCK, IHistoryManager::ItemsType::SYSTEM, this);
 
   ui->tab_widget->insertTab(WidgetType::TRANSACTIONS, transaction_widget.get(),
                             "transactions");
@@ -25,6 +27,7 @@ SystemWindow::SystemWindow(IUser *user, QWidget *parent)
                             "installment");
   ui->tab_widget->insertTab(WidgetType::ACCOUNTS, accounts_widget.get(),
                             "accounts");
+  ui->tab_widget->insertTab(WidgetType::BLOCKS, blocks_widget.get(), "blocks");
   ui->tab_widget->setCurrentIndex(WidgetType::CREDITS);
 }
 
@@ -46,6 +49,9 @@ void SystemWindow::on_verify_but_clicked() {
   case WidgetType::ACCOUNTS:
     qDebug() << "Account verify : " << accounts_widget->mark(true);
     break;
+  case WidgetType::BLOCKS:
+    qDebug() << "Block verify : " << blocks_widget->mark(true);
+    break;
   }
 }
 
@@ -62,6 +68,9 @@ void SystemWindow::on_undo_but_clicked() {
     break;
   case WidgetType::ACCOUNTS:
     qDebug() << "Account undo : " << accounts_widget->mark(false);
+    break;
+  case WidgetType::BLOCKS:
+    qDebug() << "Block undo : " << blocks_widget->mark(false);
     break;
   }
 }

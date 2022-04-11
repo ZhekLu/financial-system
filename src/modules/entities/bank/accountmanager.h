@@ -6,10 +6,16 @@
 class AccountManager : public IHistoryManager {
   Q_OBJECT
 public:
+  static bool freeze_request(size_t sender_id, size_t account_id, bool freeze);
+  static bool block_request(size_t sender_id, size_t account_id, bool freeze);
   static bool add_account_request(size_t sender_id, BankAccount *acc);
 
   // Manager
-  AccountManager(IUser *user, ItemsType items_type = ItemsType::SYSTEM);
+
+  enum Mode { LOGIN, BLOCK };
+
+  AccountManager(IUser *user, Mode mode,
+                 ItemsType items_type = ItemsType::SYSTEM);
 
   std::vector<QTableWidgetItem *> get_items() const override;
   bool mark(size_t item_index, bool verify = false) override;
@@ -19,6 +25,9 @@ private slots:
   void update_vars() override;
 
 private:
+  Mode mode;
+
+  // values
   std::vector<std::unique_ptr<BankAccount>> accounts;
   std::vector<std::unique_ptr<Request>> requests;
 
