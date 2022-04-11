@@ -31,6 +31,10 @@ private:
   // values
   std::vector<std::unique_ptr<AccountAdd>> adds;
   std::vector<std::unique_ptr<Request>> requests;
+
+  // methods
+  static bool send_add(AccountAdd &);
+  static bool send_add(AccountAdd &, Request &);
 };
 
 #endif // ACCOUNTADDMANAGER_H

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "database.h"
+#include "modules/entities/bank/accountadd.h"
 #include "modules/entities/bank/bank.h"
 #include "modules/entities/bank/bankaccount.h"
 #include "modules/entities/bank/credit.h"
@@ -77,6 +78,9 @@ public:
   std::unique_ptr<Loan> get_loan(size_t id);
   std::vector<std::unique_ptr<Credit>> get_credits();
   bool update(Loan &);
+
+  // Adds
+  bool add_add(AccountAdd &);
 
   // Debug methods
   void print_all_system_users();

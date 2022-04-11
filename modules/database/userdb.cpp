@@ -678,6 +678,21 @@ bool UserDB::update(Loan &l) {
   return false;
 }
 
+bool UserDB::add_add(AccountAdd &a) {
+  QString query = QString("INSERT INTO account_adds"
+                          "(id, type, approved, user_id, bank_id, account_id, "
+                          "start_date, period, "
+                          "payment, percent, payed_num) "
+                          "VALUES %1;")
+                      .arg(a.get_values_query());
+
+  if (exec(query)) {
+    emit DataBase::updated();
+    return true;
+  }
+  return false;
+}
+
 // Debug
 
 void UserDB::print_all_system_users() {

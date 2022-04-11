@@ -22,7 +22,10 @@ public:
     VERIFY,
     // block
     BLOCK,
-    UNBLOCK
+    UNBLOCK,
+    // account adds
+    DEPOSIT,
+    SALARY
   };
 
   Request(size_t id, Type type, size_t from, size_t object,
