@@ -81,7 +81,8 @@ void ClientWindow::update_grid() {
 void ClientWindow::init() {
   add_widget = std::make_unique<AddCardWidget>(user.get(), banks, this);
   credit_widget = std::make_unique<CreditWidget>(user.get(), banks, this);
-  transfer_widget = std::make_unique<TransferWidget>(user.get(), this);
+  transfer_widget = std::make_unique<TransferWidget>(
+      user.get(), TransferWidget::Type::User, this);
   deposit_widget = std::make_unique<AdditionWidget>(this);
   manage_window = std::make_unique<ClientManageWindow>(user.get(), this);
 

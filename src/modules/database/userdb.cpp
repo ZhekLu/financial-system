@@ -542,13 +542,15 @@ bool UserDB::update(Request &r) {
 
 // Transactions
 
-void UserDB::add_transaction(Transaction &t) {
+bool UserDB::add_transaction(Transaction &t) {
   QString query = QString("INSERT INTO transactions"
                           "(id, sender, receiver, amount, approved, type) "
                           "VALUES %1;")
                       .arg(t.get_values_query());
-  if (exec(query))
-    emit DataBase::updated();
+  if (!exec(query))
+    return false;
+  emit DataBase::updated();
+  return true;
 }
 
 std::unique_ptr<Transaction> UserDB::get_transaction(size_t id) {
@@ -692,6 +694,46 @@ bool UserDB::add_add(AccountAdd &a) {
     return true;
   }
   return false;
+}
+
+bool UserDB::update(AccountAdd &a) {
+  QString query = QString("UPDATE account_adds SET %1 WHERE id = %2")
+                      .arg(a.get_update_query(), QString::number(a.get_id()));
+
+  bool res = exec(query);
+  if (res)
+    emit DataBase::updated();
+
+  return res;
+}
+
+std::unique_ptr<AccountAdd> UserDB::get_add(size_t id) {
+  QString query = QString("SELECT "
+                          "type, approved, user_id, bank_id, "
+                          "account_id, start_date, period, "
+                          "payment, percent, payed_num "
+                          "FROM account_adds WHERE id = ") +
+                  QString::number((id));
+  exec(query);
+
+  std::unique_ptr<AccountAdd> add;
+  if (!db_query->next())
+    return nullptr;
+  int type = db_query->value(0).toULongLong();
+  bool approved = db_query->value(1).toBool();
+  size_t user_id = db_query->value(2).toULongLong();
+  size_t bank_id = db_query->value(3).toULongLong();
+  size_t account_id = db_query->value(4).toULongLong();
+  QDate start_date = db_query->value(5).toDate();
+  size_t period = db_query->value(6).toULongLong();
+  size_t payment = db_query->value(7).toULongLong();
+  size_t percent = db_query->value(8).toULongLong();
+  size_t payed_num = db_query->value(9).toULongLong();
+  add = std::make_unique<AccountAdd>(id, approved, AccountAdd::Type(type),
+                                     user_id, bank_id, account_id, start_date,
+                                     period, payment, percent, payed_num);
+
+  return add;
 }
 
 // Debug

@@ -25,7 +25,10 @@ public:
     UNBLOCK,
     // account adds
     DEPOSIT,
-    SALARY
+    SALARY,
+    // for entities
+    TRANSFER_REQUEST,
+    WITHFRAW_REQUEST
   };
 
   Request(size_t id, Type type, size_t from, size_t object,
@@ -56,9 +59,12 @@ private:
 
   static inline IdGenerator id_creator{9, "requests", "id"};
   static inline std::vector<QString> type_string{
-      "TRANSFER", "WITHDRAW",    "TOP UP",        "FREEZE",
-      "CREDIT",   "INSTALLMENT", "LOGIN_ACCOUNT", "LOGIN_USER",
-      "UNDO",     "VERIFY",      "BLOCK",         "UNBLOCK"};
+      "TRANSFER",        "WITHDRAW",   "TOP UP",
+      "FREEZE",          "CREDIT",     "INSTALLMENT",
+      "LOGIN_ACCOUNT",   "LOGIN_USER", "UNDO",
+      "VERIFY",          "BLOCK",      "UNBLOCK",
+      "DEPOSIT",         "SALARY",     "TRANSFER_REQUEST",
+      "WITHFRAW_REQUEST"};
 };
 
 inline Request::Request(size_t id, Type type, size_t from, size_t object,

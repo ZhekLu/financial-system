@@ -28,10 +28,15 @@ void AdditionWidget::show() {
 
 void AdditionWidget::period_selected(size_t period) {
   selected_period = period;
-  if (type == AccountAdd::Type::SALARY)
+
+  // Next step
+  if (type == AccountAdd::Type::SALARY) {
     ui->stacked_widget->setCurrentIndex(Page::Settings);
-  else
-    on_confirm_but_clicked();
+    return;
+  }
+
+  send_deposit();
+  close();
 }
 
 void AdditionWidget::init() {
@@ -72,31 +77,46 @@ void AdditionWidget::close() {
 
 void AdditionWidget::warning(bool warn) { ui->warning_label->setVisible(warn); }
 
-void AdditionWidget::send_deposit() {
-
-  BankAccount *initiator = (BankAccount *)sender;
-  AccountAddManager::deposit_request(initiator->get_owner(),
-                                     initiator->get_id(), selected_period);
-}
-
-void AdditionWidget::send_salary() {
-  // check if data is valid
+bool AdditionWidget::input_is_corret() {
   QString card = ui->id_line->text();
   int pos = 0;
   if (card_validator->validate(card, pos) != QValidator::Acceptable) {
     warning(true);
-    return;
+    return false;
   }
+  QString amount = ui->amount_line->text();
+  pos = 0;
+  if (amount_validator->validate(amount, pos) != QValidator::Acceptable) {
+    warning(true);
+    return false;
+  }
+  warning(false);
+  return true;
+}
 
+void AdditionWidget::send_deposit() {
+
+  BankAccount *initiator = (BankAccount *)sender;
+  qDebug() << "Deposit request : "
+           << AccountAddManager::deposit_request(
+                  initiator->get_owner(), initiator->get_id(), selected_period);
+}
+
+void AdditionWidget::send_salary() {
   // Get
   size_t amount = ui->amount_line->text().toULongLong();
-  warning(false);
   size_t destination = ui->id_line->text().toULongLong();
 
   // Send
+  send_salary(destination, amount);
+}
+
+void AdditionWidget::send_salary(size_t destination, size_t amount) {
   Entity *initiator = (Entity *)sender;
-  AccountAddManager::salary_request(initiator->get_id(), initiator->get_bank(),
-                                    destination, selected_period, amount);
+  qDebug() << "Salary request : "
+           << AccountAddManager::salary_request(
+                  initiator->get_id(), initiator->get_bank(), destination,
+                  selected_period, amount);
 }
 
 void AdditionWidget::on_cancel_but_clicked() {
@@ -104,9 +124,8 @@ void AdditionWidget::on_cancel_but_clicked() {
 }
 
 void AdditionWidget::on_confirm_but_clicked() {
-  if (type == AccountAdd::SALARY)
-    AdditionWidget::send_salary();
-  else
-    AdditionWidget::send_deposit();
+  if (!input_is_corret())
+    return;
+  AdditionWidget::send_salary();
   close();
 }

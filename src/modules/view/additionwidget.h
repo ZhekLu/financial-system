@@ -30,7 +30,6 @@ private slots:
   void period_selected(size_t period);
 
   void on_cancel_but_clicked();
-
   void on_confirm_but_clicked();
 
 private:
@@ -55,9 +54,11 @@ private:
   void clear();
   void close();
   void warning(bool);
+  bool input_is_corret();
 
   void send_deposit();
   void send_salary();
+  void send_salary(size_t destination, size_t amount);
 
   static const inline int max_salary = 1000000;
 

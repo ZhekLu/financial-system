@@ -35,6 +35,11 @@ bool AccountManager::add_account_request(size_t sender_id, BankAccount *acc) {
   return IHistoryManager::send_request(r);
 }
 
+bool AccountManager::add_account_request(size_t sender_id, size_t bank_id) {
+  std::unique_ptr<BankAccount> to_add(new BankAccount(sender_id, bank_id));
+  return add_account_request(sender_id, to_add.get());
+}
+
 // Object
 
 AccountManager::AccountManager(IUser *user, Mode mode, ItemsType)

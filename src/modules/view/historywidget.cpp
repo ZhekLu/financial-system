@@ -53,6 +53,10 @@ void HistoryWidget::manager_factory(IUser *user, Request::Type request_type) {
   case Request::WITHDRAW:
     manager = std::make_unique<TransactionManager>(user);
     break;
+  case Request::TRANSFER_REQUEST:
+    manager = std::make_unique<TransactionManager>(
+        user, TransactionManager::Mode::REQUEST);
+    break;
   case Request::INSTALLMENT:
     manager = std::make_unique<LoanManager>(LoanManager::LoanType::INSTALLMENT,
                                             user, user_mode);
@@ -71,6 +75,12 @@ void HistoryWidget::manager_factory(IUser *user, Request::Type request_type) {
   case Request::UNBLOCK:
     manager = std::make_unique<AccountManager>(
         user, AccountManager::Mode::BLOCK, user_mode);
+    break;
+  case Request::DEPOSIT:
+    manager = std::make_unique<AccountAddManager>(user, AccountAdd::DEPOSIT);
+    break;
+  case Request::SALARY:
+    manager = std::make_unique<AccountAddManager>(user, AccountAdd::SALARY);
     break;
   default:
     break;

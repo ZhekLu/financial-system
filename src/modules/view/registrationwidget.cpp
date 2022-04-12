@@ -27,48 +27,61 @@ void RegistrationWidget::init() {
   ui->stacked_widget->setCurrentIndex(Page::InfoPage);
 
   init_lines();
+  set_connections();
 }
 
 void RegistrationWidget::init_lines() {
-  QRegularExpression mail("\\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\\b",
+  // Mail
+  QRegularExpression mail("\\b[A-Z0-9_]{5,10}@[A-Z]{4,7}\\.[A-Z]{2,4}\\b",
                           QRegularExpression::CaseInsensitiveOption);
   email_validator = std::make_unique<QRegularExpressionValidator>(mail, this);
-  //  ui->email_line->setValidator(new QRegularExpressionValidator(mail, this));
+
   ui->email_line->setValidator(email_validator.get());
 
+  // Phone
   QRegularExpression phone("^\\+375(44|25|33)[0-9]{7}$");
   phone_validator = std::make_unique<QRegularExpressionValidator>(phone, this);
-  //  QRegularExpression phone("^[A-Z]{4}\\-[0-9]{4}\\-[0-9]{4}$");
-  //  ui->phone_line->setValidator(new QRegularExpressionValidator(phone,
-  //  this));
   ui->phone_line->setValidator(phone_validator.get());
 
+  // BIC
   QRegularExpression bic("^[1-9]{1}[0-9]{8}$");
   bic_validator = std::make_unique<QRegularExpressionValidator>(bic, this);
   ui->bic_line->setValidator(bic_validator.get());
   ui->bank_bic_line->setValidator(bic_validator.get());
-  // Connect
-  QObject::connect(ui->email_line, &QLineEdit::textChanged, this,
-                   &RegistrationWidget::check_input);
-  QObject::connect(ui->phone_line, &QLineEdit::textChanged, this,
-                   &RegistrationWidget::check_input);
-  QObject::connect(ui->bic_line, &QLineEdit::textChanged, this,
-                   &RegistrationWidget::check_input);
-  QObject::connect(ui->bank_bic_line, &QLineEdit::textChanged, this,
-                   &RegistrationWidget::check_input);
+
+  // Passport
+  QRegularExpression passport("^[A-Z]{2}[0-9]{6}$");
+  passport_validator =
+      std::make_unique<QRegularExpressionValidator>(passport, this);
+  ui->passport_line->setValidator(passport_validator.get());
+
+  // ID
+  QRegularExpression passport_id("^[0-9]{7}[A-Z]{1}[0-9]{3}[A-Z]{2}[0-9]{1}$");
+  passport_id_validator =
+      std::make_unique<QRegularExpressionValidator>(passport_id, this);
+  ui->id_line->setValidator(passport_id_validator.get());
 }
 
-void RegistrationWidget::check_input() {
-  //  QString amount = ui->phone_line->text();
-  //  int index = 0;
-  //  if (phone_validator->validate(amount, index) == QValidator::Acceptable)
-  //    ui->warning_label->setText("ok");
-  //  else
-  //    ui->warning_label->setText("no");
-  set_style(ui->email_line, email_validator.get());
-  set_style(ui->phone_line, phone_validator.get());
-  set_style(ui->bank_bic_line, bic_validator.get());
-  set_style(ui->bic_line, bic_validator.get());
+void RegistrationWidget::set_connections() {
+  QObject::connect(ui->email_line, &QLineEdit::textChanged, this,
+                   &RegistrationWidget::check_email);
+  QObject::connect(ui->phone_line, &QLineEdit::textChanged, this,
+                   &RegistrationWidget::check_phone);
+  QObject::connect(ui->bic_line, &QLineEdit::textChanged, this,
+                   &RegistrationWidget::check_bic);
+  QObject::connect(ui->bank_bic_line, &QLineEdit::textChanged, this,
+                   &RegistrationWidget::check_bic);
+  QObject::connect(ui->passport_line, &QLineEdit::textChanged, this,
+                   &RegistrationWidget::check_passport);
+  QObject::connect(ui->id_line, &QLineEdit::textChanged, this,
+                   &RegistrationWidget::check_passport_id);
+}
+
+bool RegistrationWidget::is_valid(QLineEdit *line) {
+  const QValidator *validator = line->validator();
+  QString text = line->text();
+  int index = 0;
+  return validator->validate(text, index) == QValidator::Acceptable;
 }
 
 bool RegistrationWidget::move_page(bool back) {
@@ -97,10 +110,8 @@ void RegistrationWidget::clear_all() {
   ui->bank_bic_line->clear();
 }
 
-void RegistrationWidget::set_style(QLineEdit *line, QValidator *validator) {
-  QString text = ui->phone_line->text();
-  int index = 0;
-  if (validator->validate(text, index) == QValidator::Acceptable)
+void RegistrationWidget::update_style(QLineEdit *line) {
+  if (is_valid(line))
     line->setStyleSheet(
         "background-color: rgb(173, 173, 173);color: rgb(0, 0, 0);");
   else
@@ -135,3 +146,18 @@ void RegistrationWidget::on_cancel_but_clicked() {
   if (!move_page(true))
     this->hide();
 }
+
+// checkers
+
+void RegistrationWidget::check_email() { update_style(ui->email_line); }
+
+void RegistrationWidget::check_bic() {
+  update_style(ui->bank_bic_line);
+  update_style(ui->bic_line);
+}
+
+void RegistrationWidget::check_phone() { update_style(ui->phone_line); }
+
+void RegistrationWidget::check_passport() { update_style(ui->passport_line); }
+
+void RegistrationWidget::check_passport_id() { update_style(ui->id_line); }

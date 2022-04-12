@@ -25,6 +25,9 @@ public:
 
   QString get_values_query() override;
   QString get_info() const override;
+  QString get_update_query() const;
+
+  void set_approved(bool value) { approved = value; }
 
 private:
   bool approved;
@@ -39,7 +42,6 @@ private:
   size_t payed_num;
 
   static inline IdGenerator id_creator{9, "account_adds", "id"};
-  static inline std::vector<QString> type_string{"SALARY", "DEPOSIT"};
 };
 
 #endif // ACCOUNTADD_H
