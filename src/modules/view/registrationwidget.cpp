@@ -29,7 +29,6 @@ void RegistrationWidget::hide() {
 }
 
 void RegistrationWidget::init() {
-
   ui->stacked_widget->insertWidget(Page::InfoPage, ui->tab_widget);
   ui->stacked_widget->insertWidget(Page::LoginPage, login_widget.get());
   ui->stacked_widget->setCurrentIndex(Page::InfoPage);

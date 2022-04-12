@@ -26,10 +26,12 @@ bool UserDB::createTables() {
   if (!db.tables().contains("system_users") && res) {
     res = query.exec("CREATE TABLE system_users"
                      "("
+                     "id INTEGER, "
                      "login TEXT PRIMARY KEY, "
                      "password TEXT, "
                      "role INTEGER, "
-                     "user_id INTEGER"
+                     "user_id INTEGER, "
+                     "approved BOOLEAN"
                      ");");
   }
 
@@ -141,36 +143,35 @@ bool UserDB::contains(SystemUser user) {
                           "WHERE login = \"%1\" AND "
                           "password = \"%2\" AND "
                           "role = %3")
-                      .arg(QString::fromStdString(user.login),
-                           QString::fromStdString(user.password),
-                           QString::number(user.mode));
+                      .arg(user.get_login(), user.get_password(),
+                           QString::number(user.get_role()));
   exec(query);
   return db_query->next();
 }
 
-size_t UserDB::get_user_by_login(SystemUser user) {
+size_t UserDB::get_user(SystemUser user) {
   QString query = QString("SELECT user_id FROM system_users "
                           "WHERE login = \"%1\" AND "
                           "password = \"%2\" AND "
                           "role = %3")
-                      .arg(QString::fromStdString(user.login),
-                           QString::fromStdString(user.password),
-                           QString::number(user.mode));
+                      .arg(user.get_login(), user.get_password(),
+                           QString::number(user.get_role()));
   exec(query);
   if (!db_query->next())
     return 0;
   return db_query->value(0).toInt();
 }
 
-void UserDB::login_user(SystemUser user) {
-  QString query = "INSERT INTO system_users(login, password, role, "
-                  "user_id) VALUES (" +
-                  qs(QString::fromStdString(user.login)) + "," +
-                  qs(QString::fromStdString(user.password)) + "," +
-                  qs(QString::number(user.mode)) + "," +
-                  qs(QString::number(user.user_id)) + ");";
-  if (exec(query))
+bool UserDB::add_user_login(SystemUser &user) {
+  QString query = QString("INSERT INTO system_users "
+                          "(id, login, password, role, user_id, approved) "
+                          "VALUES %1;")
+                      .arg(user.get_values_query());
+  if (exec(query)) {
     emit DataBase::updated();
+    return true;
+  }
+  return false;
 }
 
 // User

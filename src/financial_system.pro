@@ -19,6 +19,7 @@ SOURCES += \
     modules/entities/bank/accountaddmanager.cpp \
     modules/entities/bank/accountmanager.cpp \
     modules/entities/bank/loanmanager.cpp \
+    modules/entities/bank/loginmanager.cpp \
     modules/entities/bank/transactionmanager.cpp \
     modules/view/addcardwidget.cpp \
     modules/view/additionwidget.cpp \
@@ -49,6 +50,7 @@ HEADERS += \
     modules/entities/bank/installment.h \
     modules/entities/bank/loan.h \
     modules/entities/bank/loanmanager.h \
+    modules/entities/bank/loginmanager.h \
     modules/entities/bank/request.h \
     modules/entities/bank/transaction.h \
     modules/entities/bank/transactionmanager.h \

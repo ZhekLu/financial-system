@@ -27,9 +27,9 @@ public:
   // Login
   bool is_login_busy(QString login);
   bool contains(SystemUser user);
-  size_t get_user_by_login(SystemUser user);
+  size_t get_user(SystemUser user);
 
-  void login_user(SystemUser user);
+  bool add_user_login(SystemUser &user);
   void remove_user(std::string login);
   //  std::vector<SystemUser> users();
 
