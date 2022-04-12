@@ -101,6 +101,10 @@ QPushButton:hover{
      <height>361</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true">
+  lw-&gt;LoginWidget</string>
+   </property>
    <property name="currentIndex">
     <number>0</number>
    </property>
@@ -597,6 +601,9 @@ color: rgb(255, 255, 255);</string>
      <width>441</width>
      <height>341</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">width:461px;height:361px;</string>
    </property>
   </widget>
   <zorder>stacked_widget</zorder>

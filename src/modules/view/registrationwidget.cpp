@@ -1,13 +1,21 @@
 #include "registrationwidget.h"
+#include "ui_loginwidget.h"
 #include "ui_registrationwidget.h"
 
 RegistrationWidget::RegistrationWidget(QWidget *parent)
-    : QWidget(parent), ui(new Ui::RegistrationWidget) {
+    : QWidget(parent), ui(new Ui::RegistrationWidget), lw(new Ui::LoginWidget) {
   ui->setupUi(this);
+  login_widget = std::make_unique<QWidget>(this);
+  lw->setupUi(login_widget.get());
+
   init();
+  warning(false);
 }
 
-RegistrationWidget::~RegistrationWidget() { delete ui; }
+RegistrationWidget::~RegistrationWidget() {
+  delete ui;
+  delete lw;
+}
 
 void RegistrationWidget::show() {
   QWidget::show();
@@ -17,13 +25,13 @@ void RegistrationWidget::show() {
 void RegistrationWidget::hide() {
   QWidget::hide();
   clear_all();
+  warning(false);
 }
 
 void RegistrationWidget::init() {
-  aw = std::make_unique<AuthWidget>(this);
 
   ui->stacked_widget->insertWidget(Page::InfoPage, ui->tab_widget);
-  ui->stacked_widget->insertWidget(Page::LoginPage, aw.get());
+  ui->stacked_widget->insertWidget(Page::LoginPage, login_widget.get());
   ui->stacked_widget->setCurrentIndex(Page::InfoPage);
 
   init_lines();
@@ -110,6 +118,10 @@ void RegistrationWidget::clear_all() {
   ui->bank_bic_line->clear();
 }
 
+void RegistrationWidget::warning(bool visible) {
+  ui->warning_label->setVisible(visible);
+}
+
 void RegistrationWidget::update_style(QLineEdit *line) {
   if (is_valid(line))
     line->setStyleSheet(
@@ -137,9 +149,12 @@ void RegistrationWidget::set_buttons(Page page) {
   }
 }
 
+// Buttons
+
 void RegistrationWidget::on_confirm_but_clicked() {
-  if (move_page())
+  if (move_page() || !send_reg_request())
     return;
+  this->hide();
 }
 
 void RegistrationWidget::on_cancel_but_clicked() {
@@ -147,7 +162,9 @@ void RegistrationWidget::on_cancel_but_clicked() {
     this->hide();
 }
 
-// checkers
+bool RegistrationWidget::send_reg_request() { return false; }
+
+// Checkers
 
 void RegistrationWidget::check_email() { update_style(ui->email_line); }
 

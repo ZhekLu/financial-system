@@ -82,6 +82,7 @@ FORMS += \
     modules/view/creditwidget.ui \
     modules/view/entityclientwindow.ui \
     modules/view/historywidget.ui \
+    modules/view/loginwidget.ui \
     modules/view/periodwidget.ui \
     modules/view/registrationwidget.ui \
     modules/view/systemwindow.ui \
