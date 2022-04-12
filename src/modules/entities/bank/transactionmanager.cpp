@@ -29,7 +29,7 @@ bool TransactionManager::entity_transfer_request(size_t sender_id,
   std::unique_ptr<BankAccount> receiver(USER_DB->get_account(receiver_id));
   if (!sender || !receiver)
     return false;
-  return make_transaction(sender_id, sender.get(), receiver.get(), sum);
+  return make_transaction_request(sender_id, sender.get(), receiver.get(), sum);
 }
 
 bool TransactionManager::undo_transfer_request(size_t initiator,
@@ -126,7 +126,7 @@ bool TransactionManager::make_transaction_request(size_t sender,
     return false;
 
   Transaction t(from->get_id(), to->get_id(), sum);
-  Request r(Request::TRANSFER, sender, t.get_id());
+  Request r(Request::TRANSFER_REQUEST, sender, t.get_id());
   r.set_approved(USER_DB->add_transaction(t));
 
   return IHistoryManager::send_request(r);

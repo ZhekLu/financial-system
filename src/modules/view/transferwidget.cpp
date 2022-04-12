@@ -69,7 +69,7 @@ void TransferWidget::on_confirm_but_clicked() {
 }
 
 void TransferWidget::send_transaction(size_t destination, size_t amount) {
-  qDebug() << "Transaction:"
+  qDebug() << "Transaction : "
            << (type == Type::User
                    ? TransactionManager::transfer_request(
                          user->get_id(), account->get_id(), destination, amount)
@@ -79,7 +79,7 @@ void TransferWidget::send_transaction(size_t destination, size_t amount) {
 }
 
 void TransferWidget::send_withdraw(size_t amount) {
-  qDebug() << "Withdraw"
+  qDebug() << "Withdraw : "
            << TransactionManager::withdraw_request(user->get_id(),
                                                    account->get_id(), amount);
 }

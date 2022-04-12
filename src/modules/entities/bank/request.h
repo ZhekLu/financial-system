@@ -25,7 +25,10 @@ public:
     UNBLOCK,
     // account adds
     DEPOSIT,
-    SALARY
+    SALARY,
+    // for entities
+    TRANSFER_REQUEST,
+    WITHFRAW_REQUEST
   };
 
   Request(size_t id, Type type, size_t from, size_t object,

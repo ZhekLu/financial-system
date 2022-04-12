@@ -28,6 +28,7 @@ private slots:
   void on_log_out_but_clicked();
 
   void mode_widget_closed();
+  void on_table_widget_cellClicked(int row, int column);
 
 private:
   enum WorkMode { CardView, SalaryView, TransferView };
@@ -40,9 +41,20 @@ private:
 
   // Fields
   std::unique_ptr<Entity> user;
+  std::unique_ptr<Bank> user_bank;
+
+  std::vector<std::unique_ptr<BankAccount>> accounts;
+  BankAccount *current_account;
+
+  // methods
+  void update();
+  void update_variables();
+  void update_grid();
+  void clear_selected();
 
   void init();
   void set_connections();
+  QTableWidgetItem *get_item(BankAccount *, QString);
 };
 
 #endif // ENTITYCLIENTWINDOW_H
