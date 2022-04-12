@@ -9,6 +9,15 @@ bool LoanManager::loan_request(IUser *user, Loan &l, LoanType type) {
   return IHistoryManager::send_request(r);
 }
 
+bool LoanManager::send_request(Credit *c, Request &r) {
+  r.set_approved(USER_DB->update(*c));
+  return IHistoryManager::send_request(r);
+}
+
+bool LoanManager::send_credit(Credit &c) { return USER_DB->add_credit(c); }
+
+bool LoanManager::send_loan(Loan &l) { return USER_DB->add_loan(l); }
+
 // Object
 
 LoanManager::LoanManager(LoanType loan_type, IUser *user, ItemsType items_type)
@@ -20,15 +29,6 @@ LoanManager::LoanManager(LoanType loan_type, IUser *user, ItemsType items_type)
   // upd
   LoanManager::update_vars();
 }
-
-bool LoanManager::send_request(Credit *c, Request &r) {
-  r.set_approved(USER_DB->update(*c));
-  return IHistoryManager::send_request(r);
-}
-
-bool LoanManager::send_credit(Credit &c) { return USER_DB->add_credit(c); }
-
-bool LoanManager::send_loan(Loan &l) { return USER_DB->add_loan(l); }
 
 std::vector<QTableWidgetItem *> LoanManager::get_items() const {
   std::vector<QTableWidgetItem *> items;

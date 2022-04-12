@@ -72,6 +72,13 @@ void HistoryWidget::manager_factory(IUser *user, Request::Type request_type) {
     manager = std::make_unique<AccountManager>(
         user, AccountManager::Mode::BLOCK, user_mode);
     break;
+  case Request::DEPOSIT:
+    manager = std::make_unique<AccountAddManager>(user, AccountAdd::DEPOSIT);
+    break;
+  case Request::SALARY:
+    manager = std::make_unique<AccountAddManager>(user, AccountAdd::SALARY);
+    break;
+  case Request::TRANSFER_REQUEST: // TODOOOO
   default:
     break;
   }

@@ -23,7 +23,15 @@ private slots:
   void on_log_out_but_clicked();
 
 private:
-  enum WidgetType { TRANSACTIONS, CREDITS, INSTALLMENTS, ACCOUNTS, BLOCKS };
+  enum WidgetType {
+    TRANSACTIONS,
+    CREDITS,
+    INSTALLMENTS,
+    ACCOUNTS,
+    BLOCKS,
+    SALARIES,
+    DEPOSITS
+  };
 
   Ui::SystemWindow *ui;
   std::unique_ptr<IUser> user;
@@ -33,6 +41,8 @@ private:
   std::unique_ptr<HistoryWidget> installment_widget;
   std::unique_ptr<HistoryWidget> accounts_widget;
   std::unique_ptr<HistoryWidget> blocks_widget;
+  std::unique_ptr<HistoryWidget> salary_widget;
+  std::unique_ptr<HistoryWidget> deposit_widget;
 };
 
 #endif // SYSTEMWINDOW_H

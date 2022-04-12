@@ -6,18 +6,26 @@ SystemWindow::SystemWindow(IUser *user, QWidget *parent)
   ui->setupUi(this);
   setAttribute(Qt::WA_DeleteOnClose);
 
+  // transactions
   transaction_widget = std::make_unique<HistoryWidget>(
       user, Request::Type::TRANSFER, IHistoryManager::ItemsType::SYSTEM, this);
+  // loans
   credit_widget = std::make_unique<HistoryWidget>(
       user, Request::Type::CREDIT, IHistoryManager::ItemsType::SYSTEM, this);
   installment_widget =
       std::make_unique<HistoryWidget>(user, Request::Type::INSTALLMENT,
                                       IHistoryManager::ItemsType::SYSTEM, this);
+  // states
   accounts_widget =
       std::make_unique<HistoryWidget>(user, Request::Type::LOGIN_ACCOUNT,
                                       IHistoryManager::ItemsType::SYSTEM, this);
   blocks_widget = std::make_unique<HistoryWidget>(
       user, Request::Type::BLOCK, IHistoryManager::ItemsType::SYSTEM, this);
+  // adds
+  salary_widget = std::make_unique<HistoryWidget>(
+      user, Request::Type::SALARY, IHistoryManager::ItemsType::SYSTEM, this);
+  deposit_widget = std::make_unique<HistoryWidget>(
+      user, Request::Type::DEPOSIT, IHistoryManager::ItemsType::SYSTEM, this);
 
   ui->tab_widget->insertTab(WidgetType::TRANSACTIONS, transaction_widget.get(),
                             "transactions");
@@ -28,6 +36,10 @@ SystemWindow::SystemWindow(IUser *user, QWidget *parent)
   ui->tab_widget->insertTab(WidgetType::ACCOUNTS, accounts_widget.get(),
                             "accounts");
   ui->tab_widget->insertTab(WidgetType::BLOCKS, blocks_widget.get(), "blocks");
+  ui->tab_widget->insertTab(WidgetType::SALARIES, salary_widget.get(),
+                            "salaries");
+  ui->tab_widget->insertTab(WidgetType::DEPOSITS, deposit_widget.get(),
+                            "deposits");
   ui->tab_widget->setCurrentIndex(WidgetType::CREDITS);
 }
 

@@ -81,6 +81,8 @@ public:
 
   // Adds
   bool add_add(AccountAdd &);
+  bool update(AccountAdd &);
+  std::unique_ptr<AccountAdd> get_add(size_t id);
 
   // Debug methods
   void print_all_system_users();

@@ -26,6 +26,7 @@ private slots:
 
 private:
   AccountAdd::Type add_type;
+  Request::Type request_type;
 
   // values
   std::vector<std::unique_ptr<AccountAdd>> adds;
@@ -34,6 +35,9 @@ private:
   // methods
   static bool send_add(AccountAdd &);
   static bool send_add(AccountAdd &, Request &);
+
+  void init();
+  void update_requests();
 };
 
 #endif // ACCOUNTADDMANAGER_H

@@ -25,6 +25,9 @@ public:
 
   QString get_values_query() override;
   QString get_info() const override;
+  QString get_update_query() const;
+
+  void set_approved(bool value) { approved = value; }
 
 private:
   bool approved;
