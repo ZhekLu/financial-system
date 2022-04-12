@@ -37,13 +37,13 @@ QString AccountAdd::get_values_query() {
 }
 
 QString AccountAdd::get_info() const {
-  return QString("Type: %1\n"
+  return QString("Sum: %1\n"
                  "Initiator: %2\n"
                  "Approved: %3\n"
                  "Date: %4\n"
                  "Period: %5\n"
                  "Payed: %6\n")
-      .arg(type_string[type], QString::number(initiator_id),
+      .arg(QString::number(payment), QString::number(initiator_id),
            approved ? "True" : "False", start_date.toString(),
            QString::number(period), QString::number(payed_num));
 }

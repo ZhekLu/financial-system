@@ -64,6 +64,12 @@ void SystemWindow::on_verify_but_clicked() {
   case WidgetType::BLOCKS:
     qDebug() << "Block verify : " << blocks_widget->mark(true);
     break;
+  case WidgetType::SALARIES:
+    qDebug() << "Salary verify : " << salary_widget->mark(true);
+    break;
+  case WidgetType::DEPOSITS:
+    qDebug() << "Deposit verify : " << deposit_widget->mark(true);
+    break;
   }
 }
 
@@ -83,6 +89,12 @@ void SystemWindow::on_undo_but_clicked() {
     break;
   case WidgetType::BLOCKS:
     qDebug() << "Block undo : " << blocks_widget->mark(false);
+    break;
+  case WidgetType::SALARIES:
+    qDebug() << "Salary undo : " << salary_widget->mark(false);
+    break;
+  case WidgetType::DEPOSITS:
+    qDebug() << "Deposit undo : " << deposit_widget->mark(false);
     break;
   }
 }
