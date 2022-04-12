@@ -23,6 +23,13 @@ private slots:
   void on_confirm_but_clicked();
   void on_cancel_but_clicked();
 
+  // checkers
+  void check_email();
+  void check_bic();
+  void check_phone();
+  void check_passport();
+  void check_passport_id();
+
 private:
   enum Page { InfoPage, LoginPage };
 
@@ -32,15 +39,18 @@ private:
   std::unique_ptr<QRegularExpressionValidator> phone_validator;
   std::unique_ptr<QRegularExpressionValidator> email_validator;
   std::unique_ptr<QRegularExpressionValidator> bic_validator;
+  std::unique_ptr<QRegularExpressionValidator> passport_validator;
+  std::unique_ptr<QRegularExpressionValidator> passport_id_validator;
 
   void init();
   void init_lines();
+  void set_connections();
 
-  void check_input();
+  bool is_valid(QLineEdit *line);
   bool move_page(bool back = false);
   void clear_all();
 
-  void set_style(QLineEdit *line, QValidator *validator);
+  void update_style(QLineEdit *line);
   void set_page(Page page);
   void set_buttons(Page page);
 };
