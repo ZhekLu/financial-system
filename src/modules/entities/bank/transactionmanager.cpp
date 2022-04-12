@@ -32,8 +32,7 @@ bool TransactionManager::entity_transfer_request(size_t sender_id,
   return make_transaction_request(sender_id, sender.get(), receiver.get(), sum);
 }
 
-bool TransactionManager::undo_transfer_request(size_t initiator,
-                                               Transaction &t) {
+bool TransactionManager::undo_transfer(size_t initiator, Transaction &t) {
   std::unique_ptr<BankAccount> sender(USER_DB->get_account(t.get_sender()));
   std::unique_ptr<BankAccount> receiver(USER_DB->get_account(t.get_receiver()));
   if (!sender || (t.get_type() == Transaction::TRANSFER &&
@@ -48,6 +47,17 @@ bool TransactionManager::undo_transfer_request(size_t initiator,
   return t.get_type() == Transaction::TRANSFER
              ? make_undo_transaction(initiator, sender.get(), receiver.get(), t)
              : make_undo_withdraw(initiator, sender.get(), t);
+}
+
+bool TransactionManager::undo_transfer_request(size_t initiator,
+                                               Request &original) {
+  Request ur(Request::UNDO, initiator, original.get_id());
+  ur.set_approved(true);
+
+  original.set_viewed(IHistoryManager::send_request(ur));
+  if (original.is_viewed())
+    qDebug() << "Request : " << USER_DB->update(original);
+  return original.is_viewed();
 }
 
 bool TransactionManager::make_undo_transaction(size_t initiator,
@@ -78,6 +88,9 @@ bool TransactionManager::make_undo_withdraw(size_t initiator, BankAccount *acc,
       send_request(acc, Request(Request::UNDO, initiator, ut.get_id())));
   return send_transaction(ut);
 }
+
+bool TransactionManager::verify_transfer_request(size_t initiator,
+                                                 Transaction &t) {}
 
 bool TransactionManager::send_request(BankAccount *acc, Request r) {
   r.set_approved(USER_DB->update(*acc));
@@ -155,7 +168,11 @@ bool TransactionManager::make_withdraw(size_t sender, BankAccount *acc,
 
 // Object
 
-TransactionManager::TransactionManager(IUser *user) : IHistoryManager(user) {
+TransactionManager::TransactionManager(IUser *user, Mode mode)
+    : IHistoryManager(user) {
+  request_type =
+      mode == Mode::CONDUCT ? Request::TRANSFER : Request::TRANSFER_REQUEST;
+
   connect(USER_DB, &DataBase::updated, this, &TransactionManager::update_vars);
   TransactionManager::update_vars();
 }
@@ -173,12 +190,53 @@ std::vector<QTableWidgetItem *> TransactionManager::get_items() const {
 }
 
 bool TransactionManager::mark(size_t item_index, bool verify) {
-  if (verify)
+  if (verify && request_type == Request::TRANSFER)
     return true;
   std::unique_ptr<Transaction> current = std::move(transactions[item_index]);
   std::unique_ptr<Request> r = std::move(requests[item_index]);
 
-  r->set_viewed(undo_transfer_request(user->get_id(), *current));
+  return request_type == Request::TRANSFER
+             ? mark_transaction(current.get(), r.get(), verify)
+             : mark_transaction_request(current.get(), r.get(), verify);
+}
+
+bool TransactionManager::mark_transaction(Transaction *t, Request *r,
+                                          bool verify) {
+  if (verify)
+    return true;
+  r->set_viewed(undo_transfer(user->get_id(), *t));
+  if (r->is_viewed())
+    qDebug() << "Request : " << USER_DB->update(*r);
+  return r->is_viewed();
+}
+
+bool TransactionManager::mark_transaction_request(Transaction *t, Request *r,
+                                                  bool verify) {
+  if (!verify)
+    return undo_transfer_request(user->get_id(), *r);
+
+  std::unique_ptr<BankAccount> sender(USER_DB->get_account(t->get_sender()));
+  std::unique_ptr<BankAccount> receiver(
+      USER_DB->get_account(t->get_receiver()));
+  if (!sender || !receiver)
+    return false;
+
+  // from other
+
+  // check if accounts are not in freeze
+  if (!sender->is_available() || !receiver->is_available())
+    return false;
+
+  // can pay?
+  if (!sender->withdraw(t->get_amount()))
+    return false;
+
+  receiver->top_up(t->get_amount());
+  t->set_approved(
+      send_request(sender.get(), receiver.get(),
+                   Request(Request::VERIFY, user->get_id(), t->get_id())));
+
+  r->set_viewed(send_transaction(*t));
   if (r->is_viewed())
     qDebug() << "Request : " << USER_DB->update(*r);
   return r->is_viewed();
@@ -191,8 +249,8 @@ size_t TransactionManager::get_selected(size_t index) const {
 void TransactionManager::update_vars() {
   transactions.clear();
   requests.clear();
-  //  requests = USER_DB->get_transfer_requests();
-  requests = USER_DB->get_requests(Request::TRANSFER, false);
+  //  requests = USER_DB->get_transfer_requests(); it's for all types
+  requests = USER_DB->get_requests(request_type, false);
   for (auto &r : requests) {
     transactions.push_back(USER_DB->get_transaction(r->get_object()));
   }

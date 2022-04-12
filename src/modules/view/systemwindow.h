@@ -30,7 +30,8 @@ private:
     ACCOUNTS,
     BLOCKS,
     SALARIES,
-    DEPOSITS
+    DEPOSITS,
+    TRANSACTIONS_REQUESTS
   };
 
   Ui::SystemWindow *ui;
@@ -43,6 +44,7 @@ private:
   std::unique_ptr<HistoryWidget> blocks_widget;
   std::unique_ptr<HistoryWidget> salary_widget;
   std::unique_ptr<HistoryWidget> deposit_widget;
+  std::unique_ptr<HistoryWidget> transaction_requests_widget;
 };
 
 #endif // SYSTEMWINDOW_H

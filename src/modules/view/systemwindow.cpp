@@ -26,6 +26,9 @@ SystemWindow::SystemWindow(IUser *user, QWidget *parent)
       user, Request::Type::SALARY, IHistoryManager::ItemsType::SYSTEM, this);
   deposit_widget = std::make_unique<HistoryWidget>(
       user, Request::Type::DEPOSIT, IHistoryManager::ItemsType::SYSTEM, this);
+  transaction_requests_widget =
+      std::make_unique<HistoryWidget>(user, Request::Type::TRANSFER_REQUEST,
+                                      IHistoryManager::ItemsType::SYSTEM, this);
 
   ui->tab_widget->insertTab(WidgetType::TRANSACTIONS, transaction_widget.get(),
                             "transactions");
@@ -40,6 +43,9 @@ SystemWindow::SystemWindow(IUser *user, QWidget *parent)
                             "salaries");
   ui->tab_widget->insertTab(WidgetType::DEPOSITS, deposit_widget.get(),
                             "deposits");
+  ui->tab_widget->insertTab(WidgetType::TRANSACTIONS_REQUESTS,
+                            transaction_requests_widget.get(),
+                            "transactions_request");
   ui->tab_widget->setCurrentIndex(WidgetType::CREDITS);
 }
 
@@ -70,6 +76,10 @@ void SystemWindow::on_verify_but_clicked() {
   case WidgetType::DEPOSITS:
     qDebug() << "Deposit verify : " << deposit_widget->mark(true);
     break;
+  case WidgetType::TRANSACTIONS_REQUESTS:
+    qDebug() << "Transaction request verify : "
+             << transaction_requests_widget->mark(true);
+    break;
   }
 }
 
@@ -95,6 +105,10 @@ void SystemWindow::on_undo_but_clicked() {
     break;
   case WidgetType::DEPOSITS:
     qDebug() << "Deposit undo : " << deposit_widget->mark(false);
+    break;
+  case WidgetType::TRANSACTIONS_REQUESTS:
+    qDebug() << "Transaction request undo : "
+             << transaction_requests_widget->mark(false);
     break;
   }
 }
