@@ -134,7 +134,7 @@ bool UserDB::is_login_busy(QString login) {
       tr("SELECT login FROM system_users WHERE login = ") + qs(login);
   exec(query);
 
-  return db_query->first();
+  return db_query->next();
 }
 
 bool UserDB::contains(SystemUser user) {
@@ -162,7 +162,7 @@ size_t UserDB::get_user(SystemUser user) {
   return db_query->value(0).toInt();
 }
 
-bool UserDB::add_user_login(SystemUser &user) {
+bool UserDB::add_login(SystemUser &user) {
   QString query = QString("INSERT INTO system_users "
                           "(id, login, password, role, user_id, approved) "
                           "VALUES %1;")
@@ -195,6 +195,18 @@ Individual *UserDB::get_user(size_t id) {
   return new Individual(name, p_number, p_id, phone, email, id);
 }
 
+bool UserDB::add_user(Individual &user) {
+  QString query =
+      "INSERT INTO users(id, full_name, pass_number, pass_id, phone, email) "
+      "VALUES " +
+      user.get_values_query();
+  if (exec(query)) {
+    emit DataBase::updated();
+    return true;
+  }
+  return false;
+}
+
 void UserDB::remove_user(std::string login) {
   QString query = ("DELETE FROM users WHERE login = ") + qs(login);
   if (exec(query))
@@ -203,13 +215,16 @@ void UserDB::remove_user(std::string login) {
 
 // Companies
 
-void UserDB::add_company(Entity company) {
+bool UserDB::add_company(Entity &company) {
   QString query =
       "INSERT INTO companies(id, name, type, PAC, BIC, adress, bank_bic) "
       "VALUES " +
       company.get_values_query();
-  if (exec(query))
+  if (exec(query)) {
     emit DataBase::updated();
+    return true;
+  }
+  return false;
 }
 
 void UserDB::remove_company(size_t id) {

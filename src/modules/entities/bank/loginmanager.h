@@ -22,6 +22,10 @@ private:
   Request::Type request_type;
   std::vector<std::unique_ptr<SystemUser>> logins;
   std::vector<std::unique_ptr<Request>> requests;
+
+  // static
+  static bool send_login(SystemUser &);
+  static bool send_user(IUser *user, LoginMode role);
 };
 
 #endif // LOGINMANAGER_H

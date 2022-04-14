@@ -29,15 +29,16 @@ public:
   bool contains(SystemUser user);
   size_t get_user(SystemUser user);
 
-  bool add_user_login(SystemUser &user);
+  bool add_login(SystemUser &user);
   void remove_user(std::string login);
   //  std::vector<SystemUser> users();
 
   // Users
   Individual *get_user(size_t id);
+  bool add_user(Individual &user);
 
   // Companies
-  void add_company(Entity company);
+  bool add_company(Entity &company);
   void remove_company(size_t id);
   Entity *get_company(size_t id);
 

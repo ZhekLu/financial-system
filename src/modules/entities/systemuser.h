@@ -21,11 +21,12 @@ struct SystemUser : public ISystemObject {
   QString get_update_query() const;
   QString get_info() const override;
 
-  int get_role() const { return mode; }
+  LoginMode get_role() const { return mode; }
   QString get_login() const { return QString::fromStdString(login); }
   QString get_password() const { return QString::fromStdString(password); }
 
   void set_approved(bool value) { approved = value; }
+  void set_user(size_t id) { user_id = id; }
 
 private:
   // fields

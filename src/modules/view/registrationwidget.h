@@ -2,6 +2,7 @@
 #define REGISTRATIONWIDGET_H
 
 #include "authwidget.h"
+#include "modules/entities/bank/loginmanager.h"
 #include <QWidget>
 
 namespace Ui {
@@ -53,7 +54,15 @@ private:
   void warning(bool visible);
 
   bool is_valid(QLineEdit *line);
+  bool is_not_empty(QLineEdit *line);
+  bool is_valid_info(bool entity);
+  bool is_valid_login();
+
   bool send_reg_request();
+  Entity *get_entity();
+  Individual *get_individual();
+  IUser *get_user();
+  SystemUser *get_login();
 
   void update_style(QLineEdit *line);
   void set_page(Page page);
