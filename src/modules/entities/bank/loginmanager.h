@@ -6,6 +6,7 @@
 class LoginManager : public IHistoryManager {
 public:
   static bool login_request(IUser *user, SystemUser *login_info);
+  static bool check_login(QString &login, QString &password, LoginMode mode);
 
   // Manager
   LoginManager(IUser *user);

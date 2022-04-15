@@ -130,8 +130,7 @@ bool UserDB::createTables() {
 // Login and system
 
 bool UserDB::is_login_busy(QString login) {
-  QString query =
-      tr("SELECT login FROM system_users WHERE login = ") + qs(login);
+  QString query = tr("SELECT id FROM system_users WHERE login = ") + qs(login);
   exec(query);
 
   return db_query->next();
@@ -160,6 +159,26 @@ size_t UserDB::get_user(SystemUser user) {
   if (!db_query->next())
     return 0;
   return db_query->value(0).toInt();
+}
+
+std::unique_ptr<SystemUser> UserDB::get_login(QString login) {
+  QString query = QString("SELECT "
+                          "id, password, role, user_id, approved "
+                          "FROM system_users "
+                          "WHERE login = '%1';")
+                      .arg(login);
+
+  exec(query);
+  if (!db_query->next())
+    return nullptr;
+
+  size_t id = db_query->value(0).toULongLong();
+  std::string password = db_query->value(1).toString().toStdString();
+  int role = db_query->value(2).toInt();
+  size_t user_id = db_query->value(3).toULongLong();
+  bool approved = db_query->value(4).toBool();
+  return std::make_unique<SystemUser>(id, login.toStdString(), password,
+                                      LoginMode(role), user_id, approved);
 }
 
 bool UserDB::add_login(SystemUser &user) {

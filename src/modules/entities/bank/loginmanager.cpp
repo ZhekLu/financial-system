@@ -11,6 +11,14 @@ bool LoginManager::login_request(IUser *user, SystemUser *login_info) {
   return IHistoryManager::send_request(r);
 }
 
+bool LoginManager::check_login(QString &login, QString &password,
+                               LoginMode mode) {
+  auto user_login = USER_DB->get_login(login);
+  if (!user_login || !user_login->is_available())
+    return false;
+  return user_login->get_role() == mode && user_login->check_password(password);
+}
+
 bool LoginManager::send_login(SystemUser &l) { return USER_DB->add_login(l); }
 
 bool LoginManager::send_user(IUser *user, LoginMode role) {

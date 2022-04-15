@@ -23,8 +23,13 @@ struct SystemUser : public ISystemObject {
 
   LoginMode get_role() const { return mode; }
   QString get_login() const { return QString::fromStdString(login); }
+  bool is_available() const { return approved; }
+  // TODO : make it private
   QString get_password() const { return QString::fromStdString(password); }
 
+  bool check_password(QString &password) const {
+    return get_password() == password;
+  }
   void set_approved(bool value) { approved = value; }
   void set_user(size_t id) { user_id = id; }
 

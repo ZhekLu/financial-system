@@ -28,6 +28,7 @@ public:
   bool is_login_busy(QString login);
   bool contains(SystemUser user);
   size_t get_user(SystemUser user);
+  std::unique_ptr<SystemUser> get_login(QString login);
 
   bool add_login(SystemUser &user);
   void remove_user(std::string login);
