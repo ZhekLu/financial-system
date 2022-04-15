@@ -136,31 +136,6 @@ bool UserDB::is_login_busy(QString login) {
   return db_query->next();
 }
 
-bool UserDB::contains(SystemUser user) {
-
-  QString query = QString("SELECT user_id FROM system_users "
-                          "WHERE login = \"%1\" AND "
-                          "password = \"%2\" AND "
-                          "role = %3")
-                      .arg(user.get_login(), user.get_password(),
-                           QString::number(user.get_role()));
-  exec(query);
-  return db_query->next();
-}
-
-size_t UserDB::get_user(SystemUser user) {
-  QString query = QString("SELECT user_id FROM system_users "
-                          "WHERE login = \"%1\" AND "
-                          "password = \"%2\" AND "
-                          "role = %3")
-                      .arg(user.get_login(), user.get_password(),
-                           QString::number(user.get_role()));
-  exec(query);
-  if (!db_query->next())
-    return 0;
-  return db_query->value(0).toInt();
-}
-
 std::unique_ptr<SystemUser> UserDB::get_login(QString login) {
   QString query = QString("SELECT "
                           "id, password, role, user_id, approved "
@@ -224,12 +199,6 @@ bool UserDB::add_user(Individual &user) {
     return true;
   }
   return false;
-}
-
-void UserDB::remove_user(std::string login) {
-  QString query = ("DELETE FROM users WHERE login = ") + qs(login);
-  if (exec(query))
-    emit DataBase::updated();
 }
 
 // Companies
