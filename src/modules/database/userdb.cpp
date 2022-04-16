@@ -188,6 +188,17 @@ bool UserDB::add_login(SystemUser &user) {
   return false;
 }
 
+bool UserDB::update(SystemUser &su) {
+  QString query = QString("UPDATE system_users SET %1 "
+                          "WHERE id = %2")
+                      .arg(su.get_update_query(), QString::number(su.get_id()));
+  if (exec(query)) {
+    emit DataBase::updated();
+    return true;
+  }
+  return false;
+}
+
 // User
 
 Individual *UserDB::get_user(size_t id) {

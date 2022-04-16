@@ -46,7 +46,18 @@ LoginManager::LoginManager(IUser *user)
 }
 
 bool LoginManager::mark(size_t item_index, bool verify) {
-  // TODO
+  auto current = logins[item_index].release();
+  auto r = requests[item_index].release();
+  Request ur(verify ? Request::VERIFY : Request::UNDO, user->get_id(),
+             r->get_id());
+
+  current->set_approved(verify);
+  ur.set_approved(USER_DB->update(*current));
+
+  r->set_viewed(IHistoryManager::send_request(ur));
+  if (r->is_viewed())
+    qDebug() << "Request : " << USER_DB->update(*r);
+  return r->is_viewed();
 }
 
 size_t LoginManager::get_selected(size_t index) const {

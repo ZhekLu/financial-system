@@ -29,6 +29,7 @@ public:
   std::unique_ptr<SystemUser> get_login(QString login);
   std::unique_ptr<SystemUser> get_login(size_t id);
   bool add_login(SystemUser &user);
+  bool update(SystemUser &);
 
   // Users
   Individual *get_user(size_t id);

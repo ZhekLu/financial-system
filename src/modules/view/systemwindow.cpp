@@ -86,6 +86,9 @@ void SystemWindow::on_verify_but_clicked() {
     qDebug() << "Transaction request verify : "
              << transaction_requests_widget->mark(true);
     break;
+  case WidgetType::REGISTRATIONS:
+    qDebug() << "Registration verify : " << registration_widget->mark(true);
+    break;
   }
 }
 
@@ -115,6 +118,9 @@ void SystemWindow::on_undo_but_clicked() {
   case WidgetType::TRANSACTIONS_REQUESTS:
     qDebug() << "Transaction request undo : "
              << transaction_requests_widget->mark(false);
+    break;
+  case WidgetType::REGISTRATIONS:
+    qDebug() << "Registration undo : " << registration_widget->mark(false);
     break;
   }
 }
