@@ -156,6 +156,26 @@ std::unique_ptr<SystemUser> UserDB::get_login(QString login) {
                                       LoginMode(role), user_id, approved);
 }
 
+std::unique_ptr<SystemUser> UserDB::get_login(size_t id) {
+  QString query = QString("SELECT "
+                          "login, password, role, user_id, approved "
+                          "FROM system_users "
+                          "WHERE id = %1;")
+                      .arg(id);
+
+  exec(query);
+  if (!db_query->next())
+    return nullptr;
+
+  std::string login = db_query->value(0).toString().toStdString();
+  std::string password = db_query->value(1).toString().toStdString();
+  int role = db_query->value(2).toInt();
+  size_t user_id = db_query->value(3).toULongLong();
+  bool approved = db_query->value(4).toBool();
+  return std::make_unique<SystemUser>(id, login, password, LoginMode(role),
+                                      user_id, approved);
+}
+
 bool UserDB::add_login(SystemUser &user) {
   QString query = QString("INSERT INTO system_users "
                           "(id, login, password, role, user_id, approved) "

@@ -9,6 +9,9 @@ SystemWindow::SystemWindow(IUser *user, QWidget *parent)
   // transactions
   transaction_widget = std::make_unique<HistoryWidget>(
       user, Request::Type::TRANSFER, IHistoryManager::ItemsType::SYSTEM, this);
+  transaction_requests_widget =
+      std::make_unique<HistoryWidget>(user, Request::Type::TRANSFER_REQUEST,
+                                      IHistoryManager::ItemsType::SYSTEM, this);
   // loans
   credit_widget = std::make_unique<HistoryWidget>(
       user, Request::Type::CREDIT, IHistoryManager::ItemsType::SYSTEM, this);
@@ -26,8 +29,9 @@ SystemWindow::SystemWindow(IUser *user, QWidget *parent)
       user, Request::Type::SALARY, IHistoryManager::ItemsType::SYSTEM, this);
   deposit_widget = std::make_unique<HistoryWidget>(
       user, Request::Type::DEPOSIT, IHistoryManager::ItemsType::SYSTEM, this);
-  transaction_requests_widget =
-      std::make_unique<HistoryWidget>(user, Request::Type::TRANSFER_REQUEST,
+  // regs
+  registration_widget =
+      std::make_unique<HistoryWidget>(user, Request::Type::LOGIN_USER,
                                       IHistoryManager::ItemsType::SYSTEM, this);
 
   ui->tab_widget->insertTab(WidgetType::TRANSACTIONS, transaction_widget.get(),
@@ -46,6 +50,8 @@ SystemWindow::SystemWindow(IUser *user, QWidget *parent)
   ui->tab_widget->insertTab(WidgetType::TRANSACTIONS_REQUESTS,
                             transaction_requests_widget.get(),
                             "transactions_request");
+  ui->tab_widget->insertTab(WidgetType::REGISTRATIONS,
+                            registration_widget.get(), "registrations");
   ui->tab_widget->setCurrentIndex(WidgetType::CREDITS);
 }
 

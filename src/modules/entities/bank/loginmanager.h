@@ -20,8 +20,8 @@ private slots:
 
 private:
   // fields
-  Request::Type request_type;
   std::vector<std::unique_ptr<SystemUser>> logins;
+  std::vector<std::unique_ptr<IUser>> users;
   std::vector<std::unique_ptr<Request>> requests;
 
   // static

@@ -27,6 +27,7 @@ public:
   // Login
   bool is_login_busy(QString login);
   std::unique_ptr<SystemUser> get_login(QString login);
+  std::unique_ptr<SystemUser> get_login(size_t id);
   bool add_login(SystemUser &user);
 
   // Users

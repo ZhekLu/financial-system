@@ -39,12 +39,41 @@ bool LoginManager::send_user(IUser *user, LoginMode role) {
 // Object
 
 LoginManager::LoginManager(IUser *user)
-    : IHistoryManager(user, ItemsType::SYSTEM) {}
+    : IHistoryManager(user, ItemsType::SYSTEM) {
+  connect(USER_DB, &DataBase::updated, this, &LoginManager::update_vars);
+  // upd
+  LoginManager::update_vars();
+}
 
-bool LoginManager::mark(size_t item_index, bool verify) {}
+bool LoginManager::mark(size_t item_index, bool verify) {
+  // TODO
+}
 
-size_t LoginManager::get_selected(size_t index) const {}
+size_t LoginManager::get_selected(size_t index) const {
+  return logins[index]->get_id();
+}
 
-std::vector<QTableWidgetItem *> LoginManager::get_items() const {}
+std::vector<QTableWidgetItem *> LoginManager::get_items() const {
+  std::vector<QTableWidgetItem *> items;
+  for (size_t i = 0; i < requests.size(); i++) {
+    QString item =
+        requests[i]->get_info() + logins[i]->get_info() + users[i]->get_info();
+    items.push_back(new QTableWidgetItem(item));
+  }
+  return items;
+}
 
-void LoginManager::update_vars() {}
+void LoginManager::update_vars() {
+  // clear
+  requests.clear();
+  logins.clear();
+  users.clear();
+
+  // fill
+  requests = USER_DB->get_requests(Request::LOGIN_USER, false);
+  for (auto &r : requests) {
+    logins.push_back(USER_DB->get_login(r->get_object()));
+    users.push_back(
+        std::unique_ptr<IUser>(USER_DB->get_user(logins.back()->get_user())));
+  }
+}

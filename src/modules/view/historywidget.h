@@ -6,6 +6,7 @@
 #include "modules/entities/bank/accountaddmanager.h"
 #include "modules/entities/bank/accountmanager.h"
 #include "modules/entities/bank/loanmanager.h"
+#include "modules/entities/bank/loginmanager.h"
 #include "modules/entities/bank/request.h"
 #include "modules/entities/bank/transactionmanager.h"
 #include <QWidget>
