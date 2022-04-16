@@ -18,6 +18,7 @@ SOURCES += \
     modules/entities/bank/accountadd.cpp \
     modules/entities/bank/accountaddmanager.cpp \
     modules/entities/bank/accountmanager.cpp \
+    modules/entities/bank/accountstatemanager.cpp \
     modules/entities/bank/loanmanager.cpp \
     modules/entities/bank/loginmanager.cpp \
     modules/entities/bank/transactionmanager.cpp \
@@ -41,9 +42,11 @@ HEADERS += \
     modules/entities/ISystemObject.h \
     modules/entities/IUser.h \
     modules/entities/bank/IHistoryManager.h \
+    modules/entities/bank/IManager.h \
     modules/entities/bank/accountadd.h \
     modules/entities/bank/accountaddmanager.h \
     modules/entities/bank/accountmanager.h \
+    modules/entities/bank/accountstatemanager.h \
     modules/entities/bank/bank.h \
     modules/entities/bank/bankaccount.h \
     modules/entities/bank/credit.h \

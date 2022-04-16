@@ -7,7 +7,7 @@
 #include "creditwidget.h"
 #include "historywidget.h"
 #include "modules/database/userdb.h"
-#include "modules/entities/bank/accountmanager.h"
+#include "modules/entities/bank/accountstatemanager.h"
 #include "modules/entities/bank/bankaccount.h"
 #include "modules/entities/entity.h"
 #include "modules/entities/individual.h"

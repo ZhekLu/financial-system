@@ -45,7 +45,7 @@ void AddCardWidget::send_add_account(size_t user_id, size_t bank_id) {
   qDebug() << "Add account : "
            //           << AccountManager::add_account_request(user->get_id(),
            //           to_add.get());
-           << AccountManager::add_account_request(user_id, bank_id);
+           << AccountStateManager::add_account_request(user_id, bank_id);
 }
 
 void AddCardWidget::update_combobox() {

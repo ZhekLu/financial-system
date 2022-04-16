@@ -1,7 +1,7 @@
 #ifndef ADDCARDWIDGET_H
 #define ADDCARDWIDGET_H
 
-#include "modules/entities/bank/accountmanager.h"
+#include "modules/entities/bank/accountstatemanager.h"
 #include "modules/entities/bank/bank.h"
 #include "modules/entities/bank/bankaccount.h"
 

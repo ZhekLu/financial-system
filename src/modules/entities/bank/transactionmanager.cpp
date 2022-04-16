@@ -89,9 +89,6 @@ bool TransactionManager::make_undo_withdraw(size_t initiator, BankAccount *acc,
   return send_transaction(ut);
 }
 
-bool TransactionManager::verify_transfer_request(size_t initiator,
-                                                 Transaction &t) {}
-
 bool TransactionManager::send_request(BankAccount *acc, Request r) {
   r.set_approved(USER_DB->update(*acc));
   return IHistoryManager::send_request(r);
@@ -190,8 +187,6 @@ std::vector<QTableWidgetItem *> TransactionManager::get_items() const {
 }
 
 bool TransactionManager::mark(size_t item_index, bool verify) {
-  if (verify && request_type == Request::TRANSFER)
-    return true;
   std::unique_ptr<Transaction> current = std::move(transactions[item_index]);
   std::unique_ptr<Request> r = std::move(requests[item_index]);
 

@@ -37,7 +37,7 @@ void EntityClientWindow::set_connections() {
 
 void EntityClientWindow::on_new_card_but_clicked() {
   qDebug() << "Add account : "
-           << AccountManager::add_account_request(user->get_id(),
+           << AccountStateManager::add_account_request(user->get_id(),
                                                   user->get_bank());
 }
 
