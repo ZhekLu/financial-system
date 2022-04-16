@@ -47,6 +47,7 @@ private:
 
   void init();
   void init_lines();
+  void init_type_selector();
   void set_connections();
 
   bool move_page(bool back = false);

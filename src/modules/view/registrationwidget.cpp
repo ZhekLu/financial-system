@@ -1,6 +1,7 @@
 #include "registrationwidget.h"
 #include "ui_loginwidget.h"
 #include "ui_registrationwidget.h"
+#include <QScrollArea>
 
 RegistrationWidget::RegistrationWidget(QWidget *parent)
     : QWidget(parent), ui(new Ui::RegistrationWidget), lw(new Ui::LoginWidget) {
@@ -34,6 +35,7 @@ void RegistrationWidget::init() {
   ui->stacked_widget->setCurrentIndex(Page::InfoPage);
 
   init_lines();
+  init_type_selector();
   set_connections();
 }
 
@@ -68,6 +70,12 @@ void RegistrationWidget::init_lines() {
   passport_id_validator =
       std::make_unique<QRegularExpressionValidator>(passport_id, this);
   ui->id_line->setValidator(passport_id_validator.get());
+}
+
+void RegistrationWidget::init_type_selector() {
+  for (auto &t : Entity::type_string) {
+    ui->type_selector->addItem(t);
+  }
 }
 
 void RegistrationWidget::set_connections() {
