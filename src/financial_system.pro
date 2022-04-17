@@ -66,7 +66,6 @@ HEADERS += \
     modules/view/clientwindow.h \
     modules/view/creditwidget.h \
     modules/view/historywidget.h \
-    modules/view/managerfactory.h \
     modules/view/periodwidget.h \
     modules/view/registrationwidget.h \
     modules/view/systemwindow.h \
