@@ -754,7 +754,7 @@ std::unique_ptr<AccountAdd> UserDB::get_add(size_t id) {
   std::unique_ptr<AccountAdd> add;
   if (!db_query->next())
     return nullptr;
-  int type = db_query->value(0).toULongLong();
+  int type = db_query->value(0).toInt();
   bool approved = db_query->value(1).toBool();
   size_t user_id = db_query->value(2).toULongLong();
   size_t bank_id = db_query->value(3).toULongLong();
@@ -769,6 +769,63 @@ std::unique_ptr<AccountAdd> UserDB::get_add(size_t id) {
                                      period, payment, percent, payed_num);
 
   return add;
+}
+
+std::vector<std::unique_ptr<AccountAdd>> UserDB::get_adds(size_t account_id) {
+  QString query = QString("SELECT "
+                          "id, type, approved, user_id, bank_id, "
+                          "start_date, period, "
+                          "payment, percent, payed_num "
+                          "FROM account_adds WHERE account_id = ") +
+                  QString::number((account_id));
+  exec(query);
+
+  std::vector<std::unique_ptr<AccountAdd>> adds;
+  while (db_query->next()) {
+    size_t id = db_query->value(0).toULongLong();
+    int type = db_query->value(1).toInt();
+    bool approved = db_query->value(2).toBool();
+    size_t user_id = db_query->value(3).toULongLong();
+    size_t bank_id = db_query->value(4).toULongLong();
+    QDate start_date = db_query->value(5).toDate();
+    size_t period = db_query->value(6).toULongLong();
+    size_t payment = db_query->value(7).toULongLong();
+    size_t percent = db_query->value(8).toULongLong();
+    size_t payed_num = db_query->value(9).toULongLong();
+    adds.push_back(std::make_unique<AccountAdd>(
+        id, approved, AccountAdd::Type(type), user_id, bank_id, account_id,
+        start_date, period, payment, percent, payed_num));
+  }
+  return adds;
+}
+
+std::vector<std::unique_ptr<AccountAdd>> UserDB::get_adds(size_t account_id,
+                                                          bool approved) {
+  QString query =
+      QString("SELECT "
+              "id, type, user_id, bank_id, "
+              "start_date, period, "
+              "payment, percent, payed_num "
+              "FROM account_adds WHERE account_id = %1 and approved = %2")
+          .arg(QString::number((account_id)), QString::number((approved)));
+  exec(query);
+
+  std::vector<std::unique_ptr<AccountAdd>> adds;
+  while (db_query->next()) {
+    size_t id = db_query->value(0).toULongLong();
+    int type = db_query->value(1).toInt();
+    size_t user_id = db_query->value(2).toULongLong();
+    size_t bank_id = db_query->value(3).toULongLong();
+    QDate start_date = db_query->value(4).toDate();
+    size_t period = db_query->value(5).toULongLong();
+    size_t payment = db_query->value(6).toULongLong();
+    size_t percent = db_query->value(7).toULongLong();
+    size_t payed_num = db_query->value(8).toULongLong();
+    adds.push_back(std::make_unique<AccountAdd>(
+        id, approved, AccountAdd::Type(type), user_id, bank_id, account_id,
+        start_date, period, payment, percent, payed_num));
+  }
+  return adds;
 }
 
 // Debug

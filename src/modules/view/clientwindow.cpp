@@ -125,17 +125,17 @@ void ClientWindow::on_info_but_clicked() {
 void ClientWindow::on_freeze_but_clicked() {
   if (current_account)
     qDebug() << ui->freeze_but->text()
-             << AccountStateManager::freeze_request(user->get_id(),
-                                               current_account->get_id(),
-                                               !current_account->is_frozen());
+             << AccountStateManager::freeze_request(
+                    user->get_id(), current_account->get_id(),
+                    !current_account->is_frozen());
 }
 
 void ClientWindow::on_block_but_clicked() {
   if (current_account)
     qDebug() << ui->block_but->text()
-             << AccountStateManager::block_request(user->get_id(),
-                                              current_account->get_id(),
-                                              !current_account->is_blocked());
+             << AccountStateManager::block_request(
+                    user->get_id(), current_account->get_id(),
+                    !current_account->is_blocked());
 }
 
 void ClientWindow::on_withdraw_but_clicked() {
@@ -194,6 +194,10 @@ void ClientWindow::on_table_widget_cellClicked(int row, int) {
 
   ui->current_label->setText("Selected account : " +
                              QString::number(current_account->get_id()));
+}
+
+void ClientWindow::account_selected(BankAccount *selected) {
+  current_account = selected;
 }
 
 void ClientWindow::mode_widget_closed() {

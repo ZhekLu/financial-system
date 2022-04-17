@@ -22,6 +22,7 @@ SOURCES += \
     modules/entities/bank/loanmanager.cpp \
     modules/entities/bank/loginmanager.cpp \
     modules/entities/bank/transactionmanager.cpp \
+    modules/view/accountswidget.cpp \
     modules/view/addcardwidget.cpp \
     modules/view/additionwidget.cpp \
     modules/view/clientmanagewindow.cpp \
@@ -59,6 +60,7 @@ HEADERS += \
     modules/entities/bank/transactionmanager.h \
     modules/entities/entity.h \
     modules/entities/individual.h \
+    modules/view/accountswidget.h \
     modules/view/addcardwidget.h \
     modules/view/additionwidget.h \
     modules/view/clientmanagewindow.h \
@@ -80,6 +82,7 @@ HEADERS += \
 
 FORMS += \
     mainwindow.ui \
+    modules/view/accountswidget.ui \
     modules/view/addcardwidget.ui \
     modules/view/additionwidget.ui \
     modules/view/clientmanagewindow.ui \

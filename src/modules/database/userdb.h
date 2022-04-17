@@ -82,6 +82,9 @@ public:
   bool add_add(AccountAdd &);
   bool update(AccountAdd &);
   std::unique_ptr<AccountAdd> get_add(size_t id);
+  std::vector<std::unique_ptr<AccountAdd>> get_adds(size_t account_id);
+  std::vector<std::unique_ptr<AccountAdd>> get_adds(size_t account_id,
+                                                    bool approved);
 
   // Debug methods
   void print_all_system_users();

@@ -52,3 +52,21 @@ QString AccountAdd::get_update_query() const {
   return QString("approved = %1, payed_num = %2")
       .arg(QString::number(approved), QString::number(payed_num));
 }
+
+size_t AccountAdd::pay() {
+  if (payed_num == period)
+    return 0;
+  QDate current = QDate::currentDate();
+  QDate last = last_payment_date().addMonths(1);
+  size_t to_pay = 0;
+  while (last < current) {
+    to_pay += payment;
+    payed_num++;
+    last = last.addMonths(1);
+  }
+  return to_pay;
+}
+
+QDate AccountAdd::last_payment_date() const {
+  return start_date.addMonths(payed_num);
+}

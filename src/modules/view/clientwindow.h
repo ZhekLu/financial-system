@@ -1,6 +1,7 @@
 #ifndef CLIENTWINDOW_H
 #define CLIENTWINDOW_H
 
+#include "accountswidget.h"
 #include "addcardwidget.h"
 #include "additionwidget.h"
 #include "clientmanagewindow.h"
@@ -48,6 +49,7 @@ private slots:
 
   // Widgets
   void on_table_widget_cellClicked(int, int);
+  void account_selected(BankAccount *);
   void mode_widget_closed();
   void manage_window_closed();
 
@@ -64,6 +66,7 @@ private:
   Ui::ClientWindow *ui;
 
   // Mode widgets
+  std::unique_ptr<AccountsWidget> card_widget;
   std::unique_ptr<TransferWidget> transfer_widget;
   std::unique_ptr<CreditWidget> credit_widget;
   std::unique_ptr<AddCardWidget> add_widget;
