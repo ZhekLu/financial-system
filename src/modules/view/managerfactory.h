@@ -2,7 +2,6 @@
 #define MANAGERFACTORY_H
 
 #include "clientwindow.h"
-#include "entityclientwindow.h"
 #include "modules/modes.h"
 #include "systemwindow.h"
 
@@ -28,7 +27,8 @@ public:
       return new ClientWindow(current, ClientWindow::AccessMode::Person,
                               parent);
     case ENTITY:
-      return new EntityClientWindow((Entity *)current, parent);
+      return new ClientWindow(current, ClientWindow::AccessMode::Company,
+                              parent);
     }
     return nullptr;
   }
