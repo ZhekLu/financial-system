@@ -10,6 +10,8 @@ AccountsWidget::AccountsWidget(IUser *user, QWidget *parent)
 
 AccountsWidget::~AccountsWidget() { delete ui; }
 
+void AccountsWidget::clear_selection() { ui->table_widget->clearSelection(); }
+
 void AccountsWidget::on_table_widget_cellClicked(int row, int) {
   BankAccount *curr = manager->get_selected_account(row);
   emit selected(curr);

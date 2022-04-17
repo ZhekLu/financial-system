@@ -6,7 +6,7 @@
 class AccountManager : public IManager {
 public:
   static std::unique_ptr<BankAccount> get_account(size_t id);
-  static void update_account(BankAccount *acc);
+  static bool update(BankAccount &acc);
 
   // Manager
   AccountManager(IUser *user);
@@ -23,6 +23,8 @@ private:
   std::unordered_map<size_t, std::unique_ptr<Bank>> banks;
 
   // methods
+  static void update_account(BankAccount *acc);
+  static void update_account_adds(size_t id);
   QTableWidgetItem *get_item(BankAccount *acc, QString bank) const;
 };
 

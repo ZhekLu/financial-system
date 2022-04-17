@@ -4,7 +4,7 @@
 
 bool TransactionManager::withdraw_request(size_t sender_id, size_t account_id,
                                           size_t sum) {
-  std::unique_ptr<BankAccount> acc(USER_DB->get_account(account_id));
+  std::unique_ptr<BankAccount> acc(AccountManager::get_account(account_id));
   if (!acc || !acc->withdraw(sum))
     return false;
   return make_withdraw(sender_id, acc.get(), sum);
@@ -13,9 +13,9 @@ bool TransactionManager::withdraw_request(size_t sender_id, size_t account_id,
 bool TransactionManager::transfer_request(size_t sender_id, size_t account_id,
                                           size_t receiver_account_id,
                                           size_t sum) {
-  std::unique_ptr<BankAccount> sender(USER_DB->get_account(account_id));
+  std::unique_ptr<BankAccount> sender(AccountManager::get_account(account_id));
   std::unique_ptr<BankAccount> receiver(
-      USER_DB->get_account(receiver_account_id));
+      AccountManager::get_account(receiver_account_id));
   if (!sender || !receiver)
     return false;
   return make_transaction(sender_id, sender.get(), receiver.get(), sum);
@@ -25,16 +25,19 @@ bool TransactionManager::entity_transfer_request(size_t sender_id,
                                                  size_t account_id,
                                                  size_t receiver_id,
                                                  size_t sum) {
-  std::unique_ptr<BankAccount> sender(USER_DB->get_account(account_id));
-  std::unique_ptr<BankAccount> receiver(USER_DB->get_account(receiver_id));
+  std::unique_ptr<BankAccount> sender(AccountManager::get_account(account_id));
+  std::unique_ptr<BankAccount> receiver(
+      AccountManager::get_account(receiver_id));
   if (!sender || !receiver)
     return false;
   return make_transaction_request(sender_id, sender.get(), receiver.get(), sum);
 }
 
 bool TransactionManager::undo_transfer(size_t initiator, Transaction &t) {
-  std::unique_ptr<BankAccount> sender(USER_DB->get_account(t.get_sender()));
-  std::unique_ptr<BankAccount> receiver(USER_DB->get_account(t.get_receiver()));
+  std::unique_ptr<BankAccount> sender(
+      AccountManager::get_account(t.get_sender()));
+  std::unique_ptr<BankAccount> receiver(
+      AccountManager::get_account(t.get_receiver()));
   if (!sender || (t.get_type() == Transaction::TRANSFER &&
                   (!receiver || !receiver->can_pay(t.get_amount()))))
     return false;
@@ -90,15 +93,15 @@ bool TransactionManager::make_undo_withdraw(size_t initiator, BankAccount *acc,
 }
 
 bool TransactionManager::send_request(BankAccount *acc, Request r) {
-  r.set_approved(USER_DB->update(*acc));
+  r.set_approved(AccountManager::update(*acc));
   return IHistoryManager::send_request(r);
 }
 
 bool TransactionManager::send_request(BankAccount *acc, BankAccount *sec,
                                       Request r) {
-  r.set_approved(USER_DB->update(*acc));
+  r.set_approved(AccountManager::update(*acc));
   if (r.is_approved())
-    r.set_approved(USER_DB->update(*sec));
+    r.set_approved(AccountManager::update(*sec));
   return IHistoryManager::send_request(r);
 }
 
@@ -144,7 +147,7 @@ bool TransactionManager::make_transaction_request(size_t sender,
 
 bool TransactionManager::make_transaction(size_t sender, BankAccount *acc,
                                           size_t dest, size_t sum) {
-  std::unique_ptr<BankAccount> receiver(USER_DB->get_account(dest));
+  std::unique_ptr<BankAccount> receiver(AccountManager::get_account(dest));
   if (!receiver)
     return false;
 
@@ -210,9 +213,10 @@ bool TransactionManager::mark_transaction_request(Transaction *t, Request *r,
   if (!verify)
     return undo_transfer_request(user->get_id(), *r);
 
-  std::unique_ptr<BankAccount> sender(USER_DB->get_account(t->get_sender()));
+  std::unique_ptr<BankAccount> sender(
+      AccountManager::get_account(t->get_sender()));
   std::unique_ptr<BankAccount> receiver(
-      USER_DB->get_account(t->get_receiver()));
+      AccountManager::get_account(t->get_receiver()));
   if (!sender || !receiver)
     return false;
 

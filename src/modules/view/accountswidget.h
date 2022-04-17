@@ -15,6 +15,8 @@ public:
   explicit AccountsWidget(IUser *user, QWidget *parent = nullptr);
   ~AccountsWidget();
 
+  void clear_selection();
+
 signals:
   void selected(BankAccount *);
 

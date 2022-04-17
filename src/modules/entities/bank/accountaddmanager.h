@@ -3,6 +3,7 @@
 
 #include "IHistoryManager.h"
 #include "accountadd.h"
+#include "accountmanager.h"
 
 class AccountAddManager : public IHistoryManager {
   Q_OBJECT

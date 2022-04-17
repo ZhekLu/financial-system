@@ -18,10 +18,7 @@ class CreditWidget : public QWidget {
 public:
   enum Measure { MONTH, YEAR };
 
-  explicit CreditWidget(
-      IUser *user,
-      std::unordered_map<size_t, std::unique_ptr<Bank>> &banks_list,
-      QWidget *parent = nullptr);
+  explicit CreditWidget(IUser *user, QWidget *parent = nullptr);
   ~CreditWidget();
 
   void show(LoanManager::LoanType mode);
