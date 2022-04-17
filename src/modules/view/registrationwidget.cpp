@@ -1,13 +1,22 @@
 #include "registrationwidget.h"
+#include "ui_loginwidget.h"
 #include "ui_registrationwidget.h"
+#include <QScrollArea>
 
 RegistrationWidget::RegistrationWidget(QWidget *parent)
-    : QWidget(parent), ui(new Ui::RegistrationWidget) {
+    : QWidget(parent), ui(new Ui::RegistrationWidget), lw(new Ui::LoginWidget) {
   ui->setupUi(this);
+  login_widget = std::make_unique<QWidget>(this);
+  lw->setupUi(login_widget.get());
+
   init();
+  warning(false);
 }
 
-RegistrationWidget::~RegistrationWidget() { delete ui; }
+RegistrationWidget::~RegistrationWidget() {
+  delete ui;
+  delete lw;
+}
 
 void RegistrationWidget::show() {
   QWidget::show();
@@ -17,16 +26,16 @@ void RegistrationWidget::show() {
 void RegistrationWidget::hide() {
   QWidget::hide();
   clear_all();
+  warning(false);
 }
 
 void RegistrationWidget::init() {
-  aw = std::make_unique<AuthWidget>(this);
-
   ui->stacked_widget->insertWidget(Page::InfoPage, ui->tab_widget);
-  ui->stacked_widget->insertWidget(Page::LoginPage, aw.get());
+  ui->stacked_widget->insertWidget(Page::LoginPage, login_widget.get());
   ui->stacked_widget->setCurrentIndex(Page::InfoPage);
 
   init_lines();
+  init_type_selector();
   set_connections();
 }
 
@@ -48,6 +57,7 @@ void RegistrationWidget::init_lines() {
   bic_validator = std::make_unique<QRegularExpressionValidator>(bic, this);
   ui->bic_line->setValidator(bic_validator.get());
   ui->bank_bic_line->setValidator(bic_validator.get());
+  ui->pac_line->setValidator(bic_validator.get());
 
   // Passport
   QRegularExpression passport("^[A-Z]{2}[0-9]{6}$");
@@ -62,6 +72,12 @@ void RegistrationWidget::init_lines() {
   ui->id_line->setValidator(passport_id_validator.get());
 }
 
+void RegistrationWidget::init_type_selector() {
+  for (auto &t : Entity::type_string) {
+    ui->type_selector->addItem(t);
+  }
+}
+
 void RegistrationWidget::set_connections() {
   QObject::connect(ui->email_line, &QLineEdit::textChanged, this,
                    &RegistrationWidget::check_email);
@@ -70,6 +86,8 @@ void RegistrationWidget::set_connections() {
   QObject::connect(ui->bic_line, &QLineEdit::textChanged, this,
                    &RegistrationWidget::check_bic);
   QObject::connect(ui->bank_bic_line, &QLineEdit::textChanged, this,
+                   &RegistrationWidget::check_bic);
+  QObject::connect(ui->pac_line, &QLineEdit::textChanged, this,
                    &RegistrationWidget::check_bic);
   QObject::connect(ui->passport_line, &QLineEdit::textChanged, this,
                    &RegistrationWidget::check_passport);
@@ -82,6 +100,32 @@ bool RegistrationWidget::is_valid(QLineEdit *line) {
   QString text = line->text();
   int index = 0;
   return validator->validate(text, index) == QValidator::Acceptable;
+}
+
+bool RegistrationWidget::is_not_empty(QLineEdit *line) {
+  return line->text() != "";
+}
+
+bool RegistrationWidget::is_valid_info(bool entity) {
+  bool res;
+  if (entity)
+    res = is_valid(ui->bic_line) && is_valid(ui->bank_bic_line) &&
+          is_not_empty(ui->e_name_line) && is_valid(ui->pac_line) &&
+          is_not_empty(ui->adress_line);
+  else
+    res = is_valid(ui->passport_line) && is_valid(ui->id_line) &&
+          is_valid(ui->phone_line) && is_valid(ui->email_line) &&
+          is_not_empty(ui->i_name_line);
+  return res;
+}
+
+bool RegistrationWidget::is_valid_login() {
+  bool res = is_not_empty(lw->login_line) && is_not_empty(lw->password_line);
+
+  if (res)
+    res = !USER_DB->is_login_busy(lw->login_line->text());
+
+  return res;
 }
 
 bool RegistrationWidget::move_page(bool back) {
@@ -108,6 +152,10 @@ void RegistrationWidget::clear_all() {
   ui->bic_line->clear();
   ui->adress_line->clear();
   ui->bank_bic_line->clear();
+}
+
+void RegistrationWidget::warning(bool visible) {
+  ui->warning_label->setVisible(visible);
 }
 
 void RegistrationWidget::update_style(QLineEdit *line) {
@@ -137,9 +185,24 @@ void RegistrationWidget::set_buttons(Page page) {
   }
 }
 
+// Buttons
+
 void RegistrationWidget::on_confirm_but_clicked() {
-  if (move_page())
-    return;
+  bool warn = false;
+  switch (ui->stacked_widget->currentIndex()) {
+  case Page::InfoPage:
+    if (is_valid_info(ui->tab_widget->currentIndex()))
+      move_page();
+    else
+      warn = true;
+    break;
+  case Page::LoginPage:
+    if (send_reg_request())
+      this->hide();
+    else
+      warn = true;
+  }
+  warning(warn);
 }
 
 void RegistrationWidget::on_cancel_but_clicked() {
@@ -147,7 +210,47 @@ void RegistrationWidget::on_cancel_but_clicked() {
     this->hide();
 }
 
-// checkers
+bool RegistrationWidget::send_reg_request() {
+  if (!is_valid_login())
+    return false;
+  std::unique_ptr<IUser> new_user(get_user());
+  std::unique_ptr<SystemUser> login(get_login());
+  qDebug() << "Reqistration : "
+           << LoginManager::login_request(new_user.get(), login.get());
+  return true;
+}
+
+Entity *RegistrationWidget::get_entity() {
+  return new Entity(
+      Entity::Type(ui->type_selector->currentIndex()),
+      ui->e_name_line->text().toStdString(), ui->pac_line->text().toULongLong(),
+      ui->bic_line->text().toULongLong(), ui->adress_line->text().toStdString(),
+      ui->bank_bic_line->text().toULongLong());
+}
+
+Individual *RegistrationWidget::get_individual() {
+  return new Individual(ui->i_name_line->text().toStdString(),
+                        ui->passport_line->text().toStdString(),
+                        ui->id_line->text().toStdString(),
+                        ui->phone_line->text().toStdString(),
+                        ui->email_line->text().toStdString());
+}
+
+IUser *RegistrationWidget::get_user() {
+  bool is_entity = ui->tab_widget->currentIndex();
+  if (is_entity)
+    return get_entity();
+  return get_individual();
+}
+
+SystemUser *RegistrationWidget::get_login() {
+  bool is_entity = ui->tab_widget->currentIndex();
+  LoginMode role = is_entity ? LoginMode::ENTITY : LoginMode::INDIVIDUAL;
+  return new SystemUser(lw->login_line->text(), lw->password_line->text(),
+                        role);
+}
+
+// Checkers
 
 void RegistrationWidget::check_email() { update_style(ui->email_line); }
 

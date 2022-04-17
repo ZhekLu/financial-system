@@ -2,11 +2,13 @@
 #define REGISTRATIONWIDGET_H
 
 #include "authwidget.h"
+#include "modules/entities/bank/loginmanager.h"
 #include <QWidget>
 
 namespace Ui {
 class RegistrationWidget;
-}
+class LoginWidget;
+} // namespace Ui
 
 class RegistrationWidget : public QWidget {
   Q_OBJECT
@@ -34,7 +36,8 @@ private:
   enum Page { InfoPage, LoginPage };
 
   Ui::RegistrationWidget *ui;
-  std::unique_ptr<AuthWidget> aw;
+  Ui::LoginWidget *lw;
+  std::unique_ptr<QWidget> login_widget;
 
   std::unique_ptr<QRegularExpressionValidator> phone_validator;
   std::unique_ptr<QRegularExpressionValidator> email_validator;
@@ -44,11 +47,23 @@ private:
 
   void init();
   void init_lines();
+  void init_type_selector();
   void set_connections();
 
-  bool is_valid(QLineEdit *line);
   bool move_page(bool back = false);
   void clear_all();
+  void warning(bool visible);
+
+  bool is_valid(QLineEdit *line);
+  bool is_not_empty(QLineEdit *line);
+  bool is_valid_info(bool entity);
+  bool is_valid_login();
+
+  bool send_reg_request();
+  Entity *get_entity();
+  Individual *get_individual();
+  IUser *get_user();
+  SystemUser *get_login();
 
   void update_style(QLineEdit *line);
   void set_page(Page page);

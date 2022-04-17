@@ -57,10 +57,6 @@ private:
   static bool make_undo_withdraw(size_t initiator, BankAccount *acc,
                                  Transaction &original);
 
-  // Verify
-
-  static bool verify_transfer_request(size_t initiator, Transaction &t);
-
   // Mark
 
   bool mark_transaction(Transaction *t, Request *r, bool verify);

@@ -7,7 +7,7 @@ MainWindow::MainWindow(QWidget *parent)
   aw = new AuthWidget();
   rw = std::make_unique<RegistrationWidget>();
   connect(aw, &AuthWidget::auth_ok, this, &MainWindow::auth_connection);
-  ui->debug_but->setVisible(false);
+  ui->debug_but->setVisible(true);
 }
 
 MainWindow::~MainWindow() {
@@ -45,8 +45,8 @@ void MainWindow::on_exit_but_clicked() { this->close(); }
 void MainWindow::on_reg_but_clicked() { rw->show(); }
 
 void MainWindow::on_debug_but_clicked() {
-  //    IdGenerator::GenerateId();
-  //    ClientWindow* cl = new ClientWindow()
+  QDate curr = QDate::currentDate();
+  qDebug() << curr << curr.addYears(3) << curr;
 }
 
 void MainWindow::auth_connection(size_t id, LoginMode mode) {

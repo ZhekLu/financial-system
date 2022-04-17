@@ -43,7 +43,7 @@ inline QString Entity::get_info() const {
                  "BIC: %4\n"
                  "Legal adress: %5\n"
                  "Ur bank credits: %6\n")
-      .arg(QString::number(type), QString::fromStdString(name),
+      .arg(type_string[type], QString::fromStdString(name),
            QString::number(PAC), QString::number(BIC),
            QString::fromStdString(adress), QString::number(bank_bic));
 }

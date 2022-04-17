@@ -2,7 +2,7 @@
 #define ENTITYCLIENTWINDOW_H
 
 #include "additionwidget.h"
-#include "modules/entities/bank/accountmanager.h"
+#include "modules/entities/bank/accountstatemanager.h"
 #include "modules/entities/entity.h"
 #include "transferwidget.h"
 

@@ -41,15 +41,15 @@ void AuthWidget::hide() {
 }
 
 void AuthWidget::on_enter_btn_clicked() {
-  string login = ui->login->text().toStdString();
-  string password = ui->password->text().toStdString();
+  QString login = ui->login->text();
+  QString password = ui->password->text();
 
-  if (!USER_DB->contains(SystemUser(login, password, mode))) {
+  size_t user = LoginManager::get_user(login, password, mode);
+  if (!user) {
     QMessageBox::critical(this, "Authorization", "Wrong login or password");
   } else {
     qDebug() << "auth ok";
-    emit auth_ok(USER_DB->get_user_by_login(SystemUser(login, password, mode)),
-                 mode);
+    emit auth_ok(user, mode);
     hide();
   }
 }

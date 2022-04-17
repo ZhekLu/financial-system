@@ -26,10 +26,12 @@ bool UserDB::createTables() {
   if (!db.tables().contains("system_users") && res) {
     res = query.exec("CREATE TABLE system_users"
                      "("
+                     "id INTEGER, "
                      "login TEXT PRIMARY KEY, "
                      "password TEXT, "
                      "role INTEGER, "
-                     "user_id INTEGER"
+                     "user_id INTEGER, "
+                     "approved BOOLEAN"
                      ");");
   }
 
@@ -128,49 +130,73 @@ bool UserDB::createTables() {
 // Login and system
 
 bool UserDB::is_login_busy(QString login) {
-  QString query =
-      tr("SELECT login FROM system_users WHERE login = ") + qs(login);
+  QString query = tr("SELECT id FROM system_users WHERE login = ") + qs(login);
   exec(query);
 
-  return db_query->first();
-}
-
-bool UserDB::contains(SystemUser user) {
-
-  QString query = QString("SELECT user_id FROM system_users "
-                          "WHERE login = \"%1\" AND "
-                          "password = \"%2\" AND "
-                          "role = %3")
-                      .arg(QString::fromStdString(user.login),
-                           QString::fromStdString(user.password),
-                           QString::number(user.mode));
-  exec(query);
   return db_query->next();
 }
 
-size_t UserDB::get_user_by_login(SystemUser user) {
-  QString query = QString("SELECT user_id FROM system_users "
-                          "WHERE login = \"%1\" AND "
-                          "password = \"%2\" AND "
-                          "role = %3")
-                      .arg(QString::fromStdString(user.login),
-                           QString::fromStdString(user.password),
-                           QString::number(user.mode));
+std::unique_ptr<SystemUser> UserDB::get_login(QString login) {
+  QString query = QString("SELECT "
+                          "id, password, role, user_id, approved "
+                          "FROM system_users "
+                          "WHERE login = '%1';")
+                      .arg(login);
+
   exec(query);
   if (!db_query->next())
-    return 0;
-  return db_query->value(0).toInt();
+    return nullptr;
+
+  size_t id = db_query->value(0).toULongLong();
+  std::string password = db_query->value(1).toString().toStdString();
+  int role = db_query->value(2).toInt();
+  size_t user_id = db_query->value(3).toULongLong();
+  bool approved = db_query->value(4).toBool();
+  return std::make_unique<SystemUser>(id, login.toStdString(), password,
+                                      LoginMode(role), user_id, approved);
 }
 
-void UserDB::login_user(SystemUser user) {
-  QString query = "INSERT INTO system_users(login, password, role, "
-                  "user_id) VALUES (" +
-                  qs(QString::fromStdString(user.login)) + "," +
-                  qs(QString::fromStdString(user.password)) + "," +
-                  qs(QString::number(user.mode)) + "," +
-                  qs(QString::number(user.user_id)) + ");";
-  if (exec(query))
+std::unique_ptr<SystemUser> UserDB::get_login(size_t id) {
+  QString query = QString("SELECT "
+                          "login, password, role, user_id, approved "
+                          "FROM system_users "
+                          "WHERE id = %1;")
+                      .arg(id);
+
+  exec(query);
+  if (!db_query->next())
+    return nullptr;
+
+  std::string login = db_query->value(0).toString().toStdString();
+  std::string password = db_query->value(1).toString().toStdString();
+  int role = db_query->value(2).toInt();
+  size_t user_id = db_query->value(3).toULongLong();
+  bool approved = db_query->value(4).toBool();
+  return std::make_unique<SystemUser>(id, login, password, LoginMode(role),
+                                      user_id, approved);
+}
+
+bool UserDB::add_login(SystemUser &user) {
+  QString query = QString("INSERT INTO system_users "
+                          "(id, login, password, role, user_id, approved) "
+                          "VALUES %1;")
+                      .arg(user.get_values_query());
+  if (exec(query)) {
     emit DataBase::updated();
+    return true;
+  }
+  return false;
+}
+
+bool UserDB::update(SystemUser &su) {
+  QString query = QString("UPDATE system_users SET %1 "
+                          "WHERE id = %2")
+                      .arg(su.get_update_query(), QString::number(su.get_id()));
+  if (exec(query)) {
+    emit DataBase::updated();
+    return true;
+  }
+  return false;
 }
 
 // User
@@ -194,21 +220,30 @@ Individual *UserDB::get_user(size_t id) {
   return new Individual(name, p_number, p_id, phone, email, id);
 }
 
-void UserDB::remove_user(std::string login) {
-  QString query = ("DELETE FROM users WHERE login = ") + qs(login);
-  if (exec(query))
+bool UserDB::add_user(Individual &user) {
+  QString query =
+      "INSERT INTO users(id, full_name, pass_number, pass_id, phone, email) "
+      "VALUES " +
+      user.get_values_query();
+  if (exec(query)) {
     emit DataBase::updated();
+    return true;
+  }
+  return false;
 }
 
 // Companies
 
-void UserDB::add_company(Entity company) {
+bool UserDB::add_company(Entity &company) {
   QString query =
       "INSERT INTO companies(id, name, type, PAC, BIC, adress, bank_bic) "
       "VALUES " +
       company.get_values_query();
-  if (exec(query))
+  if (exec(query)) {
     emit DataBase::updated();
+    return true;
+  }
+  return false;
 }
 
 void UserDB::remove_company(size_t id) {
@@ -719,7 +754,7 @@ std::unique_ptr<AccountAdd> UserDB::get_add(size_t id) {
   std::unique_ptr<AccountAdd> add;
   if (!db_query->next())
     return nullptr;
-  int type = db_query->value(0).toULongLong();
+  int type = db_query->value(0).toInt();
   bool approved = db_query->value(1).toBool();
   size_t user_id = db_query->value(2).toULongLong();
   size_t bank_id = db_query->value(3).toULongLong();
@@ -734,6 +769,63 @@ std::unique_ptr<AccountAdd> UserDB::get_add(size_t id) {
                                      period, payment, percent, payed_num);
 
   return add;
+}
+
+std::vector<std::unique_ptr<AccountAdd>> UserDB::get_adds(size_t account_id) {
+  QString query = QString("SELECT "
+                          "id, type, approved, user_id, bank_id, "
+                          "start_date, period, "
+                          "payment, percent, payed_num "
+                          "FROM account_adds WHERE account_id = ") +
+                  QString::number((account_id));
+  exec(query);
+
+  std::vector<std::unique_ptr<AccountAdd>> adds;
+  while (db_query->next()) {
+    size_t id = db_query->value(0).toULongLong();
+    int type = db_query->value(1).toInt();
+    bool approved = db_query->value(2).toBool();
+    size_t user_id = db_query->value(3).toULongLong();
+    size_t bank_id = db_query->value(4).toULongLong();
+    QDate start_date = db_query->value(5).toDate();
+    size_t period = db_query->value(6).toULongLong();
+    size_t payment = db_query->value(7).toULongLong();
+    size_t percent = db_query->value(8).toULongLong();
+    size_t payed_num = db_query->value(9).toULongLong();
+    adds.push_back(std::make_unique<AccountAdd>(
+        id, approved, AccountAdd::Type(type), user_id, bank_id, account_id,
+        start_date, period, payment, percent, payed_num));
+  }
+  return adds;
+}
+
+std::vector<std::unique_ptr<AccountAdd>> UserDB::get_adds(size_t account_id,
+                                                          bool approved) {
+  QString query =
+      QString("SELECT "
+              "id, type, user_id, bank_id, "
+              "start_date, period, "
+              "payment, percent, payed_num "
+              "FROM account_adds WHERE account_id = %1 and approved = %2")
+          .arg(QString::number((account_id)), QString::number((approved)));
+  exec(query);
+
+  std::vector<std::unique_ptr<AccountAdd>> adds;
+  while (db_query->next()) {
+    size_t id = db_query->value(0).toULongLong();
+    int type = db_query->value(1).toInt();
+    size_t user_id = db_query->value(2).toULongLong();
+    size_t bank_id = db_query->value(3).toULongLong();
+    QDate start_date = db_query->value(4).toDate();
+    size_t period = db_query->value(5).toULongLong();
+    size_t payment = db_query->value(6).toULongLong();
+    size_t percent = db_query->value(7).toULongLong();
+    size_t payed_num = db_query->value(8).toULongLong();
+    adds.push_back(std::make_unique<AccountAdd>(
+        id, approved, AccountAdd::Type(type), user_id, bank_id, account_id,
+        start_date, period, payment, percent, payed_num));
+  }
+  return adds;
 }
 
 // Debug

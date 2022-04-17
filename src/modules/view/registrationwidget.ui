@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>440</width>
-    <height>433</height>
+    <height>431</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -98,8 +98,12 @@ QPushButton:hover{
      <x>0</x>
      <y>0</y>
      <width>441</width>
-     <height>361</height>
+     <height>341</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">
+  lw-&gt;LoginWidget</string>
    </property>
    <property name="currentIndex">
     <number>0</number>
@@ -114,7 +118,7 @@ QPushButton:hover{
        <x>20</x>
        <y>11</y>
        <width>401</width>
-       <height>264</height>
+       <height>301</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -330,9 +334,9 @@ color: rgb(0, 0, 0);</string>
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>20</y>
-       <width>391</width>
-       <height>310</height>
+       <y>10</y>
+       <width>401</width>
+       <height>301</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -382,7 +386,7 @@ color: rgb(0, 0, 0);</string>
            <string notr="true">color: rgb(255, 255, 255);</string>
           </property>
           <property name="text">
-           <string>PAC</string>
+           <string>PAC:</string>
           </property>
          </widget>
         </item>
@@ -440,6 +444,12 @@ color: rgb(0, 0, 0);</string>
         </property>
         <item>
          <widget class="QComboBox" name="type_selector">
+          <property name="maximumSize">
+           <size>
+            <width>301</width>
+            <height>41</height>
+           </size>
+          </property>
           <property name="styleSheet">
            <string notr="true">color: rgb(255, 255, 255);
 font: 16pt &quot;Segoe UI&quot;;</string>
@@ -586,7 +596,7 @@ color: rgb(0, 0, 0);</string>
 color: rgb(255, 255, 255);</string>
    </property>
    <property name="text">
-    <string/>
+    <string>Check input</string>
    </property>
   </widget>
   <widget class="QStackedWidget" name="stacked_widget">
@@ -597,6 +607,9 @@ color: rgb(255, 255, 255);</string>
      <width>441</width>
      <height>341</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">width:461px;height:361px;</string>
    </property>
   </widget>
   <zorder>stacked_widget</zorder>

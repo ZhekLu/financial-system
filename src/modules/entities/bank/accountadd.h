@@ -27,6 +27,8 @@ public:
   QString get_info() const override;
   QString get_update_query() const;
 
+  size_t pay();
+
   void set_approved(bool value) { approved = value; }
 
 private:
@@ -42,6 +44,8 @@ private:
   size_t payed_num;
 
   static inline IdGenerator id_creator{9, "account_adds", "id"};
+
+  QDate last_payment_date() const;
 };
 
 #endif // ACCOUNTADD_H

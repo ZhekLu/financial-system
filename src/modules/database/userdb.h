@@ -26,18 +26,17 @@ public:
 
   // Login
   bool is_login_busy(QString login);
-  bool contains(SystemUser user);
-  size_t get_user_by_login(SystemUser user);
-
-  void login_user(SystemUser user);
-  void remove_user(std::string login);
-  //  std::vector<SystemUser> users();
+  std::unique_ptr<SystemUser> get_login(QString login);
+  std::unique_ptr<SystemUser> get_login(size_t id);
+  bool add_login(SystemUser &user);
+  bool update(SystemUser &);
 
   // Users
   Individual *get_user(size_t id);
+  bool add_user(Individual &user);
 
   // Companies
-  void add_company(Entity company);
+  bool add_company(Entity &company);
   void remove_company(size_t id);
   Entity *get_company(size_t id);
 
@@ -83,6 +82,9 @@ public:
   bool add_add(AccountAdd &);
   bool update(AccountAdd &);
   std::unique_ptr<AccountAdd> get_add(size_t id);
+  std::vector<std::unique_ptr<AccountAdd>> get_adds(size_t account_id);
+  std::vector<std::unique_ptr<AccountAdd>> get_adds(size_t account_id,
+                                                    bool approved);
 
   // Debug methods
   void print_all_system_users();

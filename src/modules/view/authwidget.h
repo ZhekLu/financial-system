@@ -4,8 +4,8 @@
 #include <QMessageBox>
 #include <QWidget>
 
-//#include "financialsystem.h"
 #include "modules/database/userdb.h"
+#include "modules/entities/bank/loginmanager.h"
 #include "modules/modes.h"
 
 namespace Ui {
@@ -28,7 +28,6 @@ signals:
 private slots:
 
   void on_enter_btn_clicked();
-
   void on_back_btn_clicked();
 
 private:

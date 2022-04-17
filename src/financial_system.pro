@@ -18,8 +18,11 @@ SOURCES += \
     modules/entities/bank/accountadd.cpp \
     modules/entities/bank/accountaddmanager.cpp \
     modules/entities/bank/accountmanager.cpp \
+    modules/entities/bank/accountstatemanager.cpp \
     modules/entities/bank/loanmanager.cpp \
+    modules/entities/bank/loginmanager.cpp \
     modules/entities/bank/transactionmanager.cpp \
+    modules/view/accountswidget.cpp \
     modules/view/addcardwidget.cpp \
     modules/view/additionwidget.cpp \
     modules/view/clientmanagewindow.cpp \
@@ -40,20 +43,24 @@ HEADERS += \
     modules/entities/ISystemObject.h \
     modules/entities/IUser.h \
     modules/entities/bank/IHistoryManager.h \
+    modules/entities/bank/IManager.h \
     modules/entities/bank/accountadd.h \
     modules/entities/bank/accountaddmanager.h \
     modules/entities/bank/accountmanager.h \
+    modules/entities/bank/accountstatemanager.h \
     modules/entities/bank/bank.h \
     modules/entities/bank/bankaccount.h \
     modules/entities/bank/credit.h \
     modules/entities/bank/installment.h \
     modules/entities/bank/loan.h \
     modules/entities/bank/loanmanager.h \
+    modules/entities/bank/loginmanager.h \
     modules/entities/bank/request.h \
     modules/entities/bank/transaction.h \
     modules/entities/bank/transactionmanager.h \
     modules/entities/entity.h \
     modules/entities/individual.h \
+    modules/view/accountswidget.h \
     modules/view/addcardwidget.h \
     modules/view/additionwidget.h \
     modules/view/clientmanagewindow.h \
@@ -75,6 +82,7 @@ HEADERS += \
 
 FORMS += \
     mainwindow.ui \
+    modules/view/accountswidget.ui \
     modules/view/addcardwidget.ui \
     modules/view/additionwidget.ui \
     modules/view/clientmanagewindow.ui \
@@ -82,6 +90,7 @@ FORMS += \
     modules/view/creditwidget.ui \
     modules/view/entityclientwindow.ui \
     modules/view/historywidget.ui \
+    modules/view/loginwidget.ui \
     modules/view/periodwidget.ui \
     modules/view/registrationwidget.ui \
     modules/view/systemwindow.ui \

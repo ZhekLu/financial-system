@@ -1,38 +1,29 @@
 #ifndef ACCOUNTMANAGER_H
 #define ACCOUNTMANAGER_H
 
-#include "IHistoryManager.h"
+#include "IManager.h"
 
-class AccountManager : public IHistoryManager {
-  Q_OBJECT
+class AccountManager : public IManager {
 public:
-  static bool freeze_request(size_t sender_id, size_t account_id, bool freeze);
-  static bool block_request(size_t sender_id, size_t account_id, bool freeze);
-  static bool add_account_request(size_t sender_id, BankAccount *acc);
-  static bool add_account_request(size_t sender_id, size_t bank_id);
+  static std::unique_ptr<BankAccount> get_account(size_t id);
+  static void update_account(BankAccount *acc);
 
   // Manager
-
-  enum Mode { LOGIN, BLOCK };
-
-  AccountManager(IUser *user, Mode mode,
-                 ItemsType items_type = ItemsType::SYSTEM);
-
+  AccountManager(IUser *user);
   std::vector<QTableWidgetItem *> get_items() const override;
-  bool mark(size_t item_index, bool verify = false) override;
   size_t get_selected(size_t index) const override;
+  BankAccount *get_selected_account(size_t index) const;
 
 private slots:
   void update_vars() override;
 
 private:
-  Mode mode;
-
-  // values
+  // variables
   std::vector<std::unique_ptr<BankAccount>> accounts;
-  std::vector<std::unique_ptr<Request>> requests;
+  std::unordered_map<size_t, std::unique_ptr<Bank>> banks;
 
-  bool approve_login(BankAccount *acc);
+  // methods
+  QTableWidgetItem *get_item(BankAccount *acc, QString bank) const;
 };
 
 #endif // ACCOUNTMANAGER_H
