@@ -13,10 +13,24 @@ void AccountManager::update_account(BankAccount *acc) {
 
   for (auto &add : adds) {
     acc->top_up(add->pay());
+  }
+}
+
+void AccountManager::update_account_adds(size_t id) {
+  auto adds = USER_DB->get_adds(id, true);
+  for (auto &add : adds) {
+    add->pay();
     qDebug() << "Add upd : " << USER_DB->update(*add);
   }
+}
 
-  qDebug() << "Acc upd : " << USER_DB->update(*acc);
+bool AccountManager::update(BankAccount *acc) {
+  size_t id = acc->get_id();
+  bool res = USER_DB->update(*acc);
+  if (res)
+    update_account_adds(id);
+  qDebug() << "Acc upd : " << res;
+  return res;
 }
 
 // Object

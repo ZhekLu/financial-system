@@ -48,7 +48,6 @@ private slots:
   void on_manage_but_clicked();
 
   // Widgets
-  void on_table_widget_cellClicked(int, int);
   void account_selected(BankAccount *);
   void mode_widget_closed();
   void manage_window_closed();
@@ -82,15 +81,13 @@ private:
   BankAccount *current_account;
 
   // methods
-  void update();
-  void update_variables();
-  void update_grid();
-  void update_grid_test();
+  void update_buttons();
   void clear_selected();
 
   void init();
+  void init_widgets();
+  void init_stack();
   void set_connections();
-  QTableWidgetItem *get_item(BankAccount *, QString);
 };
 
 #endif // CLIENTWINDOW_H
