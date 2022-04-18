@@ -1,0 +1,309 @@
+@startuml
+
+abstract class ISystemObject {
+__public__
+
+  virtual QString get_values_query() = 0;
+  virtual QString get_info() const = 0;
+  size_t get_id() const { return id; }
+
+__protected__
+  size_t id;
+}
+
+class AccountAdd  {
+__public__
+  enum Type { SALARY, DEPOSIT };
+
+  QString get_values_query() override;
+  QString get_info() const override;
+  QString get_update_query() const;
+
+  size_t pay();
+  void set_approved(bool value) { approved = value; }
+
+__private__
+  bool approved;
+  Type type;
+  size_t initiator_id;
+  size_t bank_id;
+  size_t account_id;
+  QDate start_date;
+  size_t period;
+  size_t payment;
+  size_t percent;
+  size_t payed_num;
+  static inline IdGenerator id_creator;
+  QDate last_payment_date() const;
+}
+
+
+class Bank {
+__public__
+  Bank(size_t percent, Type type, std::string name, size_t PAC, size_t BIC,
+       std::string adress, size_t bank_id = 0);
+
+  QString get_values_query() override;    
+  QString get_info() const override;
+  int get_percent() const;
+__private__
+  size_t percent;
+}
+
+class BankAccount {
+__public__
+  BankAccount(size_t id, size_t owner_id, size_t bank_id, size_t balance = 0,
+              bool frozen = false, bool blocked = false,
+              bool is_available = false);
+  BankAccount(size_t owner_id, size_t bank_id);
+
+  // methods
+  void top_up(size_t value) { balance += value; }
+  bool withdraw(size_t value);
+  bool can_pay(size_t value) const { return balance >= value; }
+  void revert_frozen() { frozen = !frozen; }
+  void set_available(bool value) { available = value; }
+  void set_blocked(bool value) { blocked = value; }
+
+  // getters
+  size_t get_balance() const { return balance; }
+  size_t get_owner() const { return owner_id; }
+  size_t get_bank() const { return bank_id; }
+  bool is_frozen() const { return frozen; }
+  bool is_blocked() const { return blocked; }
+  bool is_available() const { return !frozen && !blocked && available; }
+
+  QString get_values_query() override;
+  QString get_update_query();
+  QString get_info() const override;
+__private__
+  size_t owner_id;
+  size_t bank_id;
+  size_t balance = 0;
+  bool frozen;
+  bool blocked;
+  bool available;
+
+  static inline IdGenerator id_creator;
+}
+
+class Credit {
+__public__
+  static size_t count_payment(size_t sum, size_t period_in_month,
+                              size_t percent);
+
+  Credit(size_t id, bool is_opened, size_t user_id, size_t start_sum,
+         size_t percent, QDate start, size_t duration, size_t monthly_payment,
+         size_t payed_num);
+
+  Credit(size_t user_id, size_t start_sum, size_t percent, size_t month_count);
+}
+
+
+class Installment {
+__public__
+  Installment(size_t id, bool is_opened, size_t user_id, size_t finally_sum,
+              QDate start, size_t duration, size_t monthly_payment,
+              size_t payed_num);
+
+  Installment(size_t user_id, size_t start_sum, size_t month_count);
+}
+
+class Loan {
+__public__
+  Loan(size_t id, bool is_opened, size_t user_id, size_t start_sum,
+       size_t percent, QDate start, size_t duration, size_t monthly_payment,
+       size_t payed_num);
+  Loan(size_t user_id, size_t start_sum, size_t percent, size_t month_count);
+
+  QString get_values_query() override;
+  QString get_update_query() const;
+  QString get_info() const override;
+
+  void set_open(bool value);
+  void pay_fee();
+
+  size_t get_start_sum() const;
+  size_t get_payment() const;
+__protected__
+  bool opened;
+  size_t user_id;
+  size_t start_sum;
+  size_t percent;
+  QDate start_date;
+  size_t payment;
+  size_t payed_num;
+  size_t period;
+  size_t finally_sum = 0;
+
+  static inline IdGenerator id_creator;
+}
+
+
+
+class Request {
+__public__
+  enum Type {
+    TRANSFER,
+    WITHDRAW,
+    TOPUP,
+    FREEZE,
+    CREDIT,
+    INSTALLMENT,
+    LOGIN_ACCOUNT,
+    LOGIN_USER,
+    UNDO,
+    VERIFY,
+    BLOCK,
+    UNBLOCK,
+    DEPOSIT,
+    SALARY,
+    TRANSFER_REQUEST,
+    WITHFRAW_REQUEST
+  };
+
+  Request(size_t id, Type type, size_t from, size_t object,
+          bool approved = false, bool viewed = false);
+  Request(Type type, size_t from, size_t object);
+
+  QString get_values_query() override;
+  QString get_update_query() const;
+  QString get_info() const override;
+
+  // setters
+  void set_approved(bool value) ;
+  void set_viewed(bool value) ;
+
+  // getters
+  bool is_approved() const ;
+  bool is_viewed() const ;
+  size_t get_object() const ;
+  Type get_type() const ;
+
+__private__
+  Type type;
+  bool approved;
+  bool viewed;
+  size_t sender_id; // initiator account id (from)
+  size_t object_id; // what is under request
+
+  static inline IdGenerator id_creator;
+  static inline std::vector<QString> type_string;
+}
+
+class Transaction  {
+__public__
+  enum Type { TRANSFER, WITHDRAW, TOPUP };
+
+  Transaction(Type type, size_t id, size_t from, size_t to, size_t sum,
+              bool approved = false);
+  Transaction(size_t from, size_t to, size_t sum);
+  Transaction(size_t from, size_t sum, bool minus = true);
+
+  // getters
+  bool is_approved() const;
+  size_t get_sender() const ;
+  size_t get_receiver() const ;
+  size_t get_amount() const;
+  Type get_type() const ;
+  QString get_values_query() override ;
+  QString get_info() const override ;
+
+  // setters
+  void set_approved(bool value) ;
+__private__
+  bool approved;
+  size_t sender;   // initiator account id (from)
+  size_t receiver; // receiving account id (to)
+  size_t amount;
+  Type type;
+
+  static inline IdGenerator id_creator;
+}
+
+
+class Entity {
+__public__
+  enum Type { IE, LLC, CJSC, OJSC };
+
+  static inline std::vector<QString> type_string{"IE", "LLC", "CJSC", "OJSC"};
+
+  Entity(Type type, std::string name, size_t PAC, size_t BIC,
+         std::string adress, size_t bank_id);
+
+  // methods
+  QString get_info() const override;
+  QString get_values_query() override;
+  QString get_name() const ;
+  size_t get_bank() const ;
+__private__
+  std::string name;
+  Type type;
+  size_t PAC;
+  size_t BIC;
+  std::string adress;
+  size_t bank_bic;
+}
+
+class Individual {
+__public__
+  Individual(std::string full_name, std::string pasport_number,
+             std::string pasport_id, std::string phone_number,
+             std::string email, size_t id = id_creator.GenerateId());
+
+  // methods
+  QString get_info() const override;
+  QString get_values_query() override;
+
+__private__
+  std::string name;
+  std::string pass_number;
+  std::string pass_id;
+  std::string phone_number;
+  std::string email;
+
+  static inline IdGenerator id_creator;
+}
+
+abstract class IUser {
+__public__
+  IUser(size_t id, LoginMode mode);
+  // methods
+  LoginMode get_role() const ;
+
+__protected__
+  LoginMode mode;
+}
+
+class SystemUser {
+__public__
+  SystemUser(size_t id, std::string login, std::string password, LoginMode lm,
+             size_t user_id, bool approved);
+  SystemUser(QString login, QString password, LoginMode lm, size_t user_id = 0);
+
+  QString get_values_query() override;
+  QString get_update_query() const;
+  QString get_info() const override;
+  LoginMode get_role() const;
+  QString get_login() const ;
+  size_t get_user() const;
+  bool is_available() const ;
+
+  bool check_password(QString &password) const ;
+  void set_approved(bool value) ;
+  void set_user(size_t id) ;
+__private__
+  QString get_password() const ;
+
+  // fields
+  std::string login;
+  std::string password;
+  LoginMode mode;
+  size_t user_id;
+  bool approved;
+
+  static inline IdGenerator id_creator;
+}
+
+
+@enduml

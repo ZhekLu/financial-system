@@ -1,12 +1,10 @@
 #include "creditwidget.h"
 #include "ui_creditwidget.h"
 
-CreditWidget::CreditWidget(
-    IUser *user, std::unordered_map<size_t, std::unique_ptr<Bank>> &banks_list,
-    QWidget *parent)
+CreditWidget::CreditWidget(IUser *user, QWidget *parent)
     : QWidget(parent), ui(new Ui::CreditWidget), user(user) {
   ui->setupUi(this);
-  bank_selector = std::make_unique<AddCardWidget>(banks_list, this);
+  bank_selector = std::make_unique<AddCardWidget>(this);
 
   init_labels();
   connect_pages();

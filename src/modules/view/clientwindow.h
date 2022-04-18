@@ -48,49 +48,55 @@ private slots:
   void on_manage_but_clicked();
 
   // Widgets
-  void on_table_widget_cellClicked(int, int);
   void account_selected(BankAccount *);
   void mode_widget_closed();
   void manage_window_closed();
 
 private:
   // View
+
   enum WorkMode {
     CardView,
+    AdditionView,
+    TransferView,
     CreditView,
     AddCardView,
-    TransferView,
-    DepositView,
     CreditPayView
   };
+
   Ui::ClientWindow *ui;
 
   // Mode widgets
+
   std::unique_ptr<AccountsWidget> card_widget;
   std::unique_ptr<TransferWidget> transfer_widget;
   std::unique_ptr<CreditWidget> credit_widget;
-  std::unique_ptr<AddCardWidget> add_widget;
-  std::unique_ptr<AdditionWidget> deposit_widget;
+  std::unique_ptr<AddCardWidget> add_card_widget;
+  std::unique_ptr<AdditionWidget> additions_widget;
   std::unique_ptr<ClientManageWindow> manage_window;
 
   // fields
+
   std::unique_ptr<IUser> user;
   AccessMode mode;
-
-  std::vector<std::unique_ptr<BankAccount>> accounts;
-  std::unordered_map<size_t, std::unique_ptr<Bank>> banks;
   BankAccount *current_account;
 
   // methods
+
   void update();
-  void update_variables();
-  void update_grid();
-  void update_grid_test();
+  void update_buttons();
   void clear_selected();
 
   void init();
+  void init_widgets();
+  void init_person_widgets();
+  void init_company_widgets();
+  void init_stack();
   void set_connections();
-  QTableWidgetItem *get_item(BankAccount *, QString);
+  void init_buttons();
+
+  void person_card_request();
+  void company_card_request();
 };
 
 #endif // CLIENTWINDOW_H

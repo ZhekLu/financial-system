@@ -1,0 +1,16 @@
+@startuml
+
+AccountsWidget <|-- QWidget
+AddCardWidget<|-- QWidget
+AdditionWidget<|-- QWidget
+AuthWidget<|-- QWidget
+ClientManageWindow<|-- QMainWindow
+ClientWindow<|-- ClientWindow
+CreditWidget<|-- QWidget
+HistoryWidget<|-- QWidget
+PeriodWidget<|-- QWidget
+RegistrationWidget<|-- QWidget
+SystemWindow<|-- QMainWindow
+TransferWidget<|-- QWidget
+
+@enduml

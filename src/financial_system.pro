@@ -28,7 +28,6 @@ SOURCES += \
     modules/view/clientmanagewindow.cpp \
     modules/view/clientwindow.cpp \
     modules/view/creditwidget.cpp \
-    modules/view/entityclientwindow.cpp \
     modules/view/historywidget.cpp \
     modules/view/periodwidget.cpp \
     modules/view/registrationwidget.cpp \
@@ -66,9 +65,7 @@ HEADERS += \
     modules/view/clientmanagewindow.h \
     modules/view/clientwindow.h \
     modules/view/creditwidget.h \
-    modules/view/entityclientwindow.h \
     modules/view/historywidget.h \
-    modules/view/managerfactory.h \
     modules/view/periodwidget.h \
     modules/view/registrationwidget.h \
     modules/view/systemwindow.h \
@@ -88,7 +85,6 @@ FORMS += \
     modules/view/clientmanagewindow.ui \
     modules/view/clientwindow.ui \
     modules/view/creditwidget.ui \
-    modules/view/entityclientwindow.ui \
     modules/view/historywidget.ui \
     modules/view/loginwidget.ui \
     modules/view/periodwidget.ui \

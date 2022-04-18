@@ -3,10 +3,11 @@
 
 #include <QMainWindow>
 
-#include "modes.h"
+#include "modules/modes.h"
 #include "view/authwidget.h"
-#include "view/managerfactory.h"
+#include "view/clientwindow.h"
 #include "view/registrationwidget.h"
+#include "view/systemwindow.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -32,6 +33,7 @@ private slots:
   void on_reg_but_clicked();
 
   void auth_connection(size_t, LoginMode);
+  void on_login_button_clicked(LoginMode mode);
 
 private:
   // fields
@@ -40,6 +42,7 @@ private:
   std::unique_ptr<RegistrationWidget> rw;
 
   // methods
-  void on_login_button_clicked(LoginMode mode);
+  QMainWindow *manager_factory(size_t id, LoginMode mode);
+  IUser *get_user(size_t id, LoginMode mode);
 };
 #endif // MAINWINDOW_H

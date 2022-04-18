@@ -1,30 +1,28 @@
 #include "addcardwidget.h"
 #include "ui_addcardwidget.h"
 
-AddCardWidget::AddCardWidget(
-    IUser *user, std::unordered_map<size_t, std::unique_ptr<Bank>> &banks_list,
-    QWidget *parent)
-    : QWidget(parent), ui(new Ui::AddCardWidget), user(user),
-      banks(banks_list) {
+AddCardWidget::AddCardWidget(Mode mode, IUser *user, QWidget *parent)
+    : QWidget(parent), ui(new Ui::AddCardWidget), user(user), mode(mode) {
   ui->setupUi(this);
-  mode = Mode::CardAdder;
   update_combobox();
 }
 
-AddCardWidget::AddCardWidget(
-    std::unordered_map<size_t, std::unique_ptr<Bank>> &banks_list,
-    QWidget *parent)
-    : QWidget(parent), ui(new Ui::AddCardWidget), user(nullptr),
-      banks(banks_list) {
-  ui->setupUi(this);
-  mode = Mode::BankSelector;
+AddCardWidget::AddCardWidget(IUser *user, QWidget *parent)
+    : AddCardWidget(Mode::CardAdder, user, parent) {}
+
+AddCardWidget::AddCardWidget(QWidget *parent)
+    : AddCardWidget(Mode::BankSelector, nullptr, parent) {
   ui->confirm_but->setText("Continue");
-  update_combobox();
 }
 
 AddCardWidget::~AddCardWidget() { delete ui; }
 
 void AddCardWidget::show() { update_combobox(); }
+
+void AddCardWidget::update() {
+  banks = USER_DB->get_hash_banks();
+  update_combobox();
+}
 
 void AddCardWidget::on_cance_but_clicked() { emit closed(); }
 
@@ -41,10 +39,7 @@ void AddCardWidget::on_confirm_but_clicked() {
 }
 
 void AddCardWidget::send_add_account(size_t user_id, size_t bank_id) {
-  //  std::unique_ptr<BankAccount> to_add(new BankAccount(user_id, bank_id));
   qDebug() << "Add account : "
-           //           << AccountManager::add_account_request(user->get_id(),
-           //           to_add.get());
            << AccountStateManager::add_account_request(user_id, bank_id);
 }
 
