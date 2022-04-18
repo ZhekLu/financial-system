@@ -1,0 +1,244 @@
+@startuml
+
+class AccountAddManager {
+__public__
+  static bool deposit_request(size_t initiator_id, size_t account_id,
+                              size_t period_in_month);
+  static bool salary_request(size_t initiator_id, size_t bank_id,
+                             size_t account_id, size_t period_in_month,
+                             size_t salary_amount);
+
+  // Manager
+
+  AccountAddManager(IUser *user, AccountAdd::Type add_type);
+
+  std::vector<QTableWidgetItem *> get_items() const override;
+  bool mark(size_t item_index, bool verify = false) override;
+  size_t get_selected(size_t index) const override;
+
+__private slots__
+  void update_vars() override;
+
+__private__
+  AccountAdd::Type add_type;
+  Request::Type request_type;
+
+  // values
+  std::vector<std::unique_ptr<AccountAdd>> adds;
+  std::vector<std::unique_ptr<Request>> requests;
+
+  // methods
+  static bool send_add(AccountAdd &);
+  static bool send_add(AccountAdd &, Request &);
+
+  void init();
+  void update_requests();
+}
+
+class AccountManager  {
+__public__
+  static std::unique_ptr<BankAccount> get_account(size_t id);
+  static bool update(BankAccount &acc);
+
+  // Manager
+  AccountManager(IUser *user);
+  std::vector<QTableWidgetItem *> get_items() const override;
+  size_t get_selected(size_t index) const override;
+  BankAccount *get_selected_account(size_t index) const;
+
+__private slots__
+  void update_vars() override;
+
+__private__
+  // variables
+  std::vector<std::unique_ptr<BankAccount>> accounts;
+  std::unordered_map<size_t, std::unique_ptr<Bank>> banks;
+
+  // methods
+  static void update_account(BankAccount *acc);
+  static void update_account_adds(size_t id);
+  QTableWidgetItem *get_item(BankAccount *acc, QString bank) const;
+}
+
+class AccountStateManager {
+__public__
+  static bool freeze_request(size_t sender_id, size_t account_id, bool freeze);
+  static bool block_request(size_t sender_id, size_t account_id, bool freeze);
+  static bool add_account_request(size_t sender_id, BankAccount *acc);
+  static bool add_account_request(size_t sender_id, size_t bank_id);
+
+  // Manager
+
+  enum Mode { LOGIN, BLOCK };
+
+  AccountStateManager(IUser *user, Mode mode,
+                 ItemsType items_type = ItemsType::SYSTEM);
+
+  std::vector<QTableWidgetItem *> get_items() const override;
+  bool mark(size_t item_index, bool verify = false) override;
+  size_t get_selected(size_t index) const override;
+__private slots__
+  void update_vars() override;
+__private__
+  Mode mode;
+  // values
+  std::vector<std::unique_ptr<BankAccount>> accounts;
+  std::vector<std::unique_ptr<Request>> requests;
+
+  bool approve_login(BankAccount *acc);
+}
+
+
+abstract class IHistoryManager {
+__public__
+  IHistoryManager(IUser *sender, ItemsType type);
+  IHistoryManager(IUser *sender) ;
+
+  virtual bool mark(size_t item_index, bool verify) = 0;
+__protected__
+  static bool send_request(Request &r);
+}
+
+abstract class IManager {
+__public__
+  enum ItemsType { CLIENT, SYSTEM, NON };
+
+  IManager(IUser *sender, ItemsType type) ;
+  IManager(IUser *sender);
+
+  virtual std::vector<QTableWidgetItem *> get_items() const = 0;
+  virtual size_t get_selected(size_t index) const = 0;
+__signals__
+  void updated();
+__protected__
+  IUser *user;
+  ItemsType mode;
+__private slots__
+  virtual void update_vars() = 0;
+}
+
+class Installment {
+__public__
+  Installment(size_t id, bool is_opened, size_t user_id, size_t finally_sum,
+              QDate start, size_t duration, size_t monthly_payment,
+              size_t payed_num);
+
+  Installment(size_t user_id, size_t start_sum, size_t month_count);
+}
+
+
+class LoanManager {
+__public__
+  enum LoanType { CREDIT, INSTALLMENT };
+
+  static bool loan_request(IUser *user, Loan &l, LoanType type);
+
+  // non static
+  LoanManager(LoanType loan_type, IUser *user, ItemsType items_type);
+
+  bool mark(size_t item_index, bool verify) override;
+  size_t get_selected(size_t index) const override;
+  std::vector<QTableWidgetItem *> get_items() const override;
+__private slots__
+  void update_vars() override;
+__private__
+  // static methods
+  static bool send_request(Credit *c, Request &r);
+  static bool send_credit(Credit &c);
+  static bool send_loan(Loan &l);
+
+  // fields
+  LoanType loan_type;
+  Request::Type request_type;
+  std::vector<std::unique_ptr<Loan>> credits;
+  std::vector<std::unique_ptr<Request>> requests;
+
+  void update_requests();
+}
+
+class LoginManager {
+__public__
+  static bool login_request(IUser *user, SystemUser *login_info);
+  static size_t get_user(QString &login, QString &password, LoginMode mode);
+
+  // Manager
+  LoginManager(IUser *user);
+
+  bool mark(size_t item_index, bool verify) override;
+  size_t get_selected(size_t index) const override;
+  std::vector<QTableWidgetItem *> get_items() const override;
+__private slots__
+  void update_vars() override;
+__private__
+  // fields
+  std::vector<std::unique_ptr<SystemUser>> logins;
+  std::vector<std::unique_ptr<IUser>> users;
+  std::vector<std::unique_ptr<Request>> requests;
+  // static
+  static bool send_login(SystemUser &);
+  static bool send_user(IUser *user, LoginMode role);
+  static bool check_login(SystemUser *, QString &password, LoginMode mode);
+}
+
+
+class TransactionManager {
+__public__
+  enum Mode { CONDUCT, REQUEST };
+
+  static bool withdraw_request(size_t sender_id, size_t account_id, size_t sum);
+  static bool transfer_request(size_t sender_id, size_t account_id,
+                               size_t receiver_id, size_t sum);
+
+  static bool entity_transfer_request(size_t sender_id, size_t account_id,
+                                      size_t receiver_id, size_t sum);
+
+  // Manager
+  TransactionManager(IUser *user, Mode mode = Mode::CONDUCT);
+
+  std::vector<QTableWidgetItem *> get_items() const override;
+  bool mark(size_t item_index, bool verify = false) override;
+  size_t get_selected(size_t index) const override;
+
+__private slots__
+  void update_vars() override;
+__private__
+  Request::Type request_type;
+
+  std::vector<std::unique_ptr<Transaction>> transactions;
+  std::vector<std::unique_ptr<Request>> requests;
+
+  static bool send_request(BankAccount *acc, Request);
+  static bool send_request(BankAccount *acc, BankAccount *sec, Request r);
+
+  // Make
+
+  static bool send_transaction(Transaction &);
+  static bool make_transaction(size_t sender, BankAccount *from,
+                               BankAccount *to, size_t sum);
+  static bool make_transaction_request(size_t sender, BankAccount *from,
+                                       BankAccount *to, size_t sum);
+  static bool make_transaction(size_t sender, BankAccount *acc, size_t dest,
+                               size_t sum);
+  static bool make_withdraw(size_t sender, BankAccount *acc, size_t sum);
+
+  // Undo
+
+  static bool undo_transfer(size_t initiator, Transaction &t);
+  static bool undo_transfer_request(size_t initiator, Request &original);
+  static bool make_undo_transaction(size_t initiator, BankAccount *sen,
+                                    BankAccount *rec, Transaction &original);
+  static bool make_undo_withdraw(size_t initiator, BankAccount *acc,
+                                 Transaction &original);
+
+  // Mark
+
+  bool mark_transaction(Transaction *t, Request *r, bool verify);
+  bool mark_transaction_request(Transaction *t, Request *r, bool verify);
+}
+
+
+
+
+
+
+@enduml

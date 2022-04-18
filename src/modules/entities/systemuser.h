@@ -6,7 +6,8 @@
 #include "modules/modes.h"
 #include <string>
 
-struct SystemUser : public ISystemObject {
+class SystemUser : public ISystemObject {
+public:
   SystemUser(size_t id, std::string login, std::string password, LoginMode lm,
              size_t user_id, bool approved)
       : ISystemObject(id), login(std::move(login)),
