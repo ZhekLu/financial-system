@@ -1,0 +1,76 @@
+@startuml
+abstract class DataBase
+class IdGenerator
+UserDB <|.. DataBase
+
+abstract class ISystemObject
+abstract class IUser
+
+IUser<|.. ISystemObject
+Entity<|.. IUSer
+Individual<|.. IUSer
+
+SystemUser <|.. ISystemObject
+AccountAdd <|.. ISystemObject
+Transaction<|.. ISystemObject
+Request<|.. ISystemObject
+Loan<|.. ISystemObject
+Installment<|-- Loan
+Credit<|-- Loan
+BankAccount<|.. ISystemObject
+Bank <|-- Entity
+
+abstract class IManager
+abstract class IHistoryManager
+
+IHistoryManager<|.. IManager
+IManager o-- IUser
+
+TransactionManager<|.. IHistoryManager
+TransactionManager --* Transaction
+TransactionManager --* Request
+
+LoginManager<|.. IHistoryManager
+LoginManager --* SystemUser
+LoginManager --* IUser
+LoginManager --* Request
+
+LoanManager<|.. IHistoryManager
+LoanManager --* Loan
+LoanManager --* Request
+
+AccountStateManager<|.. IHistoryManager
+AccountStateManager --* BankAccount
+AccountStateManager --* Request
+
+AccountManager<|.. IManager
+AccountManager --* BankAccount
+AccountManager --* Bank
+
+AccountAddManager<|.. IHistoryManager
+AccountAddManager --* AccountAdd
+AccountAddManager --* Request
+
+TransferWidget --> TransactionManager
+AccountsWidget --* AccountManager
+SystemWindow --* HistoryWidget
+RegistrationWidget--> LoginManager
+HistoryWidget --* IHistoryManager
+CreditWidget --* AddCardWidget
+CreditWidget --> LoanManager
+ClientManageWindow --* HistoryWidget
+AuthWidget--> LoginManager
+AdditionWidget --* PeriodWidget
+AdditionWidget --> AccountAddManager
+AddCardWidget --> AccountStateManager
+
+ClientWindow --* AccountsWidget
+ClientWindow --* TransferWidget
+ClientWindow --* CreditWidget
+ClientWindow --* AddCardWidget
+ClientWindow --* AdditionWidget
+ClientWindow --* ClientManageWindow
+
+MainWindow --* SystemWindow
+MainWindow --* ClientWindow
+@enduml
