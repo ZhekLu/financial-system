@@ -2,13 +2,16 @@
 abstract class DataBase
 class IdGenerator
 UserDB <|.. DataBase
+IdGenerator --> UserDB
 
 abstract class ISystemObject
 abstract class IUser
 
+ISystemObject --o IdGenerator 
+
 IUser<|.. ISystemObject
-Entity<|.. IUSer
-Individual<|.. IUSer
+Entity<|.. IUser
+Individual<|.. IUser
 
 SystemUser <|.. ISystemObject
 AccountAdd <|.. ISystemObject
@@ -24,7 +27,7 @@ abstract class IManager
 abstract class IHistoryManager
 
 IHistoryManager<|.. IManager
-IManager o-- IUser
+IManager --o IUser
 
 TransactionManager<|.. IHistoryManager
 TransactionManager --* Transaction
