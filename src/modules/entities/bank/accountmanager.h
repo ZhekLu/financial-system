@@ -6,7 +6,7 @@
 class AccountManager : public IManager {
 public:
   static std::unique_ptr<BankAccount> get_account(size_t id);
-  static bool update(BankAccount *acc);
+  static bool update(BankAccount &acc);
 
   // Manager
   AccountManager(IUser *user);

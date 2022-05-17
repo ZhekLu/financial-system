@@ -4,7 +4,7 @@
 
 bool AccountAddManager::deposit_request(size_t initiator_id, size_t account_id,
                                         size_t period_in_month) {
-  auto account = USER_DB->get_account(account_id);
+  auto account = AccountManager::get_account(account_id);
   if (!account || !account->is_available())
     return false;
 
@@ -22,7 +22,7 @@ bool AccountAddManager::salary_request(size_t initiator_id, size_t bank_id,
                                        size_t account_id,
                                        size_t period_in_month,
                                        size_t salary_amount) {
-  auto account = USER_DB->get_account(account_id);
+  auto account = AccountManager::get_account(account_id);
   if (!account || !account->is_available())
     return false;
 

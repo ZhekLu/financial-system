@@ -2,6 +2,7 @@
 #define TRANSACTIONMANAGER_H
 
 #include "IHistoryManager.h"
+#include "accountmanager.h"
 #include "bankaccount.h"
 #include "modules/database/userdb.h"
 #include "request.h"

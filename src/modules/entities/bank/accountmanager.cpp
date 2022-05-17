@@ -24,9 +24,9 @@ void AccountManager::update_account_adds(size_t id) {
   }
 }
 
-bool AccountManager::update(BankAccount *acc) {
-  size_t id = acc->get_id();
-  bool res = USER_DB->update(*acc);
+bool AccountManager::update(BankAccount &acc) {
+  size_t id = acc.get_id();
+  bool res = USER_DB->update(acc);
   if (res)
     update_account_adds(id);
   qDebug() << "Acc upd : " << res;
